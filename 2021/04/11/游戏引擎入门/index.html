@@ -20,13 +20,13 @@
 <meta property="og:description" content="游戏引擎入门">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-04-11T12:26:25.417Z">
-<meta property="article:modified_time" content="2021-04-11T13:54:48.596Z">
+<meta property="article:modified_time" content="2021-04-11T14:44:23.996Z">
 <meta property="article:author" content="AprilNAVI">
 <meta name="twitter:card" content="summary">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/theme-nexmoe/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,gh/theme-nexmoe/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css?v=233" crossorigin>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css">
   
-  <link rel="stylesheet" href="/css/style.css?v=1618150621649">
+  <link rel="stylesheet" href="/css/style.css?v=1618152282535">
 <meta name="generator" content="Hexo 5.4.0"></head>
 
 <body class="mdui-drawer-body-left">
@@ -132,8 +132,8 @@
     
     <div class="nexmoe-post-meta nexmoe-rainbow-fill" style="margin:10px 0!important;">
     <a><i class="nexmoefont icon-calendar-fill"></i>2021年04月11日</a>
-    <a><i class="nexmoefont icon-areachart"></i>3k 字</a>
-    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 12 分钟</a>
+    <a><i class="nexmoefont icon-areachart"></i>5.6k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 22 分钟</a>
 </div>
 
     <h1 id="游戏引擎入门"><a href="#游戏引擎入门" class="headerlink" title="游戏引擎入门"></a>游戏引擎入门</h1><span id="more"></span>
@@ -218,8 +218,46 @@
 <p>Unity 自己没有耀眼的游戏。现在你几乎可以在网络上找到任何想要的内容，比如体素地形网格化、水流方向映射、反向动力学（Inverse Kinematics，IK）、材质树、技能编辑器，甚至大量的特效、模型、贴图、动画资源，铺天盖地的论坛、教程。Unity 只提供底层的基础功能，大部分强大的功能是世界各地的人帮助它完成的，在它自己获益的同时，开发者也在获益。</p>
 <p>Unity 的出现几乎改变了整个商业引擎的格局，它的开放，它的易用性，它的开发流程，都完全超过当时人们的认知，导致一些设计观念陈旧的商业引擎加速地消亡。有能力转变的也只有 Unreal Engine，虽然其庞大的代码库让它不能一下子实现转变，但它以快速的迭代不断追赶。</p>
 <p>Unity 更强大的地方在于扩展，所有人都可以给它定制功能，这逼迫 Unreal Engine 不得不开源。开源的好处会让更多人关注它，为它定制更多的功能插件，许多问题可以轻松地在互联网上搜索到解决方案，这让它的社区也更加壮大。</p>
-<p>更新中~~</p>
-<p>文章来源：<a target="_blank" rel="noopener" href="http://c.biancheng.net/game_engine/">http://c.biancheng.net/game_engine/</a><br>作者只对文章内容进行梳理和整理，仅供学习使用，严禁商业性转载</p>
+<h2 id="游戏逻辑编程和游戏引擎编程"><a href="#游戏逻辑编程和游戏引擎编程" class="headerlink" title="游戏逻辑编程和游戏引擎编程"></a>游戏逻辑编程和游戏引擎编程</h2><p>游戏编程广义上讲可以分成游戏逻辑编程和游戏引擎编程。游戏逻辑负责游戏核心玩法方面的内容，游戏引擎负责底层方面的处理。但它们两者之间的边界往往又没有那么泾渭分明。</p>
+<p><strong>逻辑人员</strong>负责集中力量开发游戏中的剧情和玩法，要决定的是什么时候显示什么内容，什么时候播放什么声音，什么时候通过网络传输什么数据，什么时候这个物体或者人物做某个动作。游戏逻辑就像电影的剧本，至于能否拍摄出预期的效果，不但取决于导演对剧本的理解和演员的演绎，还取决于拍摄的技术和后期的特效处理。</p>
+<p>至于图像如何显示，声音如何处理，数据如何传输，物体动作如何实现，游戏逻辑开发者其实并不用关心，这些归<strong>引擎人员</strong>来处理。虽然引擎并不是一款游戏成败与否的决定性因素，但好的游戏内容通过好的游戏引擎来实现，会给人一种全新的视觉和听觉感受，会更加震撼人心，这就好比传统的2D电影与3D乃至4D电影的效果对比。</p>
+<h2 id="游戏引擎开发涉及到的数学知识"><a href="#游戏引擎开发涉及到的数学知识" class="headerlink" title="游戏引擎开发涉及到的数学知识"></a>游戏引擎开发涉及到的数学知识</h2><p>数学可以说是引擎的根基，它的作用是不言而喻的。不但开发引擎需要数学知识，而且开发游戏逻辑也需要，所需知识基本覆盖了大学里与数学相关的所有课程——《高等数学》《线性代数》《概率与数理统计》。</p>
+<h3 id="1-向量"><a href="#1-向量" class="headerlink" title="1. 向量"></a>1. 向量</h3><p>向量（也称矢量）是指具有大小（magnitude）和方向的量。这是图形学和物理学中经常用到的概念，希望读者能了解 2D、3D、4D 向量的含义，标量和点的含义。在游戏中，3D 向量既可以表示一个方向，也可以表示一个点。</p>
+<h3 id="2-矩阵"><a href="#2-矩阵" class="headerlink" title="2. 矩阵"></a>2. 矩阵</h3><p>矩阵也是图形学中最常用的概念，它的一个作用就是空间变换。对于没有学过线性代数的人来说，矩阵可能有些难以理解，不过也没关系，引擎中最常用的就是 3×3 矩阵和 4×4 矩阵。</p>
+<p>不过这里还要了解关于矩阵的一些特性，包括矩阵的维度、矩阵的逆、矩阵的转置、单位矩阵、方阵、标量和矩阵相乘、矩阵和矩阵相乘、矩阵和向量相乘、向量和矩阵相乘（不同顺序得到的结果也不一样）、正交矩阵、向量与基向量的关系等。</p>
+<h3 id="3-四元数"><a href="#3-四元数" class="headerlink" title="3. 四元数"></a>3. 四元数</h3><p>关于四元数，需要了解的包括四元数的定义以及四元数的模、单位四元数、四元数的逆、四元数的共轭、四元数的点乘和叉乘等，相关的内容在网上非常容易查到。</p>
+<h3 id="4-几何体"><a href="#4-几何体" class="headerlink" title="4. 几何体"></a>4. 几何体</h3><p>引擎中的几何体基本是用来做碰撞检测和相交检测以及求相互距离的。所有的几何体都以参数化方式表示。</p>
+<p>我们需要弄清楚的是直线、射线、线段、圆、三角形、矩形、平面、球体、立方体、胶囊体等。我们需要用到的是它们之间的相交检测以及点到它们的距离。</p>
+<h3 id="5-欧拉角"><a href="#5-欧拉角" class="headerlink" title="5. 欧拉角"></a>5. 欧拉角</h3><p>欧拉角和坐标轴的指向没什么关系，它是按照方位来定义的，是以前向量（Roll）、右向量（Pitch）、上向量（Yaw）作为旋转轴得到的角度。按不同顺序旋转得到的结果是不一样的，一般有两种旋转顺序，分别为 Roll→Pitch→Yaw 和 Yaw→Pitch→Roll。</p>
+<h2 id="游戏引擎开发的学习路线"><a href="#游戏引擎开发的学习路线" class="headerlink" title="游戏引擎开发的学习路线"></a>游戏引擎开发的学习路线</h2><p>很多游戏幵发者认为自己能写逻辑就等于掌握了游戏开发技术，引擎对自己来说无足轻重，这种想法是有问题的。</p>
+<p>首先逻辑是在引擎的基础上写的，其次如果对引擎一无所知，非常不利于深入理解逻辑开发。相反，如果对引擎有深入的研究，调用引擎提供的接口时可以很清楚地知道其内部是如何实现的，这样有助于写一些引擎的辅助功能算法，提升自己的编程能力。</p>
+<p>学习 3D 引擎需要经历一个由浅入深的过程，首先要了解最基本的一些 3D 知识，比如固定流水线、可编程流水线、3D 模型结构、骨骼动画等，并且能利用 Dirct3D 或 OPENGL 或 OPENGLES 这些图形库中任何一个，做个简单的 Demo。通过这个 Demo 了解程序运行的原理后，再尝试封装一些简单算法，一些常用函数，利用这个简单封装做一款小的游戏 Demo</p>
+<p>目前各大游戏公司，比如网易、腾讯、EA、任天堂等国内外知名的 IT 公司，还有许多新兴的 VR/AR 公司非常紧缺 3D 引擎资深程序或者图形学引擎开发人员，开出了非常诱人的薪水和待遇，从中可以看出，目前游戏市场对于这类人才需求还是非常紧缺的。这正是一个学习 3D 引擎幵发的好机会，俗话说“机不可失，时不我待”。</p>
+<h3 id="如何学习-3D-引擎开发？"><a href="#如何学习-3D-引擎开发？" class="headerlink" title="如何学习 3D 引擎开发？"></a>如何学习 3D 引擎开发？</h3><ol>
+<li><p>首先必须掌握主流幵发语言C语言、c++、java或c# 至少一门编程语言。</p>
+</li>
+<li><p>编程离不开<a target="_blank" rel="noopener" href="http://c.biancheng.net/data_structure/">数据结构</a>，大学课程里面学的数据结构对于游戏开发非常重要，数据结构在游戏开发中主要用于数据存储及内存管理，开发 3D 引擎常用数据结构有数组、链表、哈希表等，以及常用的一些查找算法：快速排序、二叉树查找、二分査找等，对于常用的数据结构要重点掌握。</p>
+</li>
+<li><p>线性代数对于开发同样非常重要，掌握线性代数的目的是在游戏开发中灵活地运用向量、矩阵、四元数，以及欧拉角这些基本的数学运算解决问题。3D 固定流水线中的坐标变换和可编程流水线的顶点和像素转换都是使用线性代数运算完成的，运算主要涉及游戏幵发中的物体移动、旋转、缩放，以及点乘和差乘等。</p>
+</li>
+<li><p>现在的 3D 游戏引擎渲染都是基于 DirectX 或者 OPENGL、OPENGLES 这些图形库完成的，这就需要开发者能够熟练地使用图形库的接口开发程序。在当前移动端跨平台非常火热的情况下，建议大家学习 OPENGL 图形库。3D 引擎的核心功能就是对游戏的场景渲染和物体的材质渲染。</p>
+</li>
+<li><p>学习图形学算法，游戏要实现一些逼真的效果离不开算法的支持，比如柔体的模拟、刚体碰撞效果及曲线插值算法等。</p>
+</li>
+<li><p>另外，在框架设计方面，需要掌握<a target="_blank" rel="noopener" href="http://c.biancheng.net/design_pattern/">设计模式</a>里常用的如工厂模式、单件模式、状态模式、MVC模式等。设计模式的使用不能靠死记硬背，需要将其灵活运用到项目幵发中，这样才能逐步深入领会其设计精髄。</p>
+</li>
+</ol>
+<p>初学者在使用设计模式的过程中会出现一个误区：千万不要为了使用设计模式而使用设计模式，过度使用会得到适得其反的效果，凡事要把握一个度。原作者的同事为了使用设计模式，不论设计什么模块都要用设计模式，最后导致在模块扩充时出现了很多问题，举这个例子的目的是告诉读者好东西也不能乱用。真正得心应手的人没有在做架构设计时去特意考虑用哪种设计模式，都是顺其自然地使用，就好像真正的用剑高手，可以做到手中无剑，心中有剑的境界。</p>
+<p>以上六点是对 3D 游戏引擎开发的心得体会，建议大家循序渐进、由易到难地学习。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>技术的掌握不是一朝一夕能够完成的，关键在于坚持，首先要做的是打好基础，在真正掌握了基础知识后，再提升是非常快的。</p>
+<p>做游戏引擎也是知识积累的过程，虽然现在的 3D 引擎非常多，自己幵发游戏引擎己经不现实，但要想真正地深入学习游戏幵发核心技术，至少应该知道引擎的底层是如何实现的，换句话说就是其工作原理要搞清楚，这对于开发者来说非常重要。</p>
+<p>不要再把自己局限于代码操作工简单地写写逻辑，这对自己的技术提升没有任何帮助的。要做到对游戏开发知其然知其所以然，就必须学习 3D 引擎开发技术，特别是对刚踏入游戏行业的从业者，每天坚持不断地学习，如果能持续不断地学习 10000 小时，你肯定会成为 3D 引擎高手。</p>
+<p>这就跟锻炼身体一样，其实锻炼身体非常能够磨炼一个人的心性，锻炼一个人的意志力。</p>
+<p>自己尝试开发一款小的游戏引擎，即使不能成功，但过程也是非常重要的，你从中可以学习到很多知识，经验的积累对自己的发展帮助非常大，这也是为什么游戏公司招聘，首要的条件是应聘者要有实际开发项目工作经验。 </p>
+<p>文章来源：<a target="_blank" rel="noopener" href="http://c.biancheng.net/game_engine/">http://c.biancheng.net/game_engine/</a><br><strong>作者只对文章内容进行梳理和整理</strong></p>
+<p><strong>仅供学习使用，严禁商业性转载</strong></p>
+<p><strong>仅供学习使用，严禁商业性转载</strong></p>
+<p><strong>仅供学习使用，严禁商业性转载</strong></p>
 
   </article>
 
@@ -281,7 +319,7 @@
 <script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
  
 
-<script src="/js/app.js?v=1618150621652"></script>
+<script src="/js/app.js?v=1618152282536"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
 <script>
