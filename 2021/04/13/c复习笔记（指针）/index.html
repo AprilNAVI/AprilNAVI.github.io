@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+
+<head>
+  
+  <title>c复习笔记（指针） - AprilNAVI&#39;s Blog | You are the best</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  
+  
+
+  <link rel="shortcut icon" href="/favicon.ico" type="image/png" />
+  <meta name="description" content="呜呜呜到学cpp的时候发现c语言就学了个语法，内存编译那些还不是很熟，真对不起自己 还会再写一篇关于内存和编译的（大概）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="c复习笔记（指针）">
+<meta property="og:url" content="https://aprilnavi.github.io/2021/04/13/c%E5%A4%8D%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E6%8C%87%E9%92%88%EF%BC%89/index.html">
+<meta property="og:site_name" content="AprilNAVI&#39;s Blog | You are the best">
+<meta property="og:description" content="呜呜呜到学cpp的时候发现c语言就学了个语法，内存编译那些还不是很熟，真对不起自己 还会再写一篇关于内存和编译的（大概）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-13T15:00:52.000Z">
+<meta property="article:modified_time" content="2021-04-13T15:00:19.801Z">
+<meta property="article:author" content="AprilNAVI">
+<meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/highlight.js@9.15.8/styles/atom-one-dark.css,gh/theme-nexmoe/hexo-theme-nexmoe@latest/source/lib/mdui_043tiny/css/mdui.css,gh/theme-nexmoe/hexo-theme-nexmoe@latest/source/lib/iconfont/iconfont.css,gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css?v=233" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css">
+  
+  <link rel="stylesheet" href="/css/style.css?v=1618326053248">
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="mdui-drawer-body-left">
+  
+  <div id="nexmoe-background">
+    <div class="nexmoe-bg" style="background-image: url(https://i.loli.net/2021/04/11/yfR6X7t1msgoHTO.jpg)"></div>
+    <div class="mdui-appbar mdui-shadow-0">
+      <div class="mdui-toolbar">
+        <a mdui-drawer="{target: '#drawer', swipe: true}" title="menu" class="mdui-btn mdui-btn-icon mdui-ripple"><i class="mdui-icon nexmoefont icon-menu"></i></a>
+        <div class="mdui-toolbar-spacer"></div>
+        <!--<a href="javascript:;" class="mdui-btn mdui-btn-icon"><i class="mdui-icon material-icons">search</i></a>-->
+        <a href="/" title="AprilNAVI" class="mdui-btn mdui-btn-icon"><img src="https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg# 网站 Logo" alt="AprilNAVI"></a>
+       </div>
+    </div>
+  </div>
+  <div id="nexmoe-header">
+      <div class="nexmoe-drawer mdui-drawer" id="drawer">
+    <div class="nexmoe-avatar mdui-ripple">
+        <a href="/" title="AprilNAVI">
+            <img src="https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg# 网站 Logo" alt="AprilNAVI" alt="AprilNAVI">
+        </a>
+    </div>
+    <div class="nexmoe-count">
+        <div><span>文章</span>5</div>
+        <div><span>标签</span>0</div>
+        <div><span>分类</span>0</div>
+    </div>
+    <div class="nexmoe-list mdui-list" mdui-collapse="{accordion: true}">
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/" title="回到首页">
+            <i class="mdui-list-item-icon nexmoefont icon-home"></i>
+            <div class="mdui-list-item-content">
+                回到首页
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/about.html" title="关于博客">
+            <i class="mdui-list-item-icon nexmoefont icon-info-circle"></i>
+            <div class="mdui-list-item-content">
+                关于博客
+            </div>
+        </a>
+        
+        <a class="nexmoe-list-item mdui-list-item mdui-ripple" href="/PY.html" title="我的朋友">
+            <i class="mdui-list-item-icon nexmoefont icon-unorderedlist"></i>
+            <div class="mdui-list-item-content">
+                我的朋友
+            </div>
+        </a>
+        
+    </div>
+    <aside id="nexmoe-sidebar">
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-search">
+        <form id="search_form" action_e="https://cn.bing.com/search?q=site:nexmoe.com" onsubmit="return search();">
+            <label><input id="search_value" name="q" type="search" placeholder="搜索"></label>
+        </form>
+    </div>
+</div>
+  
+  <div class="nexmoe-widget-wrap">
+    <div class="nexmoe-widget nexmoe-social">
+        <a class="mdui-ripple" href="https://qm.qq.com/cgi-bin/qm/qr?k=Jse9LQ8nOMWaz-hM0AZL6ao-qMCh38U8&noverify=0" target="_blank" mdui-tooltip="{content: 'QQ'}" style="color: rgb(249, 174, 8);background-color: rgba(249, 174, 8, .1);">
+            <i class="nexmoefont icon-QQ"></i>
+        </a><a class="mdui-ripple" href="https://space.bilibili.com/18946630" target="_blank" mdui-tooltip="{content: '哔哩哔哩'}" style="color: rgb(231, 106, 141);background-color: rgba(231, 106, 141, .15);">
+            <i class="nexmoefont icon-bilibili"></i>
+        </a><a class="mdui-ripple" href="https://github.com/AprilNAVI/" target="_blank" mdui-tooltip="{content: 'GitHub'}" style="color: rgb(25, 23, 23);background-color: rgba(25, 23, 23, .15);">
+            <i class="nexmoefont icon-github"></i>
+        </a>
+    </div>
+</div>
+  
+  
+
+  
+  
+  
+</aside>
+    <div class="nexmoe-copyright">
+        &copy; 2021 AprilNAVI
+        Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+        & <a href="https://github.com/theme-nexmoe/hexo-theme-nexmoe" target="_blank">Nexmoe</a>
+        
+    </div>
+</div><!-- .nexmoe-drawer -->
+  </div>
+  <div id="nexmoe-content">
+    <div class="nexmoe-primary">
+        <div class="nexmoe-post">
+
+  <div class="nexmoe-post-right">
+    
+  </div>
+
+  <article>
+    
+        <div class="nexmoe-post-cover" style="padding-bottom: 56.25%;"> 
+            <img data-src="https://i.loli.net/2021/04/11/yfR6X7t1msgoHTO.jpg" data-sizes="auto" alt="c复习笔记（指针）" class="lazyload">
+            <h1>c复习笔记（指针）</h1>
+        </div>
+    
+    
+    <div class="nexmoe-post-meta nexmoe-rainbow-fill" style="margin:10px 0!important;">
+    <a><i class="nexmoefont icon-calendar-fill"></i>2021年04月13日</a>
+    <a><i class="nexmoefont icon-areachart"></i>2.6k 字</a>
+    <a><i class="nexmoefont icon-time-circle-fill"></i>大概 11 分钟</a>
+</div>
+
+    <p>呜呜呜到学cpp的时候发现c语言就学了个语法，内存编译那些还不是很熟，真对不起自己</p>
+<p>还会再写一篇关于内存和编译的（大概）</p>
+<span id="more"></span>
+
+<hr>
+<h3 id="数组语法（这东西有时候刷题都能写错）"><a href="#数组语法（这东西有时候刷题都能写错）" class="headerlink" title="数组语法（这东西有时候刷题都能写错）"></a>数组语法（这东西有时候刷题都能写错）</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a[<span class="number">4</span>] = &#123;<span class="number">20</span>, <span class="number">345</span>, <span class="number">700</span>, <span class="number">22</span>&#125;;</span><br><span class="line"><span class="keyword">int</span> nums[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;<span class="comment">//将数组的所有元素初始化为 0</span></span><br><span class="line"><span class="keyword">int</span> a[] = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;<span class="comment">//如给全部元素赋值，那么在定义数组时可以不给出数组长度</span></span><br></pre></td></tr></table></figure>
+
+<p>C语言中，没有专门的字符串变量，没有string类型，通常就用一个字符数组来存放一个字符串。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. char a[10];  &#x2F;&#x2F;一维字符数组</span><br><span class="line"></span><br><span class="line">2. char b[5][10];  &#x2F;&#x2F;二维字符数组</span><br><span class="line"></span><br><span class="line">3. char c[20]&#x3D;&#123;&#39;c&#39;, &#39;  &#39;, &#39;p&#39;, &#39;r&#39;, &#39;o&#39;, &#39;g&#39;, &#39;r&#39;, &#39;a&#39;,&#39;m&#39;&#125;;  &#x2F;&#x2F; 给部分数组元素赋值</span><br><span class="line"></span><br><span class="line">4. char d[]&#x3D;&#123;&#39;c&#39;, &#39; &#39;, &#39;p&#39;, &#39;r&#39;, &#39;o&#39;, &#39;g&#39;, &#39;r&#39;, &#39;a&#39;, &#39;m&#39; &#125;;  &#x2F;&#x2F;对全体元素赋值时可以省去长度</span><br></pre></td></tr></table></figure>
+
+<p>C语言规定，可以将字符串直接赋值给字符数组，例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">char str[30] &#x3D; &#123;&quot;c.biancheng.net&quot;&#125;;</span><br><span class="line">char str[30] &#x3D; &quot;c.biancheng.net&quot;;  &#x2F;&#x2F;这种形式更加简洁，实际开发中常用</span><br><span class="line">char str[] &#x3D; &#123;&quot;c.biancheng.net&quot;&#125;;</span><br><span class="line">char str[] &#x3D; &quot;c.biancheng.net&quot;;  &#x2F;&#x2F;这种形式更加简洁，实际开发中常用</span><br></pre></td></tr></table></figure>
+
+<p>这里需要留意一个坑，字符数组只有在定义时才能将整个字符串一次性地赋值给它，一旦定义完了，就只能一个字符一个字符地赋值了。请看下面的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">char str[7];</span><br><span class="line">str &#x3D; &quot;abc123&quot;;  &#x2F;&#x2F;错误</span><br><span class="line">str[0] &#x3D; &#39;a&#39;; str[1] &#x3D; &#39;b&#39;; str[2] &#x3D; &#39;c&#39;;</span><br><span class="line">str[3] &#x3D; &#39;1&#39;; str[4] &#x3D; &#39;2&#39;; str[5] &#x3D; &#39;3&#39;;</span><br><span class="line">&#x2F;&#x2F;正确</span><br></pre></td></tr></table></figure>
+<p>由” “包围的字符串会自动在末尾添加’\0’。例如，”abc123”从表面看起来只包含了 6 个字符，其实不然，C语言会在最后隐式地添加一个’\0’，这个过程是在后台默默地进行的，所以我们感受不到。</p>
+<hr>
+<h3 id="指针！！！（来了来了抓大头）"><a href="#指针！！！（来了来了抓大头）" class="headerlink" title="指针！！！（来了来了抓大头）"></a>指针！！！（来了来了抓大头）</h3><p>1.数组名本身表示数组的首地址</p>
+<p>2.变量名和函数名是地址的一种助记符。CPU 访问内存时需要的是地址，而不是变量名和函数名。当源文件被编译和链接成可执行程序后，它们都会被替换成地址。编译和链接过程的一项重要任务就是找到这些名称所对应的地址。</p>
+<p>3.指针也没那么难那么绕啦，只不过就是储存了某个p的地址而已，这个我们就叫指针指向了p或是它为p的指针</p>
+<p>4.数组指针指向的是数组中的一个具体元素，而不是整个数组。</p>
+<p>5.字符数组存储在全局数据区或栈区，第二种形式的字符串存储在常量区。全局数据区和栈区的数据有读取和写入的权限，而常量区的数据只有读取权限，没有写入权限。因此，<strong>字符数组在定义后可以读取和修改每个字符</strong>，<strong>而字符串一旦被定义后就只能读取不能修改</strong>，任何对它的赋值都是错误的。</p>
+<p>6.二维数组指针：<br><code> int (*p)[4] = a;</code></p>
+<p>括号中的<code>*</code>表明 p 是一个指针，它指向一个数组，数组的类型为<code>int [4]</code>，这正是 a 所包含的每个一维数组的类型。p 指向的数据类型是<code>int [4]</code>，那么<code>p+1</code>就前进 4×4 = 16 个字节，<code>p-1</code>就后退 16 个字节。<code>*(p+1)+1</code>表示第 1 行第 1 个元素的地址。</p>
+<p>7.指针数组和二维数组指针在定义时非常相似，只是括号的位置不同：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> *(p1[<span class="number">5</span>]);  <span class="comment">//指针数组，可以去掉括号直接写作 int *p1[5];</span></span><br><span class="line"><span class="keyword">int</span> (*p2)[<span class="number">5</span>];  <span class="comment">//二维数组指针，不能去掉括号</span></span><br></pre></td></tr></table></figure>
+
+<p>指针数组和二维数组指针有着本质上的区别：指针数组是一个数组，只是每个元素保存的都是指针，以上面的 p1 为例，在32位环境下它占用 4×5 = 20 个字节的内存。二维数组指针是一个指针，它指向一个二维数组，以上面的 p2 为例，它占用 4 个字节的内存。</p>
+<p>8：函数指针的定义形式为：<br><code>returnType (*pointerName)(param list);</code></p>
+<p>注意<code>( )</code>的优先级高于<code>*</code>，第一个括号不能省略，如果写作<code>returnType *pointerName(param list);</code>就成了函数原型，它表明函数的返回值类型为<code>returnType *</code>。</p>
+<hr>
+<h2 id="指针理解小练习"><a href="#指针理解小练习" class="headerlink" title="指针理解小练习"></a>指针理解小练习</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span> <span class="keyword">int</span> *p1[<span class="number">6</span>];  <span class="comment">//指针数组</span></span><br><span class="line"><span class="number">2.</span> <span class="keyword">int</span> *(p2[<span class="number">6</span>]);  <span class="comment">//指针数组，和上面的形式等价</span></span><br><span class="line"><span class="number">3.</span> <span class="keyword">int</span> (*p3)[<span class="number">6</span>];  <span class="comment">//二维数组指针</span></span><br><span class="line"><span class="number">4.</span> <span class="keyword">int</span> (*p4)(<span class="keyword">int</span>, <span class="keyword">int</span>);  <span class="comment">//函数指针</span></span><br></pre></td></tr></table></figure>
+
+<p>运算符的优先级非常容易混淆，它们的优先级从高到低依次是：</p>
+<ul>
+<li>定义中被括号<code>( )</code>括起来的那部分。</li>
+<li>后缀操作符：括号<code>( )</code>表示这是一个函数，方括号<code>[ ]</code>表示这是一个数组。</li>
+<li>前缀操作符：星号<code>*</code>表示“指向xxx的指针”。</li>
+</ul>
+<p>答案：</p>
+<h3 id="1-int-p1-6"><a href="#1-int-p1-6" class="headerlink" title="1) int *p1[6];"></a>1) int *p1[6];</h3><p>从 p1 开始理解，它的左边是 *，右边是 [ ]，[ ] 的优先级高于 *，所以编译器先解析<code>p1[6]</code>，p1 首先是一个拥有 6 个元素的数组，然后再解析<code>int *</code>，它用来说明数组元素的类型。从整体上讲，p1 是一个拥有 6 个 int * 元素的数组，也即指针数组。</p>
+<h3 id="2-int-p3-6"><a href="#2-int-p3-6" class="headerlink" title="2) int (*p3)[6];"></a>2) int (*p3)[6];</h3><p>从 p3 开始理解，( ) 的优先级最高，编译器先解析<code>(*p3)</code>，p3 首先是一个指针，剩下的<code>int [6]</code>是 p3 指向的数据的类型，它是一个拥有 6 个元素的一维数组。从整体上讲，p3 是一个指向拥有 6 个 int 元素数组的指针，也即二维数组指针。</p>
+<blockquote>
+<p>为了能够通过指针来遍历数组元素，在定义数组指针时需要进行降维处理，例如三维数组指针实际指向的数据类型是二维数组，二维数组指针实际指向的数据类型是一维数组，一维数组指针实际指向的是一个基本类型；在表达式中，数组名也会进行同样的转换（下降一维）。</p>
+</blockquote>
+<h3 id="3-int-p4-int-int"><a href="#3-int-p4-int-int" class="headerlink" title="3) int (*p4)(int, int);"></a>3) int (*p4)(int, int);</h3><p>从 p4 开始理解，( ) 的优先级最高，编译器先解析<code>(*p4)</code>，p4 首先是一个指针，它后边的 ( ) 说明 p4 指向的是一个函数，括号中的<code>int, int</code>是参数列表，开头的<code>int</code>用来说明函数的返回值类型。整体来看，p4 是一个指向原型为<code>int func(int, int);</code>的函数的指针。</p>
+<h3 id="4-char-c-10-int-p"><a href="#4-char-c-10-int-p" class="headerlink" title="4) char ( c[10])(int **p);"></a>4) char <em>(</em> c[10])(int **p);</h3><p>这个定义有两个名字，分别是 c 和 p，乍看起来 p 是指针变量的名字，不过很遗憾这是错误的。如果 p 是指针变量名，<code>c[10]</code>这种写法就又定义了一个新的名字，这让人匪夷所思。</p>
+<p>以 c 作为变量的名字，先来看括号内部（绿色粗体）：</p>
+<p>char * <strong>(* c[10])</strong> (int **p);</p>
+<p>[ ] 的优先级高于 *，编译器先解析<code>c[10]</code>，c 首先是一个数组，它前面的<code>*</code>表明每个数组元素都是一个指针，只是还不知道指向什么类型的数据。整体上来看，<code>(* c[10])</code>说明 c 是一个指针数组，只是指针指向的数据类型尚未确定。</p>
+<p>跳出括号，根据优先级规则（() 的优先级高于 *）应该先看右边（红色粗体）：</p>
+<p>char * **(* c[10]) (int **p)**;</p>
+<p><code>( )</code>说明是一个函数，<code>int **p</code>是函数参数。</p>
+<p>再看左边（橘黄色粗体）：</p>
+<p><strong>char *</strong> **(* c[10]) (int **p)**;</p>
+<p><code>char *</code>是函数的返回值类型。</p>
+<p>从整体上看，我们可以将定义分成两部分：</p>
+<p><strong>char *</strong> **(* c[10]) (int **p)**;</p>
+<p>绿色粗体表明 c 是一个指针数组，红色粗体表明指针指向的数据类型，合起来就是：c 是一个拥有 10 个元素的指针数组，每个指针指向一个原型为<code>char *func(int **p);</code>的函数。</p>
+<h3 id="5-int-pfunc-int-5-int"><a href="#5-int-pfunc-int-5-int" class="headerlink" title="5) int (((*pfunc)(int *))[5])(int *);"></a>5) int (<em>(</em>(*pfunc)(int *))[5])(int *);</h3><p>从 pfunc 开始理解，先看括号内部（绿色粗体）：</p>
+<p>int (<em>(**</em>(*pfunc)**(int *))[5])(int *);</p>
+<p>pfunc 是一个指针。</p>
+<p>跳出括号，看它的两边（红色粗体）：</p>
+<p>int (<em>(**</em>(*pfunc)(int *)**)[5])(int *);</p>
+<p>根据优先级规则应该先看右边的<code>(int *)</code>，它表明这是一个函数，<code>int *</code>是参数列表。再看左边的<code>*</code>，它表明函数的返回值是一个指针，只是指针指向的数据类型尚未确定。</p>
+<p>将上面的两部分合成一个整体，如下面的蓝色粗体所示，它表明 pfunc 是一个指向函数的指针，现在函数的参数列表确定了，也知道返回值是一个指针了（只是不知道它指向什么类型的数据）。</p>
+<p>int (* <strong>(*(*pfunc)(int *))</strong> [5])(int *);</p>
+<p>蓝色粗体以外的部分，就用来说明函数返回什么类型的指针。</p>
+<p>我们接着分析，再向外跳一层括号（红色粗体）：</p>
+<p>int (***** <strong>(*(*pfunc)(int *))</strong> <strong>[5]</strong>)(int *);</p>
+<p>[ ] 的优先级高于 <em>，先看右边，[5] 表示这是一个数组，再看左边，</em> 表示数组的每个元素都是指针。也就是说，* [5] 是一个指针数组，函数返回的指针就指向这样一个数组。</p>
+<p>那么，指针数组中的指针又指向什么类型的数据呢？再向外跳一层括号（橘黄色粗体）：</p>
+<p><strong>int</strong> <strong>(*</strong> <strong>(*(*pfunc)(int *))</strong> <strong>[5])</strong> <strong>(int *)</strong>;</p>
+<p>先看橘黄色部分的右边，它是一个函数，再看左边，它是函数的返回值类型。也就是说，指针数组中的指针指向原型为<code>int func(int *);</code>的函数。</p>
+<p>将上面的三部分合起来就是：pfunc 是一个函数指针（蓝色部分），该函数的返回值是一个指针，它指向一个指针数组（红色部分），指针数组中的指针指向原型为<code>int func(int *);</code>的函数（橘黄色部分）。</p>
+<hr>
+<p>写到这里就暂时完结啦~</p>
+<hr>
+
+  </article>
+
+  
+    
+  <div class="nexmoe-post-copyright">
+    <strong>本文作者：</strong>AprilNAVI<br>
+    <strong>本文链接：</strong><a href="https://aprilnavi.github.io/2021/04/13/c%E5%A4%8D%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E6%8C%87%E9%92%88%EF%BC%89/" title="https:&#x2F;&#x2F;aprilnavi.github.io&#x2F;2021&#x2F;04&#x2F;13&#x2F;c%E5%A4%8D%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E6%8C%87%E9%92%88%EF%BC%89&#x2F;" target="_blank" rel="noopener">https:&#x2F;&#x2F;aprilnavi.github.io&#x2F;2021&#x2F;04&#x2F;13&#x2F;c%E5%A4%8D%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E6%8C%87%E9%92%88%EF%BC%89&#x2F;</a><br>
+    
+      <strong>版权声明：</strong>本文采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/cn/deed.zh" target="_blank">CC BY-NC-SA 3.0 CN</a> 协议进行许可
+    
+  </div>
+
+
+  
+  
+  <div class="nexmoe-post-meta nexmoe-rainbow">
+    
+    
+</div>
+
+  <div class="nexmoe-post-footer">
+    <section class="nexmoe-comment">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.css">
+<div id="gitalk"></div>
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1.5.0/dist/gitalk.min.js"></script>
+<script type="text/javascript">
+    var gitalk = new Gitalk({
+        clientID: '80b2453b6d5f37ad6225',
+        clientSecret: '43e99fa852795c9a7b3eb924b2558c64b84bbdeb',
+        id: window.location.pathname,
+        repo: 'nexmoe.github.io',
+        owner: 'nexmoe',
+        admin: 'nexmoe'
+    })
+    gitalk.render('gitalk')
+</script>
+</section>
+  </div>
+</div>
+        <div class="nexmoe-post-right">
+          <div class="nexmoe-fixed">
+            <div class="nexmoe-tool">
+              <a href="#nexmoe-content" class="toc-link" aria-label="回到顶部" title="top"><button class="mdui-fab mdui-ripple"><i class="nexmoefont icon-caret-top"></i></button></a>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/combine/npm/lazysizes@5.1.0/lazysizes.min.js,gh/highlightjs/cdn-release@9.15.8/build/highlight.min.js,npm/mdui@0.4.3/dist/js/mdui.min.js?v=1"></script>
+<script>
+	hljs.initHighlightingOnLoad();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+
+<script src="https://cdn.jsdelivr.net/gh/xtaodada/xtaodada.github.io@0.0.2/copy.js"></script>
+ 
+
+<script src="/js/app.js?v=1618326053249"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js"></script>
+<script>
+	$(".justified-gallery").justifiedGallery({
+		rowHeight: 160,
+		margins: 10,
+	});
+</script>
+
+  
+
+
+
+
+
+</body>
+
+</html>
