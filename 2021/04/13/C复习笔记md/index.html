@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || C复习笔记（内存）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>C复习笔记（内存） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/13
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>这篇真的肝了巨久！</p>
+<span id="more"></span>
+<h2 id="大小端模式"><a href="#大小端模式" class="headerlink" title="大小端模式"></a>大小端模式</h2><ol>
+<li>大端模式（Big-endian）是指将数据的低位（比如 1234 中的 34 就是低位）放在内存的高地址上，而数据的高位（比如 1234 中的 12 就是高位）放在内存的低地址上。</li>
+<li>小端模式（Little-endian）是指将数据的低位放在内存的低地址上，而数据的高位放在内存的高地址上。</li>
+</ol>
+<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><pre><code class="c">const int *p1;
+int const *p2;
+int * const p3;
+</code></pre>
+<p>在最后一种情况下，指针是只读的，也就是 p3 本身的值不能被修改；</p>
+<p>在前面两种情况下，指针所指向的数据是只读的，也就是 p1、p2 本身的值可以修改（指向不同的数据），但它们指向的数据不能被修改。</p>
+<p>const 离变量名近就是用来修饰指针变量的，离变量名远就是用来修饰指针指向的数据</p>
+<h2 id="C语言源文件要经过编译、链接才能生成可执行程序"><a href="#C语言源文件要经过编译、链接才能生成可执行程序" class="headerlink" title="C语言源文件要经过编译、链接才能生成可执行程序"></a>C语言源文件要经过编译、链接才能生成可执行程序</h2><p>1.编译（Compile）会将源文件（<code>.c</code>文件）转换为目标文件。对于 VC/VS，目标文件后缀为<code>.obj</code>；对于GCC，目标文件后缀为<code>.o</code></p>
+<p>2.链接（Link）是针对多个文件的，它会将编译生成的多个目标文件以及系统中的库、组件等合并成一个可执行程序。</p>
+<p>3.头文件只能包含变量和函数的声明，不能包含定义，否则在多次引入时会引起重复定义错误。</p>
+<h2 id="CPU构成"><a href="#CPU构成" class="headerlink" title="CPU构成"></a>CPU构成</h2><ol>
+<li>程序是保存在硬盘中的，要载入内存才能运行，CPU也被设计为只能从内存中读取数据和指令。</li>
+<li>CPU包含运算单元，寄存器，缓存</li>
+<li>寄存器（Register）是CPU内部非常小、非常快速的存储部件，它的容量很有限，对于32位的CPU，每个寄存器一般能存储32位（4个字节）的数据，对于64位的CPU，每个寄存器一般能存储64位（8个字节）的数据。为了完成各种复杂的功能，现代CPU都内置了几十个甚至上百个的寄存器，多少位的CPU，指的就是寄存器的的位数。</li>
+<li>缓存：将使用频繁的数据暂时读取。需要同一地址上的数据时，就不用大老远地再去访问内存，直接从缓存中读取即可。</li>
+</ol>
+<h2 id="虚拟地址"><a href="#虚拟地址" class="headerlink" title="虚拟地址"></a>虚拟地址</h2><p>问题抛出：代码中的全局变量，它们的内存地址在链接时就已经决定了，以后再也不能改变，该程序无论在何时运行，结果都是一样的。若物理内存中的这两个地址被其他程序占用，我们的程序岂不是无法运行了？</p>
+<p>解决方案：<strong>把程序给出的地址看做是一种虚拟地址（Virtual Address）然后通过某些映射的方法，将这个虚拟地址转换成实际的物理地址。</strong>例如，上面代码中变量 a 的地址是 0X402000，第一次运行时它对应的物理内存地址可能是 0X12ED90AA，第二次运行时可能又对应 0XED90。</p>
+<p><strong>好处：在编程时可以使用固定的内存地址，给程序员带来方便外，使用虚拟地址还能够使不同程序的地址空间相互隔离，提高内存使用效率。</strong></p>
+<h2 id="编译模式"><a href="#编译模式" class="headerlink" title="编译模式"></a>编译模式</h2><p>为了兼容不同的平台，现代编译器大都提供两种编译模式：32位模式和64位模式。</p>
+<h4 id="32位编译模式"><a href="#32位编译模式" class="headerlink" title="32位编译模式"></a>32位编译模式</h4><p>在32位模式下，一个指针或地址占用4个字节的内存，共有32位，理论上能够访问的虚拟内存空间大小为 2^32 = 0X100000000 Bytes，即4GB，有效虚拟地址范围是 0 ~ 0XFFFFFFFF。 换句话说，程序能够使用的最大内存为 4GB，跟物理内存没有关系。</p>
+<h4 id="64位编译模式"><a href="#64位编译模式" class="headerlink" title="64位编译模式"></a>64位编译模式</h4><p>在64位编译模式下，一个指针或地址占用8个字节的内存，共有64位，理论上能够访问的虚拟内存空间大小为 2^64。</p>
+<ul>
+<li>32位的操作系统只能运行32位的程序（也即以32位模式编译的程序），64位操作系统可以同时运行32位的程序（为了向前兼容，保留已有的大量的32位应用程序）和64位的程序（也即以64位模式编译的程序）。</li>
+<li>64位的CPU运行64位的程序才能发挥它的最大性能，运行32位的程序会白白浪费一部分资源。</li>
+<li>32位环境拥有非常经典的设计，易于理解，适合教学，现有的很多资料都是以32位环境为基础进行讲解的。本教程也是如此，除非特别指明，否则都是针对32位环境。相比于32位环境，64位环境的设计思路并没有发生质的变化，理解了32环境很容易向64位环境迁移。</li>
+</ul>
+<h2 id="C语言的五大内存分区"><a href="#C语言的五大内存分区" class="headerlink" title="C语言的五大内存分区"></a>C语言的五大内存分区</h2><ol>
+<li>栈，就是那些由编译器在需要的时候分配，在不需要的时候自动清楚的变量的存储区。里面的变量通常是局部变量、函数参数等。 </li>
+<li>堆，就是那些由new分配的内存块，他们的释放编译器不去管，由我们的应用程序去控制，一般一个new就要对应一个delete。如果程序员没有释放掉，那么在程序结束后，操作系统会自动回收。 </li>
+<li>自由存储区，就是那些由malloc等分配的内存块，他和堆是十分相似的，不过它是用free来结束自己的生命的。 </li>
+<li>全局/静态存储区，全局变量和静态变量被分配到同一块内存中，在以前的C语言中，全局变量又分为初始化的和未初始化的，在C++里面没有这个区分了，他们共同占用同一块内存区。</li>
+<li>常量存储区，这是一块比较特殊的存储区，他们里面存放的是常量，不允许修改（当然，你要通过非正当手段也可以修改，而且方法很多） </li>
+</ol>
+<h2 id="内存对齐"><a href="#内存对齐" class="headerlink" title="内存对齐"></a>内存对齐</h2><p>问题抛出：例如一个 int 类型的数据，如果地址为 8，对编号为 8 的内存寻址一次就可以。如果编号为 10，CPU需要先对编号为 8 的内存寻址，读取4个字节，得到该数据的前半部分，然后再对编号为 12 的内存寻址，读取4个字节，得到该数据的后半部分，再将这两部分拼接起来，才能取得数据的值。</p>
+<p><strong>解决方案：将一个数据尽量放在一个步长之内，避免跨步长存储，这称为内存对齐。在32位编译模式下，默认以4字节对齐；在64位编译模式下，默认以8字节对齐。</strong></p>
+<p>ps：内存对齐不是C语言的特性，它属于计算机的运行原理，C++、Java、Python等其他编程语言同样也会有内存对齐的问题。</p>
+<h2 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h2><p>问题抛出：以整个程序为单位进行映射，不仅会将暂时用不到的数据从磁盘中读取到内存，也会将过多的数据一次性写入磁盘，这会严重降低程序的运行效率。</p>
+<p><strong>现代计算机都使用分页（指把地址空间人为地分成大小相等（并且固定）的若干份）的方式对虚拟地址空间和物理地址空间进行分割和映射，以减小换入换出的粒度，提高程序运行效率。</strong></p>
+<p>）</p>
+<h2 id="栈的概念"><a href="#栈的概念" class="headerlink" title="栈的概念"></a>栈的概念</h2><p>在计算机中，栈可以理解为一个特殊的容器，用户可以将数据依次放入栈中，然后再将数据按照相反的顺序从栈中取出。也就是说，先放入的数据最后才能取出，而最后放入的数据必须先取出。这称为先进后出（First In Last Out）原则。从本质上来讲，栈是一段连续的内存，需要同时记录栈底和栈顶，才能对当前的栈进行定位。</p>
+<p>提示：<strong>栈也经常被称为堆栈</strong>，而堆依然称为堆，所以堆栈这个概念并不包含堆，大家要注意区分</p>
+<p>当发生函数调用时，会将函数运行需要的信息全部压入栈中，这常常被称为栈帧（Stack Frame）或活动记录（Activate Record）。活动记录一般包括以下几个方面的内容：</p>
+<ol>
+<li>函数的返回地址，也就是函数执行完成后从哪里开始继续执行后面的代码。</li>
+<li>参数和局部变量。</li>
+<li> 编译器自动生成的临时数据。例如，当函数返回值的长度较大（比如占用40个字节）时，会先将返回值压入栈中，然后再交给函数调用者。</li>
+<li>一些需要保存的寄存器</li>
+</ol>
+<h2 id="C语言动态内存分配"><a href="#C语言动态内存分配" class="headerlink" title="C语言动态内存分配"></a>C语言动态内存分配</h2><ol>
+<li><p><strong>静态内存分配</strong>:代码区、常量区、全局数据区的内存在程序启动时就已经分配好了，它们大小固定，不能由程序员分配和释放，只能等到程序运行结束由操作系统回收。</p>
+</li>
+<li><p><strong>动态内存分配</strong>:栈区和堆区的内存在程序运行期间可以根据实际需求来分配和释放，不用在程序刚启动时就备足所有内存。</p>
+</li>
+<li><p>栈区和堆区的管理模式有所不同：栈区内存由系统分配和释放，不受程序员控制；堆区内存完全由程序员掌控，想分配多少就分配多少，想什么时候释放就什么时候释放，非常灵活。</p>
+</li>
+</ol>
+<h3 id="动态内存分配函数"><a href="#动态内存分配函数" class="headerlink" title="动态内存分配函数"></a>动态内存分配函数</h3><p>   堆（Heap）是唯一由程序员控制的内存区域，我们常说的动态内存分配也是在这个区域。在堆上分配和释放内存需要用到C语言标准库中的几个函数：<a target="_blank" rel="noopener" href="http://c.biancheng.net/cpp/html/137.html">malloc()</a>、<a target="_blank" rel="noopener" href="http://c.biancheng.net/cpp/html/134.html">calloc()</a>、<a target="_blank" rel="noopener" href="http://c.biancheng.net/cpp/html/2859.html">realloc()</a> 和 <a target="_blank" rel="noopener" href="http://c.biancheng.net/cpp/html/135.html">free()</a>。</p>
+<h5 id="1-malloc"><a href="#1-malloc" class="headerlink" title="1) malloc()"></a>1) malloc()</h5><p>原型：void* malloc (size_t size);</p>
+<p>作用：在堆区分配 size 字节的内存空间。</p>
+<p>返回值：成功返回分配的内存地址，失败则返回NULL。</p>
+<p>注意：分配内存在动态存储区（堆区），手动分配，手动释放，申请时空间可能有也可能没有，需要自行判断，由于返回的是void*，建议手动强制类型转换。</p>
+<h5 id="2-calloc"><a href="#2-calloc" class="headerlink" title="2) calloc()"></a>2) calloc()</h5><p>原型：void* calloc(size_t n, size_t size);</p>
+<p>功能：在堆区分配 n*size 字节的连续空间。</p>
+<p>返回值：成功返回分配的内存地址，失败则返回NULL。</p>
+<p>注意：calloc() 函数是对 malloc() 函数的简单封装，参数不同，使用时务必小心，第一参数是第二参数的单元个数，第二参数是单位的字节数。</p>
+<h5 id="3-realloc"><a href="#3-realloc" class="headerlink" title="3) realloc()"></a>3) realloc()</h5><p>原型：void* realloc(void *ptr, size_t size);</p>
+<p>功能：对 ptr 指向的内存重新分配 size 大小的空间，size 可比原来的大或者小，还可以不变（如果你无聊的话）。</p>
+<p>返回值：成功返回更改后的内存地址，失败则返回NULL。</p>
+<h5 id="4-free"><a href="#4-free" class="headerlink" title="4) free()"></a>4) free()</h5><p>原型：void free(void* ptr);</p>
+<p>功能：释放由 malloc()、calloc()、realloc() 申请的内存空间。</p>
+<h5 id="几点注意"><a href="#几点注意" class="headerlink" title="几点注意"></a>几点注意</h5><ol>
+<li>每个内存分配函数必须有相应的 free 函数，释放后不能再次使用被释放的内存。</li>
+<li>在分配内存时最好不要直接用数字指定内存空间的大小，这样不利于程序的移植。因为在不同的操作系统中，同一数据类型的长度可能不一样。为了解决这个问题，C语言提供了一个判断数据类型长度的操作符，就是 sizeof。</li>
+<li>free(p) 并不能改变指针 p 的值，p 依然指向以前的内存，为了防止再次使用该内存，建议将 p 的值手动置为 NULL。</li>
+<li>sizeof 是一个单目操作符，不是函数，用以获取数据类型的长度时必须加括号，例如 sizeof(int)、sizeof(char) 等。</li>
+<li>在程序运行过程中，堆内存从低地址向高地址连续分配，随着内存的释放，会出现不连续的空闲区域。内存块（包括已分配和空闲的）的结构类似于链表，它们之间通过指针连接在一起。</li>
+</ol>
+<h2 id="内存池"><a href="#内存池" class="headerlink" title="内存池"></a>内存池</h2><ol>
+<li>malloc() 的整体思想是先向操作系统申请一块大小适当的内存，然后自己管理，这就是内存池（Memory Pool）。它的研究重点不是向操作系统申请内存，而是对已申请到的内存的管理。</li>
+<li>C/C++是编译型语言，没有内存回收机制，程序员需要自己释放不需要的内存，这在给程序带来了很大灵活性的同时，也带来了不少风险，例如C/C++程序经常会发生内存泄露。</li>
+<li>为了提高程序的稳定性和健壮性，后来的 Java、Python、C#、JavaScript、PHP 等使用了虚拟机机制的非编译型语言都加入了垃圾内存自动回收机制，这样程序员就不需要管理内存了，系统会自动识别不再使用的内存并把它们释放掉，避免内存泄露。可以说，这些高级语言在底层都实现了自己的内存池，也即有自己的内存管理机制。</li>
+<li>在计算机中，有很多使用“池”这种技术的地方，除了内存池，还有连接池、线程池、对象池等。</li>
+<li>所谓“池化技术”，就是程序先向系统申请过量的资源，然后自己管理，以备不时之需。之所以要申请过量的资源，是因为每次申请该资源都有较大的开销，不如提前申请好了，这样使用时就会变得非常快捷，大大提高程序运行效率。</li>
+</ol>
+<h2 id="野指针"><a href="#野指针" class="headerlink" title="野指针"></a>野指针</h2><p>定义：如果一个指针指向的内存没有访问权限，或者指向一块已经释放掉的内存，那么就无法对该指针进行操作，这样的指针称为野指针（Wild Pointer）。</p>
+<p>良好的编程习惯：</p>
+<ol>
+<li><p>指针变量如果暂时不需要赋值，一定要初始化为NULL，因为任何指针变量刚被创建时不会自动成为NULL指针，它的缺省值是随机的。</p>
+</li>
+<li><p>当指针指向的内存被释放掉时，要将指针的值设置为 NULL，因为 free() 只是释放掉了内存，并为改变指针的值。</p>
+</li>
+</ol>
+<h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><pre><code class="c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int main()
+&#123;    
+char *p = (char*)malloc(100 * sizeof(char));
+p = (char*)malloc(50 * sizeof(char));
+free(p);
+p = NULL;
+return 0;
+&#125;
+</code></pre>
+<p>该程序中，第一次分配 100 字节的内存，并将 p 指向它；第二次分配 50 字节的内存，依然使用 p 指向它。</p>
+<p>这就导致了一个问题，第一次分配的 100 字节的内存没有指针指向它了，而且我们也不知道这块内存的地址，所以就再也无法找回了，也没法释放了，这块内存就成了垃圾内存，虽然毫无用处，但依然占用资源，唯一的办法就是等程序运行结束后由操作系统回收。</p>
+<p>这就是内存泄露（Memory Leak），可以理解为程序和内存失去了联系，再也无法对它进行任何操作。</p>
+<p>再来看一种内存泄露的情况：</p>
+<pre><code>int *pOld = (int*) malloc( sizeof(int) );
+int *pNew = (int*) malloc( sizeof(int) );
+</code></pre>
+<p>这两段代码分别创建了一块内存，并且将内存的地址传给了指针 pOld 和 pNew。此时指针 pOld 和 pNew 分别指向两块内存。</p>
+<p>如果接下来进行这样的操作：</p>
+<pre><code>pOld=pNew;
+</code></pre>
+<p>pOld 指针就指向了 pNew 指向的内存地址，这时候再进行释放内存操作：</p>
+<pre><code>free(pOld);
+</code></pre>
+<p>此时释放的 pOld 所指向的内存空间就是原来 pNew 指向的，于是这块空间被释放掉了。但是 pOld 原来指向的那块内存空间还没有被释放，不过因为没有指针指向这块内存，所以这块内存就造成了丢失。</p>
+<p>另外，你不应该进行类似这面这样的操作：</p>
+<pre><code>malloc( 100 * sizeof(int) );
+</code></pre>
+<p>这样的操作没有意义，因为没有指针指向分配的内存，无法使用，而且无法通过 free() 释放掉，造成了内存泄露。</p>
+<h2 id="C语言变量的存储类别和生存期"><a href="#C语言变量的存储类别和生存期" class="headerlink" title="C语言变量的存储类别和生存期"></a>C语言变量的存储类别和生存期</h2><ol>
+<li><p>除了数据类型，变量还有一个属性，称为“存储类别”。存储类别就是变量在内存中的存放区域。在进程的地址空间中，常量区、全局数据区和栈区可以用来存放变量的值。</p>
+</li>
+<li><p>常量区和全局数据区的内存在程序启动时就已经由操作系统分配好，占用的空间固定，程序运行期间不再改变，程序运行结束后才由操作系统释放；它可以存放全局变量、静态变量、一般常量和字符串常量。</p>
+</li>
+<li><p>auto 是自动或默认的意思，很少用到，因为所有的变量默认就是 auto 的。也就是说，定义变量时加不加 auto 都一样，所以一般把它省略</p>
+</li>
+<li><p>static 声明的变量称为静态变量，不管它是全局的还是局部的，都存储在静态数据区（全局变量本来就存储在静态数据区，即使不加 static）。在程序启动时就会初始化，直到程序运行结束；对于代码块中的静态局部变量，即使代码块执行结束，也不会销毁。静态数据区的变量只能初始化（定义）一次，以后只能改变它的值，不能再被初始化，即使有这样的语句也无效。</p>
+</li>
+<li><p>register变量（寄存器变量），使用该变量时就不必访问内存，直接从寄存器中读取，大大提高程序的运行效率。</p>
+</li>
+<li><p>关于寄存器变量有以下事项需要注意：</p>
+<ol>
+<li><p>为寄存器变量分配寄存器是动态完成的，因此，只有局部变量和形式参数才能定义为寄存器变量。</p>
+</li>
+<li><p>局部静态变量不能定义为寄存器变量，因为一个变量只能声明为一种存储类别。</p>
+</li>
+<li><p>寄存器的长度一般和机器的字长一致，只有较短的类型如 int、char、short 等才适合定义为寄存器变量，诸如 double 等较大的类型，不推荐将其定义为寄存器类型。</p>
+</li>
+<li><p>CPU的寄存器数目有限，即使定义了寄存器变量，编译器可能并不真正为其分配寄存器，而是将其当做普通的auto变量来对待，为其分配栈内存。当然，有些优秀的编译器，能自动识别使用频繁的变量，如循环控制变量等，在有可用的寄存器时，即使没有使用 register 关键字，也自动为其分配寄存器，无须由程序员来指定。</p>
+</li>
+</ol>
+<hr>
+<p>到这里内存的知识就整理的差不多啦，不过看到还有一些多文件编程相关的内容，就顺便也一起提一提</p>
+<hr>
+</li>
+</ol>
+<h2 id="extern-关键字"><a href="#extern-关键字" class="headerlink" title="extern 关键字"></a>extern 关键字</h2><ol>
+<li>所谓声明（Declaration），就是告诉编译器我要使用这个变量或函数，你现在没有找到它的定义不要紧，请不要报错，稍后我会把定义补上。</li>
+<li>头文件中包含的都是函数声明，而不是函数定义，函数定义都在系统库中，只有头文件没有系统库在链接时就会报错，程序根本不能运行。</li>
+<li>对于函数声明来说，有没有 extern 都是一样的。</li>
+</ol>
+<p>变量的定义有两种形式，你可以在定义的同时初始化，也可以不初始化：</p>
+<pre><code>datatype name = value;
+datatype name; 
+</code></pre>
+<p>而变量的声明只有一种形式，就是使用 extern 关键字：</p>
+<pre><code>extern datatype name;
+</code></pre>
+<h2 id="从代码到文件"><a href="#从代码到文件" class="headerlink" title="从代码到文件"></a>从代码到文件</h2><p>从源代码生成可执行文件可以分为四个步骤，分别是预处理（Preprocessing）、编译（Compilation）、汇编（Assembly）和链接（Linking）。</p>
+<h3 id="预处理（Preprocessing）（了解）"><a href="#预处理（Preprocessing）（了解）" class="headerlink" title="预处理（Preprocessing）（了解）"></a>预处理（Preprocessing）（了解）</h3><p>预处理过程主要是处理那些源文件和头文件中以<code>#</code>开头的命令，比如 #include、#define、#ifdef 等。预处理的规则一般如下：</p>
+<ul>
+<li><p>将所有的<code>#define</code>删除，并展开所有的宏定义。</p>
+</li>
+<li><p>处理所有条件编译命令，比如 #if、#ifdef、#elif、#else、#endif 等。</p>
+</li>
+<li><p>处理<code>#include</code>命令，将被包含文件的内容插入到该命令所在的位置，这与复制粘贴的效果一样。注意，这个过程是递归进行的，也就是说被包含的文件可能还会包含其他的文件。</p>
+</li>
+<li><p>删除所有的注释<code>//</code>和<code>/* ... */</code>。</p>
+</li>
+<li><p>添加行号和文件名标识，便于在调试和出错时给出具体的代码位置。</p>
+</li>
+<li><p>保留所有的<code>#pragma</code>命令，因为编译器需要使用它们。</p>
+</li>
+</ul>
+<p>预处理的结果是生成<code>.i</code>文件。<code>.i</code>文件也是包含C语言代码的源文件，只不过所有的宏已经被展开，所有包含的文件已经被插入到当前文件中。当你无法判断宏定义是否正确，或者文件包含是否有效时，可以查看<code>.i</code>文件来确定问题。</p>
+<h3 id="编译（Compilation）"><a href="#编译（Compilation）" class="headerlink" title="编译（Compilation）"></a>编译（Compilation）</h3><p>编译就是把预处理完的文件进行一些列的词法分析、语法分析、语义分析以及优化后生成相应的汇编代码文件。</p>
+<h3 id="汇编（Assembly）"><a href="#汇编（Assembly）" class="headerlink" title="汇编（Assembly）"></a>汇编（Assembly）</h3><p>汇编的过程就是将汇编代码转换成可以执行的机器指令。</p>
+<p>汇编过程相对于编译来说比较简单，没有复杂的语法，也没有语义，也不需要做指令优化，只是根据汇编语句和机器指令的对照表一一翻译就可以了。</p>
+<h3 id="链接（Linking）"><a href="#链接（Linking）" class="headerlink" title="链接（Linking）"></a>链接（Linking）</h3><p>目标文件已经是二进制文件，与可执行文件的组织形式类似，只是有些函数和全局变量的地址还未找到，程序不能执行。链接的作用就是找到这些目标地址，将所有的目标文件组织成一个可以执行的二进制文件。</p>
+<p><strong>静态链接（Static Linking）</strong>：在程序运行之前确定符号地址的过程</p>
+<p><strong>动态链接（Dynamic Linking）</strong>：等到程序运行期间再确定符号地址</p>
+<p>Windows 下的 .dll 必须要嵌入到可执行程序、作为可执行程序的一部分运行，它们所包含的符号的地址就是在程序运行期间确定的，所以称为<strong>动态链接库（Dynamic Linking Library）</strong>。</p>
+<p><strong>符号：</strong>函数和变量在本质上是一样的，都是地址的助记符，在链接过程中，它们被称为符号（Symbol）。链接器的一个重要任务就是找到符号的地址。</p>
+<p>程序被加载到内存后，全局变量要在数据区（全局数据区）分配内存，局部变量要在栈上分配内存。</p>
+<p>数据区在程序运行期间一直存在，因此全局变量的位置不会改变，地址也是固定的，所以在链接时就能够计算出全局变量的地址。</p>
+<p>而栈区内存会随着函数的调用不断被分配和释放，局部变量的地址不能预先计算，必须等到发生函数调用时才能确定，所以链接过程会忽略局部变量。</p>
+<p><strong>总结起来，链接的一项重要任务就是确定函数和全局变量的地址，并对每一个重定位入口进行修正。</strong></p>
+<h2 id="强符号和弱符号"><a href="#强符号和弱符号" class="headerlink" title="强符号和弱符号"></a>强符号和弱符号</h2><p><strong>强符号（Strong Symbol）</strong>：函数和初始化了的全局变量。之所以强，是因为它们拥有确切的数据，变量有值，函数有函数体；</p>
+<p><strong>弱符号（Weak Symbol）</strong>：未初始化的全局变量。之所以弱，是因为它们还未被初始化，没有确切的数据。</p>
+<p>链接器会按照如下的规则处理被多次定义的强符号和弱符号：</p>
+<ol>
+<li>不允许强符号被多次定义，也即不同的目标文件中不能有同名的强符号；如果有多个强符号，那么链接器会报符号重复定义错误。</li>
+<li>如果一个符号在某个目标文件中是强符号，在其他文件中是弱符号，那么选择强符号。</li>
+<li>如果一个符号在所有的目标文件中都是弱符号，那么选择其中占用空间最大的一个。</li>
+</ol>
+<h2 id="强引用和弱引用"><a href="#强引用和弱引用" class="headerlink" title="强引用和弱引用"></a>强引用和弱引用</h2><p><strong>强引用（Strong Reference）</strong>：目前我们所看到的符号引用（c = a + b），在所有目标文件被链接成可执行文件时，它们的地址都要被找到，如果没有符号定义，链接器就会报符号未定义错误。</p>
+<p><strong>弱引用（Weak Reference）</strong>：符号有定义，就使用它对应的地址，如果没有定义，也不报错。</p>
+<h2 id="static变量和函数"><a href="#static变量和函数" class="headerlink" title="static变量和函数"></a>static变量和函数</h2><p><strong>static</strong> 关键字：将全局变量和函数的作用域限制在当前文件中，在其他文件中无效。</p>
+<p>除了可以修饰全局变量，还可以修饰局部变量，被 static 修饰的变量统称为静态变量（Static Variable）。</p>
+<p>不管是全局变量还是局部变量，只要被 static 修饰，都会存储在全局数据区（全局变量本来就存储在全局数据区，即使不加 static）。全局数据区的数据在程序启动时就被初始化，一直到程序运行结束才会被操作系统回收内存；对于函数中的静态局部变量，即使函数调用结束，内存也不会销毁。</p>
+<p><strong>全局数据区的变量只能被初始化（定义）一次，以后只能改变它的值，不能再被初始化，即使有这样的语句，也无效。</strong></p>
+<hr>
+<p>终于尼玛的写完了，肝了一晚上现在已经是第二天的2点了。休息去咯！</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+</body>
+
+</html>
