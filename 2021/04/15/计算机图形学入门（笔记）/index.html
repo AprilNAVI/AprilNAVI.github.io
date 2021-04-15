@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 计算机图形学入门（笔记）（更新中）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>计算机图形学入门（笔记）（更新中） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/15
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>闫令琪教授的games101课程笔记哒</p>
+<span id="more"></span>
+
+<h2 id="1-Review-of-Linear-Algebra"><a href="#1-Review-of-Linear-Algebra" class="headerlink" title="1.Review of Linear Algebra"></a>1.Review of Linear Algebra</h2><p>待写！</p>
+<h2 id="2-Transformation"><a href="#2-Transformation" class="headerlink" title="2.Transformation"></a>2.Transformation</h2><p>待写！</p>
+<h2 id="3-Transformation-Cont"><a href="#3-Transformation-Cont" class="headerlink" title="3.Transformation Cont"></a>3.Transformation Cont</h2><p>待写！</p>
+<h2 id="4-Resterization-1（Triangle）-三角形光栅化"><a href="#4-Resterization-1（Triangle）-三角形光栅化" class="headerlink" title="4.Resterization 1（Triangle） (三角形光栅化)"></a>4.Resterization 1（Triangle） (三角形光栅化)</h2><ul>
+<li>Different raster displays</li>
+<li>Rasterizing a triangle</li>
+</ul>
+<p>sometime people prefer:</p>
+<p>vertical <strong>field-of-view</strong> (forY) and <strong>aspect ratio</strong> (assume symmetry i.e I=-r,b=-t)</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412110847983.png"></p>
+<p>即视锥定义需要长宽比和垂直角度</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412113350441.png"></p>
+<p>由可视角度和距离即可求屏幕大小</p>
+<h3 id="What‘s-after-MVP"><a href="#What‘s-after-MVP" class="headerlink" title="What‘s after MVP"></a>What‘s after MVP</h3><ul>
+<li>model transformation （placing object）</li>
+<li>view transformation（placing object）</li>
+<li>projection transformation（placing object）</li>
+</ul>
+<h3 id="canonical-cube-to-screen！"><a href="#canonical-cube-to-screen！" class="headerlink" title="canonical cube to screen！"></a>canonical cube to screen！</h3><p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412114610510.png"></p>
+<p>这里可以暂时抽象认为像素是最小单位</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412114911212.png"></p>
+<p>像素被写作（x,y），都为整数，从（0,0）开始，蓝色方块坐标为（2,1）</p>
+<p>像素的指数从（0,0）到（width-1，length-1）</p>
+<p>像素中心在（x+0.5，y+0.5）</p>
+<p>屏幕范围为（0,0）到（width，length）</p>
+<ul>
+<li><p>transform in xy plane:</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412120419388.png" alt="image-20210412120419388"></p>
+<p>视口变换</p>
+<p>(看不懂的滚回去看第三节！)</p>
+</li>
+</ul>
+<p>小知识：</p>
+<ul>
+<li><p>隔行扫描（先偷懒扫1357…第二次扫2468….）利用了人眼的视觉暂留，提高了扫描的效率</p>
+</li>
+<li><p>超出人眼视网膜最大分辨率的屏幕被称为视网膜屏幕</p>
+</li>
+<li><p>LCD（液晶显示器）利用液晶影响光的极化</p>
+</li>
+<li><p>LED（发光二极管）利用阵列变成屏幕</p>
+</li>
+<li><p>部分电子书设备（例如kindle）利用电子墨水瓶来控制墨水的朝向</p>
+</li>
+</ul>
+<h3 id="Triangle-Fudamental-Shape-Primitives"><a href="#Triangle-Fudamental-Shape-Primitives" class="headerlink" title="Triangle - Fudamental Shape Primitives"></a>Triangle - Fudamental Shape Primitives</h3><p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412125303069.png" alt="image-20210412125303069"></p>
+<ul>
+<li>三角形是最基本的图形，所有图形能拆成三角形</li>
+<li>三角形一定是平面的，有清晰严格的内外定义区分</li>
+<li>只需要确定三个点，就可以三角形内部取一个点，控制它到三个点的距离得到一个渐变的过程</li>
+</ul>
+<h3 id="A-Simple-Approach：Sampling（采样）"><a href="#A-Simple-Approach：Sampling（采样）" class="headerlink" title="A Simple Approach：Sampling（采样）"></a>A Simple Approach：Sampling（采样）</h3><p>这里的采样是指利用像素中心对屏幕进行采样，得到每个像素的像素中心是否在图形的内</p>
+<p>​                                           sample if each pixel center is inside triangle</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412130047723.png"></p>
+<p>这里我们定义inside（t，x，y）</p>
+<p>{if（（x，y）在三角形t内） return 1；else return 0；}</p>
+<p>rasterization==sample a 2d indicator function</p>
+<p>所以，光栅化则是对2d屏幕进行采样</p>
+<p>for （int x=0；x&lt;xmax;++x）</p>
+<p>​    for （int y=0；x&lt;tmax;++t）</p>
+<p>​           image[x] [y]=inside(tri,x+0.5,y+0.5);</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210412131049391.png"><br>白色区域不可能碰到三角形，固不考虑，只考虑三角形的包围盒（bounding box）</p>
+<hr>
+<p>初稿完成于2021.4.12      ！这里是分割线！</p>
+<hr>
+<h2 id="5-Rasterization-2（Antialiasing-and-Z-Buffering）"><a href="#5-Rasterization-2（Antialiasing-and-Z-Buffering）" class="headerlink" title="5.Rasterization 2（Antialiasing and Z-Buffering）"></a>5.Rasterization 2（Antialiasing and Z-Buffering）</h2><hr>
+<p>这节课介绍反走样和深度缓冲，这节课难得多555</p>
+<hr>
+<p>概念：<strong>锯齿＝走样，抗锯齿=反走样</strong>（采样和走样的关系参考卖家秀和实物图，网恋和奔现）</p>
+<p>视频是对时间进行采样，得到一帧帧连续的图</p>
+<h3 id="Sampling-Artifacts-in-computer-graphic"><a href="#Sampling-Artifacts-in-computer-graphic" class="headerlink" title="Sampling Artifacts in computer graphic"></a>Sampling Artifacts in computer graphic</h3><p>采样产生的问题</p>
+<ol>
+<li>锯齿（Jaggies-sample in space）</li>
+<li>摩尔纹（图像去掉奇数行和奇数列)(moire undersample images)</li>
+<li>看到物体倒转（人眼在时间中的采样跟不上运动速度）(wagon wheel effect-sample in time)</li>
+</ol>
+<p>原因：信号变化太快但采样跟不上</p>
+<h3 id="Antialiasing-idea（pre-filtering）before-sample"><a href="#Antialiasing-idea（pre-filtering）before-sample" class="headerlink" title="Antialiasing idea（pre-filtering）before sample"></a>Antialiasing idea（pre-filtering）before sample</h3><p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415121726406.png"></p>
+<p>先做一个模糊（滤波）然后再采样（行！）</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415121904782.png"></p>
+<p>错误示范：先采样再模糊（那岂不是更糊）（不行！）</p>
+<h3 id="Frequency-domain（频域）"><a href="#Frequency-domain（频域）" class="headerlink" title="Frequency domain（频域）"></a>Frequency domain（频域）</h3><p>傅里叶奇数展开：任何周期函数都能写成正弦和余弦函数和常数项</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415122519631.png"></p>
+<p>傅里叶变换：一个函数经过某复杂变换变成另一个函数</p>
+<p>逆傅里叶变换：再变回去</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415122746904.png"></p>
+<p>每隔一段时间采样，频率越高越不准确</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415122954308.png"></p>
+<p> 两种频率用同一种方法进行采样，得到的确是一样的结果，我们无法区分他们，这就称为<strong>“走样”</strong></p>
+<p>模糊（滤波）：抹掉特定频域的频率（大师我悟了）</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415123320628.png"></p>
+<p>傅里叶变换把一个函数从时域（空间不同位置也算时域 ）变到频域，让我们看到图像在各个不同频域长什么样，我们称为频谱。</p>
+<p>图像中心最低频，边缘最高频，图像信息的多少通过亮度来表示（例如上图的信息就主要集中在低频区域）</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415123839901.png"></p>
+<p>高通滤波（high pass filter）：把低频信息屏蔽，再逆傅里叶变换变成图像</p>
+<p>如图所示高通滤波后图片剩下边界，我们认为边界是图像中变化较大的交界处</p>
+<p>剧烈变化=高频信息</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415125422894.png"></p>
+<p>低通滤波（low pass filter）：把高频信息屏蔽，再逆傅里叶变换变成图像</p>
+<p>如图所示边界变得模糊，因为高频信息被去掉了</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415130033355.png"></p>
+<p>如图所示是圆通滤波中通滤波申通滤波（误）</p>
+<h3 id="Filtering-Cnvolution-（-Averaging）"><a href="#Filtering-Cnvolution-（-Averaging）" class="headerlink" title="Filtering = Cnvolution （=Averaging）"></a>Filtering = Cnvolution （=Averaging）</h3><p>滤波=卷积=平均？</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415130727040.png"></p>
+<p>卷积（图形学简单定义）：信号在一个地方的周围做一个平均</p>
+<p>卷积定理：时域上对两个信号进行卷积相当于对他们的频域进行乘积</p>
+<p>相反也适用（时域上对两个信号进行乘积相当于对他们的频域进行卷积）</p>
+<p>所以我们，将图片（时域）进行傅里叶变换，得到频域，把卷积的滤波器也变到频域上，两者相乘，再逆傅里叶变换变回图像</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415131306044.png"></p>
+<p>如图所示，图像的频域和滤波器的频域相乘再逆傅里叶变换，就成功对图像进行了模糊</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415131632230.png"></p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415131829313.png"></p>
+<p>此处盒型滤波器=低通滤波器</p>
+<p>若盒子变大，频域上他会变小，因为盒子越大相当于越模糊=边界越不明显=高频信息越来越少，所以频域上变小了</p>
+<h3 id="Sampling-Repeating-Frequency-Contents"><a href="#Sampling-Repeating-Frequency-Contents" class="headerlink" title="Sampling = Repeating Frequency Contents"></a>Sampling = Repeating Frequency Contents</h3><p>采样=重复频率上的内容</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415133549330.png"></p>
+<p>如图所示，左边为时域右边为频域</p>
+<p>这里a和c乘积=b和d的卷积，得到一堆重复的频谱</p>
+<p>所以采样就是重复一个原始信号的频谱</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415133913216.png"></p>
+<p>若采样率不足/采样（复制粘贴）的速度太慢（如图所示），原始信号混叠，那这就是走样了！</p>
+<h3 id="How-Can-We-Reduce-Aliasing-Error？"><a href="#How-Can-We-Reduce-Aliasing-Error？" class="headerlink" title="How Can We Reduce Aliasing Error？"></a>How Can We Reduce Aliasing Error？</h3><ol>
+<li>提高显示器分辨率（钱不够算法凑）</li>
+<li>先做模糊再做采样（反走样）</li>
+</ol>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415134454271.png"></p>
+<p>（有没有豁然开朗的感觉呢）</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415134700517.png"></p>
+<p>如图所示以每个像素进行模糊</p>
+<h3 id="Antialiaing-By-Supersampling"><a href="#Antialiaing-By-Supersampling" class="headerlink" title="Antialiaing By Supersampling"></a>Antialiaing By Supersampling</h3><p><strong>Multi sample antialiaing（MSAA）</strong></p>
+<p>把一个像素划分为更小的点，判断是不是在三角形内，然后再平均起来</p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415135137603.png"></p>
+<p><img src="/2021/04/15/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/image-20210415135124651.png"></p>
+<p>MSAA不是靠增加分辨率来直接抗锯齿的，而是靠模拟模糊得到近似三角形。</p>
+<p>but not free lunch，多倍采样会造成大量的性能损耗（显卡在燃烧）</p>
+<p><strong>FXAA（Fast Approximate AA）</strong></p>
+<p>先把锯齿图得出，然后再进行后期处理（不是模糊），通过图像匹配找到边界，然后将其换成没有锯齿的边界，非常快速效果也不错。</p>
+<p><strong>TAA（Temporal AA）</strong></p>
+<p>静态时复用上一帧的结果（先不谈运动时如何使用）</p>
+<p><strong>DLSS(Deep Learning Super Sampling)（老黄家RTX的招牌）</strong></p>
+<p>通过深度学习把其他样本猜出来，将细节补充，从而提升分辨率</p>
+<hr>
+<p>本文于4.15的14:18编辑完成，这周会把前面的补上的！</p>
+<hr>
+<p>更新中~~</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+</body>
+
+</html>
