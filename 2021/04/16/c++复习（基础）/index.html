@@ -110,7 +110,7 @@
 
 <p>主要还是以自己舒服的方式记的这些笔记，一些特别基础的点就跳过了</p>
 <p>呜呜呜发现自己确实应该连c语言的内存部分都还不是很明白，再开一坑吧</p>
-<h2 id="1-从C到C"><a href="#1-从C到C" class="headerlink" title="1.从C到C++"></a>1.从C到C++</h2><h3 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h3><p>为了解决合作开发时的命名冲突问题，c++引入了<strong>命名空间（Namespace）</strong>的概念。请看下面的例子：</p>
+<h1 id="1-从C到C"><a href="#1-从C到C" class="headerlink" title="1.从C到C++"></a>1.从C到C++</h1><h2 id="命名空间"><a href="#命名空间" class="headerlink" title="命名空间"></a>命名空间</h2><p>为了解决合作开发时的命名冲突问题，c++引入了<strong>命名空间（Namespace）</strong>的概念。请看下面的例子：</p>
 <pre><code>namespace Li
 &#123;
   //小李的变量定义
@@ -122,10 +122,10 @@ namespace Han
 &#125;
 </code></pre>
 <p>小李与小韩各自定义了以自己姓氏为名的命名空间，此时再将他们的 fp 变量放在一起编译就不会有任何问题。</p>
-<h3 id="C-输入和输出"><a href="#C-输入和输出" class="headerlink" title="C++输入和输出"></a>C++输入和输出</h3><p>在编写 C++ 程序时，如果需要使用输入输出时，则需要包含头文件<code>iostream</code>，它包含了用于输入输出的对象，例如常见的<code>cin</code>表示标准输入、<code>cout</code>表示标准输出、<code>cerr</code>表示标准错误。</p>
+<h2 id="C-输入和输出"><a href="#C-输入和输出" class="headerlink" title="C++输入和输出"></a>C++输入和输出</h2><p>在编写 C++ 程序时，如果需要使用输入输出时，则需要包含头文件<code>iostream</code>，它包含了用于输入输出的对象，例如常见的<code>cin</code>表示标准输入、<code>cout</code>表示标准输出、<code>cerr</code>表示标准错误。</p>
 <p>cout 和 cin 都是 C++ 的内置对象，而不是关键字。cout、cin 的用法非常强大灵活。</p>
-<h3 id="C-中的const又玩出了新花样"><a href="#C-中的const又玩出了新花样" class="headerlink" title="C++中的const又玩出了新花样"></a>C++中的const又玩出了新花样</h3><p>因为感觉这篇挺需要实例讲解的所以直接整篇直接copy走了</p>
-<h4 id="C-中的-const-更像编译阶段的-define"><a href="#C-中的-const-更像编译阶段的-define" class="headerlink" title="C++中的 const 更像编译阶段的 #define"></a>C++中的 const 更像编译阶段的 #define</h4><p>先来看下面的两条语句：</p>
+<h2 id="C-中的const又玩出了新花样"><a href="#C-中的const又玩出了新花样" class="headerlink" title="C++中的const又玩出了新花样"></a>C++中的const又玩出了新花样</h2><p>因为感觉这篇挺需要实例讲解的所以直接整篇直接copy走了</p>
+<h3 id="C-中的-const-更像编译阶段的-define"><a href="#C-中的-const-更像编译阶段的-define" class="headerlink" title="C++中的 const 更像编译阶段的 #define"></a>C++中的 const 更像编译阶段的 #define</h3><p>先来看下面的两条语句：</p>
 <pre><code>const int m = 10;int n = m;
 </code></pre>
 <p>我们知道，变量是要占用内存的，即使被 const 修饰也不例外。m、n 两个变量占用不同的内存，<code>int n = m;</code>表示将 m 的值赋给 n，这个赋值的过程在C和C++中是有区别的。</p>
@@ -140,7 +140,7 @@ namespace Han
 <p>将代码放到<code>.c</code>文件中，以C语言的方式编译，运行结果为<code>99</code>。再将代码放到<code>.cpp</code>文件中，以C++的方式编译，运行结果就变成了<code>10</code>。这种差异正是由于C和C++对 const 的处理方式不同造成的。</p>
 <p>在C语言中，使用 printf 输出 n 时会到内存中获取 n 的值，这个时候 n 所在内存中的数据已经被修改成了 99，所以输出结果也是 99。而在C++中，<code>printf(&quot;%d\n&quot;, n);</code>语句在编译时就将 n 的值替换成了 10，效果和<code>printf(&quot;%d\n&quot;, 10);</code>一样，不管 n 所在的内存如何变化，都不会影响输出结果。</p>
 <p>当然，这种修改常量的变态代码在实际开发中基本不会出现，本例只是为了说明C和C++对 const 的处理方式的差异：C语言对 const 的处理和普通变量一样，会到内存中读取数据；C++ 对 const 的处理更像是编译时期的<code>#define</code>，是一个值替换的过程。</p>
-<h4 id="C-中全局-const-变量的可见范围是当前文件"><a href="#C-中全局-const-变量的可见范围是当前文件" class="headerlink" title="C++中全局 const 变量的可见范围是当前文件"></a>C++中全局 const 变量的可见范围是当前文件</h4><p>我们知道，普通全局变量的作用域是当前文件，但是在其他文件中也是可见的，使用<code>extern</code>声明后就可以使用，这在《<a target="_blank" rel="noopener" href="http://c.biancheng.net/c/150/">C语言头文件的编写</a>》一章中进行了深入讲解。下面是多文件编程的演示代码：</p>
+<h3 id="C-中全局-const-变量的可见范围是当前文件"><a href="#C-中全局-const-变量的可见范围是当前文件" class="headerlink" title="C++中全局 const 变量的可见范围是当前文件"></a>C++中全局 const 变量的可见范围是当前文件</h3><p>我们知道，普通全局变量的作用域是当前文件，但是在其他文件中也是可见的，使用<code>extern</code>声明后就可以使用，这在《<a target="_blank" rel="noopener" href="http://c.biancheng.net/c/150/">C语言头文件的编写</a>》一章中进行了深入讲解。下面是多文件编程的演示代码：</p>
 <p>代码段1（源文件1）：</p>
 <pre><code>#include &lt;stdio.h&gt;int n = 10;void func();int main()&#123;    func();    printf(&quot;main: %d\n&quot;, n);    return 0;&#125;
 </code></pre>
@@ -164,7 +164,7 @@ namespace Han
 </code></pre>
 <p>运行结果：<br>module: 10<br>main: 10</p>
 <p>C和C++中全局 const 变量的作用域相同，都是当前文件，不同的是它们的可见范围：C语言中 const 全局变量的可见范围是整个程序，在其他文件中使用 extern 声明后就可以使用；而C++中 const 全局变量的可见范围仅限于当前文件，在其他文件中不可见，所以它可以定义在头文件中，多次引入后也不会出错。</p>
-<h3 id="C-new和delete运算符"><a href="#C-new和delete运算符" class="headerlink" title="C++ new和delete运算符"></a>C++ new和delete运算符</h3><p>在C语言中，动态分配内存用 malloc() 函数，释放内存用 free() 函数。如下所示：</p>
+<h2 id="C-new和delete运算符"><a href="#C-new和delete运算符" class="headerlink" title="C++ new和delete运算符"></a>C++ new和delete运算符</h2><p>在C语言中，动态分配内存用 malloc() 函数，释放内存用 free() 函数。如下所示：</p>
 <pre><code>int *p = (int*) malloc( sizeof(int) * 10 );  //分配10个int型的内存空间free(p);  //释放内存
 </code></pre>
 <p>在<a target="_blank" rel="noopener" href="http://c.biancheng.net/cplus/">C++</a>中，这两个函数仍然可以使用，但是C++又新增了两个关键字，new 和 delete</p>
@@ -176,7 +176,7 @@ namespace Han
 <pre><code>int *p = new int[10];  //分配10个int型的内存空间delete[] p;
 </code></pre>
 <p>和 malloc() 一样，new 也是在堆区分配内存，必须手动释放，否则只能等到程序运行结束由操作系统回收。用 new[] 分配的内存需要用 delete[] 释放，它们是一一对应的。</p>
-<h3 id="c-内联函数"><a href="#c-内联函数" class="headerlink" title="c++内联函数"></a>c++内联函数</h3><p>指定内联函数的方法很简单，只需要在函数定义处增加 inline 关键字</p>
+<h2 id="c-内联函数"><a href="#c-内联函数" class="headerlink" title="c++内联函数"></a>c++内联函数</h2><p>指定内联函数的方法很简单，只需要在函数定义处增加 inline 关键字</p>
 <pre><code>1. //内联函数，交换两个数的值
 2. **inline** void swap(int *a, int *b)&#123;
 3.   int temp;
@@ -187,7 +187,7 @@ namespace Han
 </code></pre>
 <p>当函数比较复杂时，函数调用的时空开销可以忽略，大部分的 CPU 时间都会花费在执行函数体代码上，所以我们一般是将非常短小的函数声明为内联函数。编译后的程序会存在多份相同的函数拷贝，如果被声明为内联函数的函数体非常大，那么编译后的程序体积也将会变得很大，所以再次强调，一般只将那些短小的、频繁调用的函数声明为内联函数。</p>
 <p>在函数声明处添加 inline 关键字是无效的。内联函数不应该有声明，应该将函数定义放在本应该出现函数声明的地方，这是一种良好的编程风格。</p>
-<h3 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h3><p>函数的重载的规则：</p>
+<h2 id="函数重载"><a href="#函数重载" class="headerlink" title="函数重载"></a>函数重载</h2><p>函数的重载的规则：</p>
 <ul>
 <li>函数名称必须相同。</li>
 <li>参数列表必须不同（个数不同、类型不同、参数排列顺序不同等）。</li>
@@ -195,7 +195,7 @@ namespace Han
 <li>仅仅返回类型不同不足以成为函数的重载。</li>
 </ul>
 <hr>
-<h2 id="2-类与对象"><a href="#2-类与对象" class="headerlink" title="2.类与对象"></a>2.类与对象</h2><h3 id="C-类的定义和对象的创建详解"><a href="#C-类的定义和对象的创建详解" class="headerlink" title="C++类的定义和对象的创建详解"></a>C++类的定义和对象的创建详解</h3><p><strong>基础语法：</strong></p>
+<h1 id="2-类与对象"><a href="#2-类与对象" class="headerlink" title="2.类与对象"></a>2.类与对象</h1><h2 id="C-类的定义和对象的创建详解"><a href="#C-类的定义和对象的创建详解" class="headerlink" title="C++类的定义和对象的创建详解"></a>C++类的定义和对象的创建详解</h2><p><strong>基础语法：</strong></p>
 <p>一个简单的类的定义：</p>
 <pre><code class="c++">纯文本复制
 class Student&#123;
@@ -228,10 +228,10 @@ Student *pStu = &amp;stu;
 <p>当然也可以在堆上创建对象，这个时候就需要使用前面讲到的<code>new</code>关键字</p>
 <p>使用 new 在堆上创建出来的对象是匿名的，它在堆上分配内存，没有名字，只能得到一个指向它的指针，所以必须使用一个指针变量来接收这个指针，再借助指针来访问它的成员变量或成员函数。</p>
 <p>在实际开发中，new 和 delete 往往成对出现，记得 delete 掉不再使用的对象依然是一种良好的编程习惯。</p>
-<h3 id="C-类的成员变量和成员函数详解"><a href="#C-类的成员变量和成员函数详解" class="headerlink" title="C++类的成员变量和成员函数详解"></a>C++类的成员变量和成员函数详解</h3><p>成员函数是一个类的成员，出现在类体中，它的作用范围由类来决定；</p>
+<h2 id="C-类的成员变量和成员函数详解"><a href="#C-类的成员变量和成员函数详解" class="headerlink" title="C++类的成员变量和成员函数详解"></a>C++类的成员变量和成员函数详解</h2><p>成员函数是一个类的成员，出现在类体中，它的作用范围由类来决定；</p>
 <p>普通函数是独立的，作用范围是全局的，或位于某个命名空间内。</p>
 <p>当成员函数定义在类外时，就必须在函数名前面加上类名予以限定。<code>::</code>被称为域解析符（也称作用域运算符或作用域限定符），用来连接类名和函数名，指明当前函数属于哪个类。</p>
-<h3 id="C-类成员的访问权限以及类的封装"><a href="#C-类成员的访问权限以及类的封装" class="headerlink" title="C++类成员的访问权限以及类的封装"></a>C++类成员的访问权限以及类的封装</h3><blockquote>
+<h2 id="C-类成员的访问权限以及类的封装"><a href="#C-类成员的访问权限以及类的封装" class="headerlink" title="C++类成员的访问权限以及类的封装"></a>C++类成员的访问权限以及类的封装</h2><blockquote>
 <p>Java、c# 程序员注意，C++ 中的 public、private、protected 只能修饰类的成员，不能修饰类，C++中的类没有共有私有之分。</p>
 </blockquote>
 <p>public：全都行！</p>
@@ -241,9 +241,9 @@ Student *pStu = &amp;stu;
 <p>实际项目开发中的成员变量以及只被成员函数调用的成员函数都建议声明为 private</p>
 <p>给成员变量赋值的函数通常称为 set 函数，它们的名字通常以<code>set</code>开头，后跟成员变量的名字；</p>
 <p>读取成员变量的值的函数通常称为 get 函数，它们的名字通常以<code>get</code>开头，后跟成员变量的名字。</p>
-<h3 id="C-对象的内存模型"><a href="#C-对象的内存模型" class="headerlink" title="C++对象的内存模型"></a>C++对象的内存模型</h3><p>类是创建对象的模板，不占用内存空间，不存在于编译后的可执行文件中；而对象是实实在在的数据，需要内存来存储。</p>
+<h2 id="C-对象的内存模型"><a href="#C-对象的内存模型" class="headerlink" title="C++对象的内存模型"></a>C++对象的内存模型</h2><p>类是创建对象的模板，不占用内存空间，不存在于编译后的可执行文件中；而对象是实实在在的数据，需要内存来存储。</p>
 <p>编译器会将成员变量和成员函数分开存储：分别为每个对象的成员变量分配内存，但是所有对象都共享同一段函数代码。</p>
-<h3 id="C-函数编译原理和成员函数的实现"><a href="#C-函数编译原理和成员函数的实现" class="headerlink" title="C++函数编译原理和成员函数的实现"></a>C++函数编译原理和成员函数的实现</h3><p>C++和C语言的编译方式不同。C语言中的函数在编译时名字不变，或者只是简单的加一个下划线<code>_</code>例如，func() 编译后为 func() 或 _func()。</p>
+<h2 id="C-函数编译原理和成员函数的实现"><a href="#C-函数编译原理和成员函数的实现" class="headerlink" title="C++函数编译原理和成员函数的实现"></a>C++函数编译原理和成员函数的实现</h2><p>C++和C语言的编译方式不同。C语言中的函数在编译时名字不变，或者只是简单的加一个下划线<code>_</code>例如，func() 编译后为 func() 或 _func()。</p>
 <p>只要函数所在的命名空间、所属的类、包含的参数列表等有一个不同，最后产生的新函数名也不同。</p>
 <p>C++规定，编译成员函数时要额外添加一个参数，把当前对象的指针传递进去，通过指针来访问成员变量。</p>
 <p>假设 Demo 类有两个 int 型的成员变量，分别是 a 和 b，并且在成员函数 display() 中使用到了，如下所示：</p>
@@ -264,7 +264,7 @@ cout&lt;&lt;p-&gt;b&lt;&lt;endl;
 <pre><code>new_function_name(&amp;obj);
 </code></pre>
 <p>这样<strong>通过传递对象指针就完成了成员函数和成员变量的关联</strong>。这与我们从表明上看到的刚好相反，通过对象调用成员函数时，不是通过对象找函数，而是通过函数找对象。</p>
-<h3 id="C-构造函数详解"><a href="#C-构造函数详解" class="headerlink" title="C++构造函数详解"></a>C++构造函数详解</h3><p>构造函数没有返回值，因为没有变量来接收返回值，即使有也毫无用处，这意味着：</p>
+<h2 id="C-构造函数详解"><a href="#C-构造函数详解" class="headerlink" title="C++构造函数详解"></a>C++构造函数详解</h2><p>构造函数没有返回值，因为没有变量来接收返回值，即使有也毫无用处，这意味着：</p>
 <ul>
 <li>不管是声明还是定义，函数名前面都不能出现返回值类型，即使是 void 也不允许；</li>
 <li>函数体中不能有 return 语句。</li>
@@ -279,23 +279,23 @@ cout&lt;&lt;p-&gt;b&lt;&lt;endl;
 <p>这个语句的意思相当于函数体内部的<code>m_name = name; m_age = age; m_score = score;</code>语句，也是赋值的意思。</p>
 <p><strong>使用构造函数初始化列表并没有效率上的优势，仅仅是书写方便，尤其是成员变量较多时，这种写法非常简单明了。</strong></p>
 <p>构造函数初始化列表还有一个很重要的作用，那就是<strong>初始化 const 成员变量</strong>。初始化 const 成员变量的<strong>唯一方法</strong>就是使用初始化列表</p>
-<h3 id="C-析构函数详解"><a href="#C-析构函数详解" class="headerlink" title="C++析构函数详解"></a>C++析构函数详解</h3><p>析构函数（Destructor）：一种特殊的成员函数，没有返回值，不需要程序员显式调用（程序员也没法显式调用），而是在销毁对象时自动执行。</p>
+<h2 id="C-析构函数详解"><a href="#C-析构函数详解" class="headerlink" title="C++析构函数详解"></a>C++析构函数详解</h2><p>析构函数（Destructor）：一种特殊的成员函数，没有返回值，不需要程序员显式调用（程序员也没法显式调用），而是在销毁对象时自动执行。</p>
 <p>构造函数的名字和类名相同，而析构函数的名字是在类名前面加一个<code>~</code>符号。</p>
 <p><strong>注意：析构函数没有参数，不能被重载，因此一个类只能有一个析构函数。如果用户没有定义，编译器会自动生成一个默认的析构函数。</strong></p>
 <p><strong>执行时机：</strong></p>
 <p>在所有函数之外创建的对象是全局对象，它和全局变量类似，位于内存分区中的全局数据区，程序在结束执行时会调用这些对象的析构函数。</p>
 <p>new 创建的对象位于堆区，通过 delete 删除时才会调用析构函数；如果没有 delete，析构函数就不会被执行。</p>
-<h3 id="C-成员对象和封闭类详解"><a href="#C-成员对象和封闭类详解" class="headerlink" title="C++成员对象和封闭类详解"></a>C++成员对象和封闭类详解</h3><p><strong>封闭类对象生成时，先执行所有成员对象的构造函数，然后才执行封闭类自己的构造函数。</strong></p>
+<h2 id="C-成员对象和封闭类详解"><a href="#C-成员对象和封闭类详解" class="headerlink" title="C++成员对象和封闭类详解"></a>C++成员对象和封闭类详解</h2><p><strong>封闭类对象生成时，先执行所有成员对象的构造函数，然后才执行封闭类自己的构造函数。</strong></p>
 <p><strong>封闭类对象消亡时，先执行封闭类的析构函数，然后再执行成员对象的析构函数</strong></p>
 <p><strong>成员对象析构函数的执行次序和构造函数的执行次序相反，即先构造的后析构，这是 C++ 处理此类次序问题的一般规律。</strong></p>
-<h3 id="C-this指针详解（精辟中的精辟）"><a href="#C-this指针详解（精辟中的精辟）" class="headerlink" title="C++ this指针详解（精辟中的精辟）"></a>C++ this指针详解（精辟中的精辟）</h3><p>ps：因为原文说标注是精辟所以我觉得自己必然是精辟中的精辟</p>
+<h2 id="C-this指针详解（精辟中的精辟）"><a href="#C-this指针详解（精辟中的精辟）" class="headerlink" title="C++ this指针详解（精辟中的精辟）"></a>C++ this指针详解（精辟中的精辟）</h2><p>ps：因为原文说标注是精辟所以我觉得自己必然是精辟中的精辟</p>
 <p>this 是c++中的一个关键字，也是一个 const指针，它指向当前对象，通过它可以访问当前对象的所有成员。</p>
 <p>this 只能用在类的内部，通过 this 可以访问类的所有成员，包括 private、protected、public 属性的。</p>
 <p>本例中成员函数的参数和成员变量重名，只能通过 this 区分。</p>
 <p>以成员函数<code>setname(char *name)</code>为例，它的形参是<code>name</code>，和成员变量<code>name</code>重名，如果写作<code>name = name;</code>就是给形参<code>name</code>赋值，而不是给成员变量<code>name</code>赋值。</p>
 <p>而写作<code>this -&gt; name = name;</code>后，<code>=</code>左边的<code>name</code>就是成员变量，右边的<code>name</code>就是形参，一目了然。</p>
 <p>this 作为隐式形参，本质上是成员函数的局部变量，所以只能用在成员函数的内部，并且只有在通过对象调用成员函数时才给 this 赋值。</p>
-<h3 id="C-static详解"><a href="#C-static详解" class="headerlink" title="C++ static详解"></a>C++ static详解</h3><p><strong>static成员变量详解：</strong></p>
+<h2 id="C-static详解"><a href="#C-static详解" class="headerlink" title="C++ static详解"></a>C++ static详解</h2><p><strong>static成员变量详解：</strong></p>
 <p>在c++中，我们可以使用静态成员变量来实现多个对象共享数据的目标。静态成员变量是一种特殊的成员变量，它被关键字<code>static</code>修饰</p>
 <p>我们可以使用静态成员变量来实现多个对象共享数据的目标。静态成员变量是一种特殊的成员变量，它被关键字<code>static</code>修饰，例如：</p>
 <pre><code class="c++">class Student&#123;
@@ -330,7 +330,7 @@ private:
 <p><strong>static静态成员函数详解：</strong></p>
 <p>static还能声明静态成员函数</p>
 <p><strong>根本区别：</strong>普通成员函数可以访问所有成员（包括成员变量和成员函数），但静态成员函数没有 this 指针，不知道指向哪个对象，无法访问对象的成员变量，所以只能访问静态成员变量。</p>
-<h3 id="C-const"><a href="#C-const" class="headerlink" title="C++ const"></a>C++ const</h3><p><strong>const成员函数</strong>：</p>
+<h2 id="C-const"><a href="#C-const" class="headerlink" title="C++ const"></a>C++ const</h2><p><strong>const成员函数</strong>：</p>
 <p>const 成员变量的用法和普通 const 变量的用法相似，需要在声明和定义的时候在<strong>函数头部的结尾</strong>加上 const 关键字</p>
 <p><strong>初始化 const 成员变量只有一种方法，就是通过构造函数的初始化列表</strong></p>
 <p>const 成员函数可以使用类中的所有成员变量，但是不能修改它们的值，这种措施主要还是为了保护数据而设置的。</p>
@@ -343,7 +343,7 @@ private:
 <p><strong>const对象：</strong></p>
 <p>const 也可以用来修饰对象，称为常对象。</p>
 <p>一旦将对象定义为常对象之后，就只能调用类的 const 成员（包括 const 成员变量和 const 成员函数）了，因为非 const 成员可能会修改对象的数据（编译器也会这样假设），C++禁止这样做。。</p>
-<h3 id="C-friend"><a href="#C-friend" class="headerlink" title="C++ friend"></a>C++ friend</h3><p><strong>友元函数：</strong></p>
+<h2 id="C-friend"><a href="#C-friend" class="headerlink" title="C++ friend"></a>C++ friend</h2><p><strong>友元函数：</strong></p>
 <p>在函数声明前面加 friend 关键字就构成了友元函数。</p>
 <p>可以将全局函数声明为友元函数。也可以声明其他类的成员函数为友元，此时可以访问当前类中的所有成员，包括 public、protected、private 属性的。</p>
 <p><strong>友元函数不同于类的成员函数，在友元函数中不能直接访问类的成员，必须要借助对象。</strong></p>
@@ -354,7 +354,7 @@ private:
 <li>友元的关系是单向的而不是双向的。如果声明了类 B 是类 A 的友元类，不等于类 A 是类 B 的友元类，类 A 中的成员函数不能访问类 B 中的 private 成员。</li>
 <li>友元的关系不能传递。如果类 B 是类 A 的友元类，类 C 是类 B 的友元类，不等于类 C 是类 A 的友元类。</li>
 </ul>
-<h3 id="C-string详解"><a href="#C-string详解" class="headerlink" title="C++ string详解"></a>C++ string详解</h3><p><strong>string 是 C++ 中常用的一个类，使用 string 类需要包含头文件<code>&lt;string&gt;</code></strong></p>
+<h2 id="C-string详解"><a href="#C-string详解" class="headerlink" title="C++ string详解"></a>C++ string详解</h2><p><strong>string 是 C++ 中常用的一个类，使用 string 类需要包含头文件<code>&lt;string&gt;</code></strong></p>
 <p>与C风格的字符串不同，当我们需要知道字符串长度时，可以调用 string 类提供的 length() 函数。</p>
 <p>有了 string 类，我们可以使用<code>+</code>或<code>+=</code>运算符来直接拼接字符串</p>
 <p>用<code>+</code>来拼接字符串时：</p>
@@ -396,6 +396,269 @@ size_t find (const char* s, size_t pos = 0) const;
 <hr>
 <p>本章完成于4.16 0:27</p>
 <hr>
+<h1 id="3-c-引用"><a href="#3-c-引用" class="headerlink" title="3.c++引用"></a>3.c++引用</h1><p><strong>参数传递的本质=&gt;赋值，赋值=&gt;对内存进行拷贝</strong></p>
+<p><strong>内存拷贝=&gt;将一块内存上的数据复制到另一块内存上。</strong></p>
+<p>问题抛出：数组、结构体、对象是一系列数据的集合，数据的数量没有限制，对它们进行频繁的内存拷贝可能会消耗很多时间</p>
+<p>解决方案：传递指针或<strong>引用（Reference）（c++专属）</strong></p>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><h3 id="定义和基础语法"><a href="#定义和基础语法" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h3><p>定义：引用可以看做是数据的<strong>一个别名</strong>，通过这个别名和原来的名字都能够找到这份数据。</p>
+<p>定义方式:类似于指针，只是用<code>&amp;</code>取代了<code>*</code></p>
+<pre><code class="c++">type &amp;name = data;
+</code></pre>
+<p>规范：必须在<strong>定义的同时初始化</strong>，并且以后也要从一而终，不能再引用其它数据，这有点类似于常量（const 变量）。引用在**定义时需要添加<code>&amp;</code>，在使用时不能添加<code>&amp;</code>**，使用时添加<code>&amp;</code>表示取地址。</p>
+<p>变量 r 就是变量 a 的引用，它们用来指代同一份数据；也可以说变量 r 是变量 a 的另一个名字。由于引用 r 和原始变量 a 都是指向同一地址，所以通过引用也可以修改原始变量中所存储的数据，请看下面的例子：</p>
+<pre><code class="c++">#include &lt;iostream&gt;
+using namespace std;
+int main() &#123;
+int a = 99;    
+int &amp;r = a;    
+r = 47;    
+cout &lt;&lt; a &lt;&lt; &quot;, &quot; &lt;&lt; r &lt;&lt; endl;
+return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>47, 47</p>
+<hr>
+<p>如果不希望通过引用来修改原始的数据，那么可以在定义时添加 const 限制</p>
+<pre><code class="c++">const type &amp;name = value;
+</code></pre>
+<p>也可以是：</p>
+<pre><code class="c++">type const &amp;name = value;
+</code></pre>
+<p>这种引用方式为常引用</p>
+<p>但绝不是这一种！！！</p>
+<pre><code class="c++">int &amp; const r = a;
+</code></pre>
+<h3 id="引用作为函数参数"><a href="#引用作为函数参数" class="headerlink" title="引用作为函数参数"></a>引用作为函数参数</h3><p>将函数的形参指定为引用的形式，在调用函数时就会将实参和形参绑定在一起，让它们都指代同一份数据。因此如果在函数体中修改了形参的数据，那么实参的数据也会被修改，</p>
+<pre><code>//直接传递参数内容
+void swap1(int a, int b) &#123;
+int temp = a;
+a = b;
+b = temp;
+&#125;
+//传递指针
+void swap2(int *p1, int *p2) &#123;
+int temp = *p1;
+ *p1 = *p2;
+*p2 = temp;
+&#125;
+//按引用传参
+void swap3(int &amp;r1, int &amp;r2) &#123;
+int temp = r1;
+r1 = r2;
+r2 = temp;
+</code></pre>
+<p>Input two integers: 12 34↙<br>12 34<br>Input two integers: 88 99↙<br>99 88<br>Input two integers: 100 200↙<br>200 100</p>
+<p>按引用传参在使用形式上比指针更加直观,鼓励大量使用引用，一般可以代替指针。</p>
+<h3 id="引用作为函数返回值"><a href="#引用作为函数返回值" class="headerlink" title="引用作为函数返回值"></a>引用作为函数返回值</h3><p>引用除了可以作为函数形参，还可以作为函数返回值，请看下面的例子：</p>
+<pre><code class="c++">int &amp;plus10(int &amp;r) 
+&#123;
+r += 10;    
+return r;
+&#125;
+int main()
+&#123;    
+int num1 = 10; 
+int num2 = plus10(num1);  
+cout &lt;&lt; num1 &lt;&lt; &quot; &quot; &lt;&lt; num2 &lt;&lt; endl;  
+return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>20 20</p>
+<p><strong>不能返回局部数据（例如局部变量、局部对象、局部数组等）的引用，因为当函数调用完成后局部数据就会被销毁</strong></p>
+<h2 id="引用在本质上和指针有什么区别？"><a href="#引用在本质上和指针有什么区别？" class="headerlink" title="引用在本质上和指针有什么区别？"></a>引用在本质上和指针有什么区别？</h2><p>看下面的例子：</p>
+<pre><code class="c++">int num = 99;
+
+class A
+&#123;
+public:
+A();
+private:
+int n; 
+int &amp;r;
+&#125;;
+
+A::A(): n(0), r(num)&#123;&#125;
+int main ()
+&#123;    
+A *a = new A(); 
+cout&lt;&lt;sizeof(A)&lt;&lt;endl;  //输出A类型的大小 
+cout&lt;&lt;hex&lt;&lt;showbase&lt;&lt;*((int*)a + 1)&lt;&lt;endl;  //输出r本身的内容    cout&lt;&lt;&amp;num&lt;&lt;endl;  //输出num变量的地址  
+return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>8<br>0x442000<br>0x442000</p>
+<p>从运行结果可以看出：</p>
+<ul>
+<li>成员变量 r 是占用内存的，如果不占用的话，<code>sizeof(A)</code>的结果应该为 4。</li>
+<li>r 存储的内容是<code>0x442000</code>，也即变量 num 的地址。</li>
+</ul>
+<hr>
+<p>r 的实现和指针非常类似。如果将 r 定义为<code>int *</code>类型的指针，并在构造函数中让它指向 num，那么 r 占用的内存也是 4 个字节，存储的内容也是 num 的地址。</p>
+<p><strong>其实引用只是对指针进行了简单的封装，它的底层依然是通过指针实现的，引用占用的内存和指针占用的内存长度一样，在 32 位环境下是 4 个字节，在 64 位环境下是 8 个字节</strong></p>
+<p><strong>其他区别：</strong></p>
+<ol>
+<li>引用必须在定义时初始化，并且以后也要从一而终，不能再指向其他数据；而指针没有这个限制，指针在定义时不必赋值，以后也能指向任意数据。</li>
+<li>指针可以有多级，但是引用只能有一级，例如，<code>int **p</code>是合法的，而<code>int &amp;&amp;r</code>是不合法的。</li>
+<li> 指针和引用的自增（++）自减（–）运算意义不一样。对指针使用 ++ 表示指向下一份数据，对引用使用 ++ 表示它所指代的数据本身加 1；</li>
+</ol>
+<h1 id="4-继承与派生"><a href="#4-继承与派生" class="headerlink" title="4.继承与派生"></a>4.继承与派生</h1><h2 id="定义和基础语法-1"><a href="#定义和基础语法-1" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h2><p><strong>继承（Inheritance）</strong>可以理解为一个类从另一个类获取成员变量和成员函数的过程。例如类 B 继承于类 A，那么 B 就拥有 A 的成员变量和成员函数。</p>
+<p><strong>派生（Derive）</strong>和继承是一个概念，只是站的角度不同。继承是儿子接收父亲的产业，派生是父亲把产业传承给儿子。</p>
+<p>被继承的类称为父类或基类，继承的类称为子类或派生类。<strong>“子类”和“父类”</strong>通常放在一起称呼，<strong>“基类”和“派生类”</strong>通常放在一起称呼。</p>
+<p>定义方式：</p>
+<p>下面我们定义一个基类 People，然后由此派生出 Student 类：</p>
+<pre><code class="c++">//基类 People
+class People&#123;
+
+public: 
+void setname(char *name);  
+void setage(int age);  
+char *getname();  
+int getage();
+
+private:   
+char *m_name;  
+int m_age;
+&#125;;
+
+void People::setname(char *name)
+&#123; m_name = name; &#125;
+
+void People::setage(int age)
+&#123; m_age = age; &#125;
+
+char* People::getname()
+&#123; return m_name; &#125;
+
+int People::getage()
+&#123; return m_age;&#125;
+
+//派生类 Student
+class Student: public People&#123;
+
+public:   
+void setscore(float score); 
+float getscore();
+
+private: 
+float m_score;
+&#125;;
+
+void Student::setscore(float score)
+&#123; m_score = score; &#125;
+
+float Student::getscore()
+&#123; return m_score; &#125;
+
+int main()&#123; 
+Student stu; 
+stu.setname(&quot;小明&quot;);  
+stu.setage(16);  
+stu.setscore(95.5f);  
+cout&lt;&lt;stu.getname()&lt;&lt;&quot;的年龄是 &quot;&lt;&lt;stu.getage()&lt;&lt;&quot;，成绩是 &quot;&lt;&lt;stu.getscore()&lt;&lt;endl; 
+return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>小明的年龄是 16，成绩是 95.5</p>
+<p>Student 类继承了 People 类的成员，同时还新增了自己的成员变量 score 和成员函数 setscore()、getscore()。这些继承过来的成员，可以通过子类对象访问，就像自己的一样。</p>
+<h2 id="继承中的三种权限修饰符"><a href="#继承中的三种权限修饰符" class="headerlink" title="继承中的三种权限修饰符"></a>继承中的三种权限修饰符</h2><p>继承的一般语法为：</p>
+<p>class 派生类名:［权限修饰符］ 基类名{<br>  派生类新增加的成员<br>};</p>
+<p>权限修饰符限定了基类成员在派生类中的访问权限，包括 <strong>public（公有的）</strong>、<strong>private（私有的）</strong>和 <strong>protected（受保护的）</strong>。</p>
+<p>此项是可选项，如果不写，默认为 private（成员变量和成员函数默认也是 private）。</p>
+<p>基类中的 protected 成员可以在派生类中使用，而基类中的 private 成员不能在派生类中使用。</p>
+<h2 id="public、protected、private"><a href="#public、protected、private" class="headerlink" title="public、protected、private"></a>public、protected、private</h2><p>不同的继承方式会影响基类成员在派生类中的访问权限。</p>
+<p><strong>public继承方式</strong></p>
+<ul>
+<li>基类中所有 public 成员在派生类中为 public 属性；</li>
+<li>基类中所有 protected 成员在派生类中为 protected 属性；</li>
+<li>基类中所有 private 成员在派生类中不能使用。</li>
+</ul>
+<p><strong>protected继承方式</strong></p>
+<ul>
+<li>基类中的所有 public 成员在派生类中为 protected 属性；</li>
+<li>基类中的所有 protected 成员在派生类中为 protected 属性；</li>
+<li>基类中的所有 private 成员在派生类中不能使用。</li>
+</ul>
+<p><strong>private继承方式</strong></p>
+<ul>
+<li>基类中的所有 public 成员在派生类中均为 private 属性；</li>
+<li>基类中的所有 protected 成员在派生类中均为 private 属性；</li>
+<li>基类中的所有 private 成员在派生类中不能使用。</li>
+</ul>
+<p>由于 private 和 protected 继承方式会改变基类成员在派生类中的访问权限，导致继承关系复杂，所以实际开发中我们一般使用 public。</p>
+<h2 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h2><p>演示类的继承关系。</p>
+<pre><code class="c++">//基类People
+class People&#123;
+
+public:   
+void setname(char *name);  
+void setage(int age);  
+void sethobby(char *hobby); 
+char *gethobby();
+
+protected:  
+char *m_name;  
+int m_age;
+
+private:  
+char *m_hobby;
+&#125;;
+
+void People::setname(char *name)
+&#123; m_name = name; &#125;
+
+void People::setage(int age)
+&#123; m_age = age; &#125;
+
+void People::sethobby(char *hobby)
+&#123; m_hobby = hobby; &#125;
+
+char *People::gethobby()
+&#123; return m_hobby; &#125;
+
+//派生类Student
+class Student: public People&#123;
+
+public:   
+void setscore(float score);
+
+protected:  
+float m_score;
+&#125;;
+
+void Student::setscore(float score)
+&#123; m_score = score; &#125;
+
+//派生类Pupil
+class Pupil: public Student&#123;
+
+public: 
+void setranking(int ranking);   
+void display();
+
+private:   
+int m_ranking;
+&#125;;
+
+void Pupil::setranking(int ranking)
+&#123; m_ranking = ranking; &#125;
+
+void Pupil::display()&#123;    
+cout&lt;&lt;m_name&lt;&lt;&quot;的年龄是&quot;&lt;&lt;m_age&lt;&lt;&quot;，考试成绩为&quot;&lt;&lt;m_score&lt;&lt;&quot;分，班级排名第&quot;&lt;&lt;m_ranking&lt;&lt;&quot;，TA喜欢&quot;&lt;&lt;gethobby()&lt;&lt;&quot;。&quot;&lt;&lt;endl;
+&#125;
+
+int main()&#123;
+Pupil pup;  
+pup.setname(&quot;小明&quot;); 
+pup.setage(15);   
+pup.setscore(92.5f); 
+pup.setranking(4);   
+pup.sethobby(&quot;乒乓球&quot;); 
+pup.display();   
+return 0;&#125;
+</code></pre>
+<p>运行结果：<br>小明的年龄是15，考试成绩为92.5分，班级排名第4，TA喜欢乒乓球。</p>
+<p>派生类中访问基类 private 成员的唯一方法就是借助基类的非 private 成员函数，如果基类没有非 private 成员函数，那么该成员在派生类中将无法访问。</p>
+<h2 id="继承时的名字遮蔽"><a href="#继承时的名字遮蔽" class="headerlink" title="继承时的名字遮蔽"></a>继承时的名字遮蔽</h2><hr>
 <p>待更新~</p>
 
     </div>
