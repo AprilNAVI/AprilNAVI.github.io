@@ -96,7 +96,7 @@
             <span class="icon">
                 <a-icon type="calendar" theme="filled" />
             </span>
-            2021/4/19
+            2021/4/22
         </span>
 
         
@@ -122,7 +122,7 @@ namespace Han
 &#125;
 </code></pre>
 <p>小李与小韩各自定义了以自己姓氏为名的命名空间，此时再将他们的 fp 变量放在一起编译就不会有任何问题。</p>
-<h2 id="C-输入和输出"><a href="#C-输入和输出" class="headerlink" title="C++输入和输出"></a>C++输入和输出</h2><p>在编写 C++ 程序时，如果需要使用输入输出时，则需要包含头文件<code>iostream</code>，它包含了用于输入输出的对象，例如常见的<code>cin</code>表示标准输入、<code>cout</code>表示标准输出、<code>cerr</code>表示标准错误。</p>
+<h2 id="输入和输出"><a href="#输入和输出" class="headerlink" title="输入和输出"></a>输入和输出</h2><p>在编写 C++ 程序时，如果需要使用输入输出时，则需要包含头文件<code>iostream</code>，它包含了用于输入输出的对象，例如常见的<code>cin</code>表示标准输入、<code>cout</code>表示标准输出、<code>cerr</code>表示标准错误。</p>
 <p>cout 和 cin 都是 C++ 的内置对象，而不是关键字。cout、cin 的用法非常强大灵活。</p>
 <h2 id="C-中的const又玩出了新花样"><a href="#C-中的const又玩出了新花样" class="headerlink" title="C++中的const又玩出了新花样"></a>C++中的const又玩出了新花样</h2><p>因为感觉这篇挺需要实例讲解的所以直接整篇直接copy走了</p>
 <h3 id="C-中的-const-更像编译阶段的-define"><a href="#C-中的-const-更像编译阶段的-define" class="headerlink" title="C++中的 const 更像编译阶段的 #define"></a>C++中的 const 更像编译阶段的 #define</h3><p>先来看下面的两条语句：</p>
@@ -195,7 +195,7 @@ namespace Han
 <li>仅仅返回类型不同不足以成为函数的重载。</li>
 </ul>
 <hr>
-<h1 id="2-类与对象"><a href="#2-类与对象" class="headerlink" title="2.类与对象"></a>2.类与对象</h1><h2 id="C-类的定义和对象的创建详解"><a href="#C-类的定义和对象的创建详解" class="headerlink" title="C++类的定义和对象的创建详解"></a>C++类的定义和对象的创建详解</h2><p><strong>基础语法：</strong></p>
+<h1 id="2-类与对象"><a href="#2-类与对象" class="headerlink" title="2.类与对象"></a>2.类与对象</h1><h2 id="定义和基础语法"><a href="#定义和基础语法" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h2><p><strong>基础语法：</strong></p>
 <p>一个简单的类的定义：</p>
 <pre><code class="c++">纯文本复制
 class Student&#123;
@@ -228,10 +228,10 @@ Student *pStu = &amp;stu;
 <p>当然也可以在堆上创建对象，这个时候就需要使用前面讲到的<code>new</code>关键字</p>
 <p>使用 new 在堆上创建出来的对象是匿名的，它在堆上分配内存，没有名字，只能得到一个指向它的指针，所以必须使用一个指针变量来接收这个指针，再借助指针来访问它的成员变量或成员函数。</p>
 <p>在实际开发中，new 和 delete 往往成对出现，记得 delete 掉不再使用的对象依然是一种良好的编程习惯。</p>
-<h2 id="C-类的成员变量和成员函数详解"><a href="#C-类的成员变量和成员函数详解" class="headerlink" title="C++类的成员变量和成员函数详解"></a>C++类的成员变量和成员函数详解</h2><p>成员函数是一个类的成员，出现在类体中，它的作用范围由类来决定；</p>
+<h2 id="类的成员变量和成员函数详解"><a href="#类的成员变量和成员函数详解" class="headerlink" title="类的成员变量和成员函数详解"></a>类的成员变量和成员函数详解</h2><p>成员函数是一个类的成员，出现在类体中，它的作用范围由类来决定；</p>
 <p>普通函数是独立的，作用范围是全局的，或位于某个命名空间内。</p>
 <p>当成员函数定义在类外时，就必须在函数名前面加上类名予以限定。<code>::</code>被称为域解析符（也称作用域运算符或作用域限定符），用来连接类名和函数名，指明当前函数属于哪个类。</p>
-<h2 id="C-类成员的访问权限以及类的封装"><a href="#C-类成员的访问权限以及类的封装" class="headerlink" title="C++类成员的访问权限以及类的封装"></a>C++类成员的访问权限以及类的封装</h2><blockquote>
+<h2 id="类成员的访问权限以及类的封装"><a href="#类成员的访问权限以及类的封装" class="headerlink" title="类成员的访问权限以及类的封装"></a>类成员的访问权限以及类的封装</h2><blockquote>
 <p>Java、c# 程序员注意，C++ 中的 public、private、protected 只能修饰类的成员，不能修饰类，C++中的类没有共有私有之分。</p>
 </blockquote>
 <p>public：全都行！</p>
@@ -241,7 +241,7 @@ Student *pStu = &amp;stu;
 <p>实际项目开发中的成员变量以及只被成员函数调用的成员函数都建议声明为 private</p>
 <p>给成员变量赋值的函数通常称为 set 函数，它们的名字通常以<code>set</code>开头，后跟成员变量的名字；</p>
 <p>读取成员变量的值的函数通常称为 get 函数，它们的名字通常以<code>get</code>开头，后跟成员变量的名字。</p>
-<h2 id="C-对象的内存模型"><a href="#C-对象的内存模型" class="headerlink" title="C++对象的内存模型"></a>C++对象的内存模型</h2><p>类是创建对象的模板，不占用内存空间，不存在于编译后的可执行文件中；而对象是实实在在的数据，需要内存来存储。</p>
+<h2 id="对象的内存模型"><a href="#对象的内存模型" class="headerlink" title="对象的内存模型"></a>对象的内存模型</h2><p>类是创建对象的模板，不占用内存空间，不存在于编译后的可执行文件中；而对象是实实在在的数据，需要内存来存储。</p>
 <p>编译器会将成员变量和成员函数分开存储：分别为每个对象的成员变量分配内存，但是所有对象都共享同一段函数代码。</p>
 <h2 id="C-函数编译原理和成员函数的实现"><a href="#C-函数编译原理和成员函数的实现" class="headerlink" title="C++函数编译原理和成员函数的实现"></a>C++函数编译原理和成员函数的实现</h2><p>C++和C语言的编译方式不同。C语言中的函数在编译时名字不变，或者只是简单的加一个下划线<code>_</code>例如，func() 编译后为 func() 或 _func()。</p>
 <p>只要函数所在的命名空间、所属的类、包含的参数列表等有一个不同，最后产生的新函数名也不同。</p>
@@ -264,7 +264,7 @@ cout&lt;&lt;p-&gt;b&lt;&lt;endl;
 <pre><code>new_function_name(&amp;obj);
 </code></pre>
 <p>这样<strong>通过传递对象指针就完成了成员函数和成员变量的关联</strong>。这与我们从表明上看到的刚好相反，通过对象调用成员函数时，不是通过对象找函数，而是通过函数找对象。</p>
-<h2 id="C-构造函数详解"><a href="#C-构造函数详解" class="headerlink" title="C++构造函数详解"></a>C++构造函数详解</h2><p>构造函数没有返回值，因为没有变量来接收返回值，即使有也毫无用处，这意味着：</p>
+<h2 id="构造函数详解"><a href="#构造函数详解" class="headerlink" title="构造函数详解"></a>构造函数详解</h2><p>构造函数没有返回值，因为没有变量来接收返回值，即使有也毫无用处，这意味着：</p>
 <ul>
 <li>不管是声明还是定义，函数名前面都不能出现返回值类型，即使是 void 也不允许；</li>
 <li>函数体中不能有 return 语句。</li>
@@ -279,23 +279,23 @@ cout&lt;&lt;p-&gt;b&lt;&lt;endl;
 <p>这个语句的意思相当于函数体内部的<code>m_name = name; m_age = age; m_score = score;</code>语句，也是赋值的意思。</p>
 <p><strong>使用构造函数初始化列表并没有效率上的优势，仅仅是书写方便，尤其是成员变量较多时，这种写法非常简单明了。</strong></p>
 <p>构造函数初始化列表还有一个很重要的作用，那就是<strong>初始化 const 成员变量</strong>。初始化 const 成员变量的<strong>唯一方法</strong>就是使用初始化列表</p>
-<h2 id="C-析构函数详解"><a href="#C-析构函数详解" class="headerlink" title="C++析构函数详解"></a>C++析构函数详解</h2><p>析构函数（Destructor）：一种特殊的成员函数，没有返回值，不需要程序员显式调用（程序员也没法显式调用），而是在销毁对象时自动执行。</p>
+<h2 id="析构函数详解"><a href="#析构函数详解" class="headerlink" title="析构函数详解"></a>析构函数详解</h2><p>析构函数（Destructor）：一种特殊的成员函数，没有返回值，不需要程序员显式调用（程序员也没法显式调用），而是在销毁对象时自动执行。</p>
 <p>构造函数的名字和类名相同，而析构函数的名字是在类名前面加一个<code>~</code>符号。</p>
 <p><strong>注意：析构函数没有参数，不能被重载，因此一个类只能有一个析构函数。如果用户没有定义，编译器会自动生成一个默认的析构函数。</strong></p>
 <p><strong>执行时机：</strong></p>
 <p>在所有函数之外创建的对象是全局对象，它和全局变量类似，位于内存分区中的全局数据区，程序在结束执行时会调用这些对象的析构函数。</p>
 <p>new 创建的对象位于堆区，通过 delete 删除时才会调用析构函数；如果没有 delete，析构函数就不会被执行。</p>
-<h2 id="C-成员对象和封闭类详解"><a href="#C-成员对象和封闭类详解" class="headerlink" title="C++成员对象和封闭类详解"></a>C++成员对象和封闭类详解</h2><p><strong>封闭类对象生成时，先执行所有成员对象的构造函数，然后才执行封闭类自己的构造函数。</strong></p>
+<h2 id="成员对象和封闭类详解"><a href="#成员对象和封闭类详解" class="headerlink" title="成员对象和封闭类详解"></a>成员对象和封闭类详解</h2><p><strong>封闭类对象生成时，先执行所有成员对象的构造函数，然后才执行封闭类自己的构造函数。</strong></p>
 <p><strong>封闭类对象消亡时，先执行封闭类的析构函数，然后再执行成员对象的析构函数</strong></p>
 <p><strong>成员对象析构函数的执行次序和构造函数的执行次序相反，即先构造的后析构，这是 C++ 处理此类次序问题的一般规律。</strong></p>
-<h2 id="C-this指针详解（精辟中的精辟）"><a href="#C-this指针详解（精辟中的精辟）" class="headerlink" title="C++ this指针详解（精辟中的精辟）"></a>C++ this指针详解（精辟中的精辟）</h2><p>ps：因为原文说标注是精辟所以我觉得自己必然是精辟中的精辟</p>
+<h2 id="this指针详解（精辟中的精辟）"><a href="#this指针详解（精辟中的精辟）" class="headerlink" title="this指针详解（精辟中的精辟）"></a>this指针详解（精辟中的精辟）</h2><p>ps：因为原文说标注是精辟所以我觉得自己必然是精辟中的精辟</p>
 <p>this 是c++中的一个关键字，也是一个 const指针，它指向当前对象，通过它可以访问当前对象的所有成员。</p>
 <p>this 只能用在类的内部，通过 this 可以访问类的所有成员，包括 private、protected、public 属性的。</p>
 <p>本例中成员函数的参数和成员变量重名，只能通过 this 区分。</p>
 <p>以成员函数<code>setname(char *name)</code>为例，它的形参是<code>name</code>，和成员变量<code>name</code>重名，如果写作<code>name = name;</code>就是给形参<code>name</code>赋值，而不是给成员变量<code>name</code>赋值。</p>
 <p>而写作<code>this -&gt; name = name;</code>后，<code>=</code>左边的<code>name</code>就是成员变量，右边的<code>name</code>就是形参，一目了然。</p>
 <p>this 作为隐式形参，本质上是成员函数的局部变量，所以只能用在成员函数的内部，并且只有在通过对象调用成员函数时才给 this 赋值。</p>
-<h2 id="C-static详解"><a href="#C-static详解" class="headerlink" title="C++ static详解"></a>C++ static详解</h2><p><strong>static成员变量详解：</strong></p>
+<h2 id="static详解"><a href="#static详解" class="headerlink" title="static详解"></a>static详解</h2><p><strong>static成员变量详解：</strong></p>
 <p>在c++中，我们可以使用静态成员变量来实现多个对象共享数据的目标。静态成员变量是一种特殊的成员变量，它被关键字<code>static</code>修饰</p>
 <p>我们可以使用静态成员变量来实现多个对象共享数据的目标。静态成员变量是一种特殊的成员变量，它被关键字<code>static</code>修饰，例如：</p>
 <pre><code class="c++">class Student&#123;
@@ -330,7 +330,7 @@ private:
 <p><strong>static静态成员函数详解：</strong></p>
 <p>static还能声明静态成员函数</p>
 <p><strong>根本区别：</strong>普通成员函数可以访问所有成员（包括成员变量和成员函数），但静态成员函数没有 this 指针，不知道指向哪个对象，无法访问对象的成员变量，所以只能访问静态成员变量。</p>
-<h2 id="C-const"><a href="#C-const" class="headerlink" title="C++ const"></a>C++ const</h2><p><strong>const成员函数</strong>：</p>
+<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p><strong>const成员函数</strong>：</p>
 <p>const 成员变量的用法和普通 const 变量的用法相似，需要在声明和定义的时候在<strong>函数头部的结尾</strong>加上 const 关键字</p>
 <p><strong>初始化 const 成员变量只有一种方法，就是通过构造函数的初始化列表</strong></p>
 <p>const 成员函数可以使用类中的所有成员变量，但是不能修改它们的值，这种措施主要还是为了保护数据而设置的。</p>
@@ -343,7 +343,7 @@ private:
 <p><strong>const对象：</strong></p>
 <p>const 也可以用来修饰对象，称为常对象。</p>
 <p>一旦将对象定义为常对象之后，就只能调用类的 const 成员（包括 const 成员变量和 const 成员函数）了，因为非 const 成员可能会修改对象的数据（编译器也会这样假设），C++禁止这样做。。</p>
-<h2 id="C-friend"><a href="#C-friend" class="headerlink" title="C++ friend"></a>C++ friend</h2><p><strong>友元函数：</strong></p>
+<h2 id="friend"><a href="#friend" class="headerlink" title="friend"></a>friend</h2><p><strong>友元函数：</strong></p>
 <p>在函数声明前面加 friend 关键字就构成了友元函数。</p>
 <p>可以将全局函数声明为友元函数。也可以声明其他类的成员函数为友元，此时可以访问当前类中的所有成员，包括 public、protected、private 属性的。</p>
 <p><strong>友元函数不同于类的成员函数，在友元函数中不能直接访问类的成员，必须要借助对象。</strong></p>
@@ -354,7 +354,7 @@ private:
 <li>友元的关系是单向的而不是双向的。如果声明了类 B 是类 A 的友元类，不等于类 A 是类 B 的友元类，类 A 中的成员函数不能访问类 B 中的 private 成员。</li>
 <li>友元的关系不能传递。如果类 B 是类 A 的友元类，类 C 是类 B 的友元类，不等于类 C 是类 A 的友元类。</li>
 </ul>
-<h2 id="C-string详解"><a href="#C-string详解" class="headerlink" title="C++ string详解"></a>C++ string详解</h2><p><strong>string 是 C++ 中常用的一个类，使用 string 类需要包含头文件<code>&lt;string&gt;</code></strong></p>
+<h2 id="string详解"><a href="#string详解" class="headerlink" title="string详解"></a>string详解</h2><p><strong>string 是 C++ 中常用的一个类，使用 string 类需要包含头文件<code>&lt;string&gt;</code></strong></p>
 <p>与C风格的字符串不同，当我们需要知道字符串长度时，可以调用 string 类提供的 length() 函数。</p>
 <p>有了 string 类，我们可以使用<code>+</code>或<code>+=</code>运算符来直接拼接字符串</p>
 <p>用<code>+</code>来拼接字符串时：</p>
@@ -396,11 +396,11 @@ size_t find (const char* s, size_t pos = 0) const;
 <hr>
 <p>本章完成于4.16 0:27</p>
 <hr>
-<h1 id="3-c-引用"><a href="#3-c-引用" class="headerlink" title="3.c++引用"></a>3.c++引用</h1><p><strong>参数传递的本质=&gt;赋值，赋值=&gt;对内存进行拷贝</strong></p>
+<h1 id="3-引用"><a href="#3-引用" class="headerlink" title="3.引用"></a>3.引用</h1><h2 id="定义和基础语法-1"><a href="#定义和基础语法-1" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h2><p><strong>参数传递的本质=&gt;赋值，赋值=&gt;对内存进行拷贝</strong></p>
 <p><strong>内存拷贝=&gt;将一块内存上的数据复制到另一块内存上。</strong></p>
 <p>问题抛出：数组、结构体、对象是一系列数据的集合，数据的数量没有限制，对它们进行频繁的内存拷贝可能会消耗很多时间</p>
 <p>解决方案：传递指针或<strong>引用（Reference）（c++专属）</strong></p>
-<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><h3 id="定义和基础语法"><a href="#定义和基础语法" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h3><p>定义：引用可以看做是数据的<strong>一个别名</strong>，通过这个别名和原来的名字都能够找到这份数据。</p>
+<p>定义：引用可以看做是数据的<strong>一个别名</strong>，通过这个别名和原来的名字都能够找到这份数据。</p>
 <p>定义方式:类似于指针，只是用<code>&amp;</code>取代了<code>*</code></p>
 <pre><code class="c++">type &amp;name = data;
 </code></pre>
@@ -501,7 +501,7 @@ return 0;
 <li>指针可以有多级，但是引用只能有一级，例如，<code>int **p</code>是合法的，而<code>int &amp;&amp;r</code>是不合法的。</li>
 <li> 指针和引用的自增（++）自减（–）运算意义不一样。对指针使用 ++ 表示指向下一份数据，对引用使用 ++ 表示它所指代的数据本身加 1；</li>
 </ol>
-<h1 id="4-继承与派生"><a href="#4-继承与派生" class="headerlink" title="4.继承与派生"></a>4.继承与派生</h1><h2 id="定义和基础语法-1"><a href="#定义和基础语法-1" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h2><p><strong>继承（Inheritance）</strong>可以理解为一个类从另一个类获取成员变量和成员函数的过程。例如类 B 继承于类 A，那么 B 就拥有 A 的成员变量和成员函数。</p>
+<h1 id="4-继承与派生"><a href="#4-继承与派生" class="headerlink" title="4.继承与派生"></a>4.继承与派生</h1><h2 id="定义和基础语法-2"><a href="#定义和基础语法-2" class="headerlink" title="定义和基础语法"></a>定义和基础语法</h2><p><strong>继承（Inheritance）</strong>可以理解为一个类从另一个类获取成员变量和成员函数的过程。例如类 B 继承于类 A，那么 B 就拥有 A 的成员变量和成员函数。</p>
 <p><strong>派生（Derive）</strong>和继承是一个概念，只是站的角度不同。继承是儿子接收父亲的产业，派生是父亲把产业传承给儿子。</p>
 <p>被继承的类称为父类或基类，继承的类称为子类或派生类。<strong>“子类”和“父类”</strong>通常放在一起称呼，<strong>“基类”和“派生类”</strong>通常放在一起称呼。</p>
 <p>定义方式：</p>
@@ -585,80 +585,268 @@ return 0;
 <li>基类中的所有 private 成员在派生类中不能使用。</li>
 </ul>
 <p>由于 private 和 protected 继承方式会改变基类成员在派生类中的访问权限，导致继承关系复杂，所以实际开发中我们一般使用 public。</p>
-<h2 id="多重继承"><a href="#多重继承" class="headerlink" title="多重继承"></a>多重继承</h2><p>演示类的继承关系。</p>
-<pre><code class="c++">//基类People
-class People&#123;
-
-public:   
-void setname(char *name);  
-void setage(int age);  
-void sethobby(char *hobby); 
-char *gethobby();
-
-protected:  
-char *m_name;  
-int m_age;
-
-private:  
-char *m_hobby;
+<h2 id="继承时的名字遮蔽"><a href="#继承时的名字遮蔽" class="headerlink" title="继承时的名字遮蔽"></a>继承时的名字遮蔽</h2><p>如果派生类中的成员（包括成员变量和成员函数）和基类中的成员<strong>重名</strong>，那么就会遮蔽从基类继承过来的成员。在派生类中使用该成员时，实际上使用的是<strong>派生类新增的成员</strong>，而不是从基类继承来的。</p>
+<p>基类中的成员仍然可以访问，不过要加上类名和域解析符</p>
+<pre><code class="c++"> Student stu(&quot;小明&quot;, 16, 90.5);
+ //使用的是派生类新增的成员函数，而不是从基类继承的
+    stu.show();
+ //使用的是从基类继承来的成员函数
+    stu.People::show();
+</code></pre>
+<h3 id="基类成员函数和派生类成员函数不构成重载"><a href="#基类成员函数和派生类成员函数不构成重载" class="headerlink" title="基类成员函数和派生类成员函数不构成重载"></a>基类成员函数和派生类成员函数不构成重载</h3><p>对于成员函数而言，不管函数的参数如何，只要名字一样就会造成遮蔽。</p>
+<p>基类成员函数和派生类成员函数不会构成重载，如果派生类有同名函数，那么就会遮蔽基类中的所有同名函数，不管它们的参数是否一样。</p>
+<h3 id="类继承时的作用域嵌套"><a href="#类继承时的作用域嵌套" class="headerlink" title="类继承时的作用域嵌套"></a>类继承时的作用域嵌套</h3><p>每个类都会定义它自己的作用域，当存在继承关系时，派生类的作用域嵌套在基类的作用域之内，如果一个名字在派生类的作用域内无法找到，编译器会继续到外层的基类作用域中查找该名字的定义。</p>
+<p>恰恰因为类作用域有这种继承嵌套的关系，所以派生类才能像使用自己的成员一样来使用基类的成员。</p>
+<p>只有<strong>一个作用域内的同名函数才具有重载关系</strong>，不同作用域内的同名函数是会造成遮蔽，使得外层函数无效。派生类和基类拥有不同的作用域，所以它们的同名函数不具有重载关系。</p>
+<h2 id="继承时的对象内存模型"><a href="#继承时的对象内存模型" class="headerlink" title="继承时的对象内存模型"></a>继承时的对象内存模型</h2><p>没有继承时对象的内存模型很简单，成员变量和成员函数会分开存储：</p>
+<ul>
+<li>对象的内存中只包含成员变量，存储在栈区或堆区（使用 new 创建对象）；</li>
+<li>成员函数与对象内存分离，存储在代码区。</li>
+</ul>
+<p>存在继承关系时，内存模型会稍微复杂一些。</p>
+<hr>
+<p>有继承关系时，派生类的内存模型可以看成是基类成员变量和新增成员变量的总和</p>
+<p>而所有成员函数仍然存储在另外一个区域——代码区，由所有对象共享。</p>
+<p><img src="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420195935279.png" alt="image-20210420195935279"></p>
+<h3 id="有成员变量遮蔽时的内存分布"><a href="#有成员变量遮蔽时的内存分布" class="headerlink" title="有成员变量遮蔽时的内存分布"></a>有成员变量遮蔽时的内存分布</h3><p><img src="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420200802092.png" alt="image-20210420200802092"></p>
+<p>当基类 A、B 的成员变量被遮蔽时，仍然会留在派生类对象 obj_c 的内存中，C 类新增的成员变量始终排在基类 A、B 的后面。</p>
+<h2 id="基类和派生类的构造函数"><a href="#基类和派生类的构造函数" class="headerlink" title="基类和派生类的构造函数"></a>基类和派生类的构造函数</h2><p>基类的成员函数可以被继承，但这仅仅指的是普通的成员函数，<strong>类的构造函数不能被继承。</strong></p>
+<p>设计派生类时，对继承过来的成员变量的初始化也要由派生类的构造函数完成。但大部分基类成员变量都有 private 属性，在派生类中无法访问，更不能使用派生类的构造函数来初始化。</p>
+<p>解决这个问题的思路是：<strong>在派生类的构造函数中调用基类的构造函数。</strong></p>
+<pre><code class="c++">Student::Student(char *name, int age, float score):
+People(name, age), m_score(score)&#123; &#125;
+</code></pre>
+<p><code>People(name, age)</code>就是调用基类的构造函数，并将 name 和 age 作为实参传递给它，<code>m_score(score)</code>是派生类的参数初始化表，它们之间以逗号<code>,</code>隔开。也可以将基类构造函数的调用放在参数初始化表后面。</p>
+<p>但是不管顺序如何，派生类构造函数总是先调用基类构造函数再执行其他代码。</p>
+<p><strong>定义派生类构造函数时最好指明基类构造函数；如果不指明，就调用基类的默认构造函数（不带参数的构造函数）；如果没有默认构造函数，那么编译失败。</strong></p>
+<p><strong>派生类构造函数中只能调用直接基类的构造函数，不能调用间接基类的。</strong></p>
+<p>以 A–&gt;B–&gt;C 为例，C 是最终的派生类，B 就是 C 的直接基类，A 就是 C 的间接基类。</p>
+<h3 id="构造函数的调用顺序"><a href="#构造函数的调用顺序" class="headerlink" title="构造函数的调用顺序"></a>构造函数的调用顺序</h3><p>创建派生类对象时，会先调用基类构造函数，再调用派生类构造函数。</p>
+<p>构造函数的调用顺序是按照继承的层次自顶向下、从基类再到派生类的。</p>
+<h2 id="基类和派生类的构造函数-1"><a href="#基类和派生类的构造函数-1" class="headerlink" title="基类和派生类的构造函数"></a>基类和派生类的构造函数</h2><p>析构函数也不能被继承。与构造函数不同的是，在派生类的析构函数中不用显式地调用基类的析构函数。</p>
+<p>另外析构函数的执行顺序和构造函数的执行顺序也刚好相反：</p>
+<ul>
+<li><strong>创建派生类对象时，构造函数的执行顺序和继承顺序相同，即先执行基类构造函数，再执行派生类构造函数。</strong></li>
+<li><strong>而销毁派生类对象时，析构函数的执行顺序和继承顺序相反，即先执行派生类析构函数，再执行基类析构函数。</strong></li>
+</ul>
+<h2 id="多继承"><a href="#多继承" class="headerlink" title="多继承"></a>多继承</h2><p>即一个派生类可以<strong>有两个或多个基类</strong>称为多继承</p>
+<p>多继承的语法如下：</p>
+<pre><code class="c++">class D: public A, private B, protected C&#123;
+  //类D新增加的成员
+&#125;
+</code></pre>
+<p>D 是多继承形式的派生类，它以公有的方式继承 A 类，以私有的方式继承 B 类，以保护的方式继承 C 类。</p>
+<h3 id="多继承下的构造函数"><a href="#多继承下的构造函数" class="headerlink" title="多继承下的构造函数"></a>多继承下的构造函数</h3><p>D 类构造函数的写法为：</p>
+<pre><code class="c++">D(形参列表): A(实参列表), B(实参列表), C(实参列表)&#123;
+  //其他操作
+&#125;
+</code></pre>
+<p>基类构造函数的调用顺序和和它们在派生类构造函数中出现的顺序无关，而是和声明派生类时基类出现的顺序相同。</p>
+<h3 id="命名冲突"><a href="#命名冲突" class="headerlink" title="命名冲突"></a>命名冲突</h3><p>当两个或多个基类中(这两个类彼此不是继承关系，不然就覆盖了)有同名的成员时，如果直接访问该成员，就会产生命名冲突</p>
+<p>这个时候需要在成员名字前面加上类名和域解析符<code>::</code>，以显式地指明到底使用哪个类的成员，消除二义性。</p>
+<h2 id="虚继承和虚基类详解"><a href="#虚继承和虚基类详解" class="headerlink" title="虚继承和虚基类详解"></a>虚继承和虚基类详解</h2><h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>问题抛出：菱形继承</p>
+<p><img src="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420205828007.png" alt="image-20210420205828007"></p>
+<p>类 A 中的成员变量和成员函数继承到类 D 中变成了两份</p>
+<p>一份来自 A–&gt;B–&gt;D 这条路径</p>
+<p>另一份来自 A–&gt;C–&gt;D 这条路径。</p>
+<p>解决方案：为了解决多继承时的命名冲突和冗余数据问题，c++提出了虚继承，使得在<strong>派生类中只保留一份间接基类的成员</strong>。</p>
+<p><strong>继承方式前面加上 virtual 关键字就是虚继承</strong></p>
+<pre><code class="c++">//间接基类A
+class A&#123;
+protected:
+    int m_a;
 &#125;;
-
-void People::setname(char *name)
-&#123; m_name = name; &#125;
-
-void People::setage(int age)
-&#123; m_age = age; &#125;
-
-void People::sethobby(char *hobby)
-&#123; m_hobby = hobby; &#125;
-
-char *People::gethobby()
-&#123; return m_hobby; &#125;
-
-//派生类Student
-class Student: public People&#123;
-
-public:   
-void setscore(float score);
-
-protected:  
-float m_score;
+//直接基类B
+class B: virtual public A&#123;  //虚继承
+protected:
+    int m_b;
 &#125;;
+//直接基类C
+class C: virtual public A&#123;  //虚继承
+protected:
+    int m_c;
+&#125;;
+class D: public B, public C&#123;
+public:
+    void seta(int a)&#123; m_a = a; &#125;  //正确
+    void setb(int b)&#123; m_b = b; &#125;  //正确
+    void setc(int c)&#123; m_c = c; &#125;  //正确
+    void setd(int d)&#123; m_d = d; &#125;  //正确
+</code></pre>
+<p>这个被共享的基类就称为<strong>虚基类（Virtual Base Class）</strong></p>
+<p>在这种机制下，不论虚基类在继承体系中出现了多少次，在派生类中都只包含一份虚基类的成员。</p>
+<p>虚派生只影响从指定了虚基类的派生类中进一步派生出来的类，它不会影响派生类本身。</p>
+<p>C++标准库中的 iostream 类就是一个虚继承的实际应用案例。</p>
+<p>iostream 从 istream 和 ostream 直接继承而来，而 istream 和 ostream 又都继承自一个共同的名为 base_ios 的类，是典型的菱形继承。此时 istream 和 ostream 必须采用虚继承，否则将导致 iostream 类中保留两份 base_ios 类的成员。</p>
+<h3 id="虚继承时的构造函数"><a href="#虚继承时的构造函数" class="headerlink" title="虚继承时的构造函数"></a>虚继承时的构造函数</h3><p>最终派生类的构造函数必须要调用虚基类的构造函数。对最终的派生类来说，虚基类是间接基类，而不是直接基类。这跟普通继承不同。</p>
+<p>在普通继承中，派生类构造函数中只能调用直接基类的构造函数，不能调用间接基类的。</p>
+<pre><code class="c++">D::D(int a, int b, int c, int d): A(a), B(90, b), C(100, c), m_d(d)&#123; &#125;
+</code></pre>
+<p>在最终派生类 D 的构造函数中，除了调用 B 和 C 的构造函数，还调用了 A 的构造函数，这说明 D 不但要负责初始化直接基类 B 和 C，还要负责初始化间接基类 A。</p>
+<p>而在以往的普通继承中，派生类的构造函数只负责初始化它的直接基类，再由直接基类的构造函数初始化间接基类，用户尝试调用间接基类的构造函数将导致错误。</p>
+<h2 id="派生类赋值给基类（向上转型）"><a href="#派生类赋值给基类（向上转型）" class="headerlink" title="派生类赋值给基类（向上转型）"></a>派生类赋值给基类（向上转型）</h2><p>将<strong>派生类赋值给基类</strong>，包括将<strong>派生类对象赋值给基类对象</strong>、将<strong>派生类指针赋值给基类指针</strong>、<strong>将派生类引用赋值给基类引用</strong>，这在 C++ 中称为向上转型（Upcasting）</p>
+<p>相应地，将基类赋值给派生类称为向下转型（Downcasting）。</p>
+<p><strong>向上转型非常安全</strong>，可以由编译器自动完成；向下转型有风险，需要程序员手动干预。</p>
+<p>下面的例子演示了如何将派生类对象赋值给基类对象：</p>
+<pre><code class="c++">//基类
+class A&#123;
 
-void Student::setscore(float score)
-&#123; m_score = score; &#125;
-
-//派生类Pupil
-class Pupil: public Student&#123;
-
-public: 
-void setranking(int ranking);   
+public:  
+A(int a);  
 void display();
 
-private:   
-int m_ranking;
+public:  
+int m_a;
 &#125;;
 
-void Pupil::setranking(int ranking)
-&#123; m_ranking = ranking; &#125;
+A::A(int a): m_a(a)&#123; &#125;
+void A::display()&#123;    cout&lt;&lt;&quot;Class A: m_a=&quot;&lt;&lt;m_a&lt;&lt;endl;&#125;
 
-void Pupil::display()&#123;    
-cout&lt;&lt;m_name&lt;&lt;&quot;的年龄是&quot;&lt;&lt;m_age&lt;&lt;&quot;，考试成绩为&quot;&lt;&lt;m_score&lt;&lt;&quot;分，班级排名第&quot;&lt;&lt;m_ranking&lt;&lt;&quot;，TA喜欢&quot;&lt;&lt;gethobby()&lt;&lt;&quot;。&quot;&lt;&lt;endl;
-&#125;
+//派生类
+class B: public A&#123;
+
+public: 
+B(int a, int b); 
+void display();
+
+public:  
+int m_b;
+&#125;;
+
+B::B(int a, int b): A(a), m_b(b)&#123; &#125;
+void B::display()
+&#123;    cout&lt;&lt;&quot;Class B: m_a=&quot;&lt;&lt;m_a&lt;&lt;&quot;, m_b=&quot;&lt;&lt;m_b&lt;&lt;endl;&#125;
 
 int main()&#123;
-Pupil pup;  
-pup.setname(&quot;小明&quot;); 
-pup.setage(15);   
-pup.setscore(92.5f); 
-pup.setranking(4);   
-pup.sethobby(&quot;乒乓球&quot;); 
-pup.display();   
+A a(10);  
+B b(66, 99); 
+//赋值前 
+a.display(); 
+b.display(); 
+cout&lt;&lt;&quot;--------------&quot;&lt;&lt;endl; 
+//赋值后   
+a = b;   
+a.display();  
+b.display();  
 return 0;&#125;
 </code></pre>
-<p>运行结果：<br>小明的年龄是15，考试成绩为92.5分，班级排名第4，TA喜欢乒乓球。</p>
-<p>派生类中访问基类 private 成员的唯一方法就是借助基类的非 private 成员函数，如果基类没有非 private 成员函数，那么该成员在派生类中将无法访问。</p>
-<h2 id="继承时的名字遮蔽"><a href="#继承时的名字遮蔽" class="headerlink" title="继承时的名字遮蔽"></a>继承时的名字遮蔽</h2><hr>
+<p>运行结果：<br>Class A: m_a=10<br>Class B: m_a=66, m_b=99<br>-—————————<br>Class A: m_a=66<br>Class B: m_a=66, m_b=99</p>
+<p><strong>赋值的本质是将现有的数据写入已分配好的内存中，对象的内存只包含了成员变量，所以对象之间的赋值是成员变量的赋值，成员函数不存在赋值问题。</strong></p>
+<hr>
+<p>指针和引用的向上转型爷不写辣！！！4.20 21:42毕</p>
+<hr>
+<h1 id="多态与虚函数"><a href="#多态与虚函数" class="headerlink" title="多态与虚函数"></a>多态与虚函数</h1><h2 id="定义和基本语法"><a href="#定义和基本语法" class="headerlink" title="定义和基本语法"></a>定义和基本语法</h2><p>问题抛出：</p>
+<pre><code class="c++">void People::display()&#123;
+    cout&lt;&lt;m_name&lt;&lt;&quot;今年&quot;&lt;&lt;m_age&lt;&lt;&quot;岁了，是个无业游民。&quot;&lt;&lt;endl;&#125;
+void Teacher::display()&#123;
+    cout&lt;&lt;m_name&lt;&lt;&quot;今年&quot;&lt;&lt;m_age&lt;&lt;&quot;岁了，是一名教师，每月有&quot;&lt;&lt;m_salary&lt;&lt;&quot;元的收入。&quot;&lt;&lt;endl;&#125;
+
+int main()&#123;
+    People *p = new People(&quot;王志刚&quot;, 23);
+    p -&gt; display();
+    p = new Teacher(&quot;赵宏佳&quot;, 45, 8200);
+    p -&gt; display();
+</code></pre>
+<p>运行结果：<br>王志刚今年23岁了，是个无业游民。<br>赵宏佳今年45岁了，是个无业游民。</p>
+<p>直观上认为，如果指针指向了派生类对象，那么就应该使用派生类的成员变量和成员函数，这符合人们的思维习惯。但是本例的运行结果却告诉我们，当基类指针 p 指向派生类 Teacher 的对象时，虽然使用了 Teacher 的成员变量，但是却没有使用它的成员函数，</p>
+<p><strong>通过基类指针只能访问派生类的成员变量，但是不能访问派生类的成员函数。</strong></p>
+<p>解决方案：c++增加了<strong>虚函数（Virtual Function）</strong>只需要在函数声明前面增加 virtual 关键字</p>
+<pre><code class="c++">public: 
+ virtual void display();  //声明为虚函数
+</code></pre>
+<p>运行结果：<br>王志刚今年23岁了，是个无业游民。<br>赵宏佳今年45岁了，是一名教师，每月有8200元的收入。</p>
+<hr>
+<p>有了虚函数，基类指针可以按照基类的方式来做事，也可以按照派生类的方式来做事，它有多种表现方式，我们将这种现象称为<strong>多态（Polymorphism）</strong>。</p>
+<p>提供多态的目的是：<strong>可以通过基类指针对所有派生类（包括直接派生和间接派生）的成员变量和成员函数进行“全方位”的访问，尤其是成员函数</strong>。如果没有多态，我们只能访问成员变量。</p>
+<p>so</p>
+<p>通过指针调用普通的成员函数时会根据指针的类型（通过哪个类定义的指针）来判断调用哪个类的成员函数</p>
+<p>虚函数是根据指针的指向来调用的，指针指向哪个类的对象就调用哪个类的虚函数。</p>
+<hr>
+<p>多态是面向对象编程的主要特征之一，C++中虚函数的唯一用处就是构成多态。</p>
+<hr>
+<h2 id="虚函数注意事项以及构成多态的条件"><a href="#虚函数注意事项以及构成多态的条件" class="headerlink" title="虚函数注意事项以及构成多态的条件"></a>虚函数注意事项以及构成多态的条件</h2><ol>
+<li>只需要在虚函数的声明处加上 virtual 关键字，函数定义处可以加也可以不加。</li>
+<li>可以只将基类中的函数声明为虚函数，这样所有派生类中具有遮蔽关系的同名函数都将自动成为虚函数。</li>
+<li>基类中定义了虚函数时，如果派生类没有定义新的函数来遮蔽此函数，那么将使用基类的虚函数。</li>
+<li>只有派生类的虚函数覆盖基类的虚函数（函数原型相同）才能构成多态（通过基类<a target="_blank" rel="noopener" href="http://c.biancheng.net/c/80/">指针</a>访问派生类函数）。例如基类虚函数的原型为<code>virtual void func();</code>，派生类虚函数的原型为<code>virtual void func(int);</code>，那么当基类指针 p 指向派生类对象时，语句<code>p -&gt; func(100);</code>将会出错，而语句<code>p -&gt; func();</code>将调用基类的函数。</li>
+<li>派生类不继承基类的构造函数，所以构造函数也不能是虚函数。</li>
+<li>析构函数可以声明为虚函数，而且有时候必须要声明为虚函数</li>
+</ol>
+<hr>
+<p>构成多态的条件：</p>
+<ul>
+<li>必须存在继承关系；</li>
+<li>继承关系中必须有同名的虚函数，并且它们是覆盖关系（函数原型相同）。</li>
+<li>存在基类的指针，通过该指针调用虚函数。</li>
+</ul>
+<h2 id="虚析构函数的必要性"><a href="#虚析构函数的必要性" class="headerlink" title="虚析构函数的必要性"></a>虚析构函数的必要性</h2><pre><code class="c++">//基类
+class Base&#123;
+public:
+    Base();
+    ~Base();
+protected:
+    char *str;
+&#125;;
+Base::Base()&#123;
+    str = new char[100];
+    cout&lt;&lt;&quot;Base constructor&quot;&lt;&lt;endl;
+&#125;
+Base::~Base()&#123;
+    delete[] str;
+    cout&lt;&lt;&quot;Base destructor&quot;&lt;&lt;endl;
+&#125;
+//派生类
+class Derived: public Base&#123;
+public:
+    Derived();
+    ~Derived();
+private:
+    char *name;
+&#125;;
+Derived::Derived()&#123;
+    name = new char[100];
+    cout&lt;&lt;&quot;Derived constructor&quot;&lt;&lt;endl;
+&#125;
+Derived::~Derived()&#123;
+    delete[] name;
+    cout&lt;&lt;&quot;Derived destructor&quot;&lt;&lt;endl;
+&#125;
+int main()&#123;
+   Base *pb = new Derived();
+   delete pb;
+   cout&lt;&lt;&quot;-------------------&quot;&lt;&lt;endl;
+   Derived *pd = new Derived();
+   delete pd;
+   return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>Base constructor<br>Derived constructor<br>Base destructor<br>-——————<br>Base constructor<br>Derived constructor<br>Derived destructor<br>Base destructor</p>
+<p>pb、pd 分别是基类指针和派生类指针，它们都指向派生类对象，最后使用 delete 销毁 pb、pd 所指向的对象</p>
+<p>从运行结果可以看出，语句<code>delete pb;</code>只调用了基类的析构函数，没有调用派生类的析构函数；而语句<code>delete pd;</code>同时调用了派生类和基类的析构函数。</p>
+<p>为什么<code>delete pb;</code>不会调用派生类的析构函数呢？</p>
+<p>因为这里的析构函数是非虚函数。pb 是基类的指针，所以不管它指向基类的对象还是派生类的对象，始终都是调用基类的析构函数。<strong>通过指针访问非虚函数时，编译器会根据指针的类型来确定要调用的函数。</strong></p>
+<p>基类的析构函数声明为虚函后，派生类的析构函数也会自动成为虚函数。编译器会忽略指针的类型，而根据指针的指向来选择函数。</p>
+<p>pb、pd 都指向了派生类的对象，所以会调用派生类的析构函数，继而再调用基类的析构函数。如此一来也就解决了内存泄露的问题。</p>
+<h2 id="纯虚函数和抽象类详解"><a href="#纯虚函数和抽象类详解" class="headerlink" title="纯虚函数和抽象类详解"></a>纯虚函数和抽象类详解</h2><p>可以将虚函数声明为纯虚函数：</p>
+<pre><code class="c++">virtual 返回值类型 函数名 (函数参数) = 0;
+</code></pre>
+<p><strong>纯虚函数没有函数体，只有函数声明，包含纯虚函数的类称为抽象类（Abstract Class）</strong></p>
+<p>之所以说它抽象，是因为它无法实例化，也就是无法创建对象。纯虚函数没有函数体，不是完整的函数，无法调用，也无法为其分配内存空间。</p>
+<p><strong>抽象类通常是作为基类，让派生类去实现纯虚函数。派生类必须实现纯虚函数才能被实例化。</strong></p>
+<p>在实际开发中，你可以定义一个抽象基类，只完成部分功能，未完成的功能交给派生类去实现（谁派生谁实现）。这部分未完成的功能，往往是基类不需要的，或者在基类中无法实现的。虽然抽象基类没有完成，但是却强制要求派生类完成。<strong>抽象基类用来约束派生类的功能。</strong></p>
+<p>注意事项：</p>
+<p> <strong>一个纯虚函数就可以使类成为抽象基类，但是抽象基类中除了包含纯虚函数外，还可以包含其它的成员函数（虚函数或普通函数）和成员变量。</strong></p>
+<h2 id="typeid运算符：获取类型信息"><a href="#typeid运算符：获取类型信息" class="headerlink" title="typeid运算符：获取类型信息()"></a>typeid运算符：获取类型信息()</h2><p>typeid 运算符用来获取一个表达式的类型信息</p>
+<ul>
+<li>对于基本类型（int、float 等c++内置类型）的数据，类型信息所包含的内容比较简单，主要是指数据的类型。</li>
+<li>对于类类型的数据（也就是对象），类型信息是指对象所属的类、所包含的成员、所在的继承关系等。</li>
+</ul>
+<pre><code class="c++">typeid( dataType )
+typeid( expression )
+</code></pre>
+<hr>
+<p>4.22 0:04完成多态和虚函数这部分啦，还有一些细节但我不打算深究了，有空再记录吧</p>
+<hr>
 <p>待更新~</p>
 
     </div>
