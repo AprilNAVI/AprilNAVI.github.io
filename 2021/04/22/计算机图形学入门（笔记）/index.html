@@ -570,7 +570,7 @@
 <hr>
 <p>好晚才写完，今天效率超级低4.22 21:45</p>
 <hr>
-<h2 id="Geometry-（introduction）（几何）"><a href="#Geometry-（introduction）（几何）" class="headerlink" title="Geometry （introduction）（几何）"></a>Geometry （introduction）（几何）</h2><h3 id="applications-of-texture（纹理的应用）"><a href="#applications-of-texture（纹理的应用）" class="headerlink" title="applications of texture（纹理的应用）"></a>applications of texture（纹理的应用）</h3><p>纹理本身是一张图，我们可以把纹理理解成线代GPU上内存上的一份数据，我们可以对它做快速的点查询和范围查询</p>
+<h1 id="8-Geometry-（introduction）（几何）"><a href="#8-Geometry-（introduction）（几何）" class="headerlink" title="8.Geometry （introduction）（几何）"></a>8.Geometry （introduction）（几何）</h1><h2 id="applications-of-texture（纹理的应用）"><a href="#applications-of-texture（纹理的应用）" class="headerlink" title="applications of texture（纹理的应用）"></a>applications of texture（纹理的应用）</h2><p>纹理本身是一张图，我们可以把纹理理解成线代GPU上内存上的一份数据，我们可以对它做快速的点查询和范围查询</p>
 <p>可以做mipmap</p>
 <p><strong>做environment map（环境光）</strong></p>
 <p>我们假设有一个球是镜面的，那么他储存的内容就是环境光的内容，我们把这个球平面展开就组成了spherical environment map</p>
@@ -604,6 +604,42 @@
 <p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210424031121681.png" alt="image-20210424031121681"></p>
 <p>体积渲染</p>
 <hr>
+<h2 id="Geometry"><a href="#Geometry" class="headerlink" title="Geometry"></a>Geometry</h2><p>复杂几何存在的问题：</p>
+<ul>
+<li>不便存储</li>
+<li>不便渲染</li>
+</ul>
+<p>对几何做一个归类： </p>
+<p><strong>implicit geometry（隐式几何）</strong></p>
+<p>不给实际的点的位置，通过关系来表示位置，只要找出满足关系f（x，y，z）=0的所有点就能将几何表示出来。例如满足x2+y2+z2=1的话就能构造出三维的球面。</p>
+<p>优点：判定一个点和几何的相对位置很容易，（内，外，重合）</p>
+<p>缺点：从表达式很难看出几何的形状（不直观）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426110832195.png" alt="image-20210426110832195"></p>
+<p>explicit geometry（显式几何）</p>
+<p>直接给出或通过参数映射（例如f（u，v）=xxxx，和隐式的不一样！）给出点的位置，以此来构造曲面。</p>
+<p>优点：每个参数都写的清清楚楚</p>
+<p>缺点：想判断一个点和几何的相对位置比较难（内，外，重合）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426111159040.png" alt="image-20210426111159040"></p>
+<p><strong>根据问题的不同需要来选择隐式或显式</strong></p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426112236949.png" alt="image-20210426112236949"></p>
+<p>CSG：通过结合隐性几何进行布尔运算，将简单几何变成复杂几何</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426112458552.png" alt="image-20210426112458552"></p>
+<p>距离函数：空间中一个点到需要的几何形体的距离（可以是正的也可以是负的）</p>
+<p>因为距离函数f（x）=0的时候，得到的就是物体表面</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426112653121.png" alt="image-20210426112653121"></p>
+<p>应用距离函数：A和B如果制作一个简单blend，就会得到左边黑中间灰右边白</p>
+<p>而我们将A和B各自做一个有向距离函数（scene distance function），然后将SDF（A）和SDF（B）做一个blend，得到的就是左边黑右边白的结果（我们需要的）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426114323480.png" alt="image-20210426114323480"></p>
+<p>所以两个几何最后得到这种结果</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426114458470.png" alt="image-20210426114458470"></p>
+<p>水平集的原理和距离函数有点类似，应用在地理上是等高线（在不同位置有相同的值）</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E5%85%A5%E9%97%A8%EF%BC%88%E7%AC%94%E8%AE%B0%EF%BC%89/Users\YZP\Desktop\blog\Futaba\source_posts\计算机图形学入门（笔记）\image-20210426114814717.png" alt="image-20210426114814717"></p>
+<p>fractals（分形）也叫自相似，和计算机中的递归是一个道理</p>
+<p>（简单来说就是套娃）</p>
 <hr>
 <p>本文于</p>
 <p>更新中~~</p>
