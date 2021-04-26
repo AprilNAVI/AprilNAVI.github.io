@@ -607,8 +607,8 @@ return 0;
 <hr>
 <p>有继承关系时，派生类的内存模型可以看成是基类成员变量和新增成员变量的总和</p>
 <p>而所有成员函数仍然存储在另外一个区域——代码区，由所有对象共享。</p>
-<p><img src="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420195935279.png" alt="image-20210420195935279"></p>
-<h3 id="有成员变量遮蔽时的内存分布"><a href="#有成员变量遮蔽时的内存分布" class="headerlink" title="有成员变量遮蔽时的内存分布"></a>有成员变量遮蔽时的内存分布</h3><p><img src="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420200802092.png" alt="image-20210420200802092"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420195935279.png" alt="image-20210420195935279"></p>
+<h3 id="有成员变量遮蔽时的内存分布"><a href="#有成员变量遮蔽时的内存分布" class="headerlink" title="有成员变量遮蔽时的内存分布"></a>有成员变量遮蔽时的内存分布</h3><p><img src="/images/loading.jpg" data-original="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420200802092.png" alt="image-20210420200802092"></p>
 <p>当基类 A、B 的成员变量被遮蔽时，仍然会留在派生类对象 obj_c 的内存中，C 类新增的成员变量始终排在基类 A、B 的后面。</p>
 <h2 id="基类和派生类的构造函数"><a href="#基类和派生类的构造函数" class="headerlink" title="基类和派生类的构造函数"></a>基类和派生类的构造函数</h2><p>基类的成员函数可以被继承，但这仅仅指的是普通的成员函数，<strong>类的构造函数不能被继承。</strong></p>
 <p>设计派生类时，对继承过来的成员变量的初始化也要由派生类的构造函数完成。但大部分基类成员变量都有 private 属性，在派生类中无法访问，更不能使用派生类的构造函数来初始化。</p>
@@ -645,7 +645,7 @@ People(name, age), m_score(score)&#123; &#125;
 <h3 id="命名冲突"><a href="#命名冲突" class="headerlink" title="命名冲突"></a>命名冲突</h3><p>当两个或多个基类中(这两个类彼此不是继承关系，不然就覆盖了)有同名的成员时，如果直接访问该成员，就会产生命名冲突</p>
 <p>这个时候需要在成员名字前面加上类名和域解析符<code>::</code>，以显式地指明到底使用哪个类的成员，消除二义性。</p>
 <h2 id="虚继承和虚基类详解"><a href="#虚继承和虚基类详解" class="headerlink" title="虚继承和虚基类详解"></a>虚继承和虚基类详解</h2><h3 id="虚继承"><a href="#虚继承" class="headerlink" title="虚继承"></a>虚继承</h3><p>问题抛出：菱形继承</p>
-<p><img src="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420205828007.png" alt="image-20210420205828007"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/22/c++%E5%A4%8D%E4%B9%A0%EF%BC%88%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210420205828007.png" alt="image-20210420205828007"></p>
 <p>类 A 中的成员变量和成员函数继承到类 D 中变成了两份</p>
 <p>一份来自 A–&gt;B–&gt;D 这条路径</p>
 <p>另一份来自 A–&gt;C–&gt;D 这条路径。</p>
@@ -938,6 +938,12 @@ typeid( expression )
     gitalk.render('gitalk-container')
 </script>
 
-</body>
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
 
 </html>
