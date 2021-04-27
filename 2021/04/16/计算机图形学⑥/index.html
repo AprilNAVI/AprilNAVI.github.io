@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 计算机图形学⑥</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>计算机图形学⑥ </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/16
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>闫令琪教授的games101课程笔记哒</p>
+<span id="more"></span>
+
+<h1 id="6-Shading-1-Illumination-Shading-（照明和着色）"><a href="#6-Shading-1-Illumination-Shading-（照明和着色）" class="headerlink" title="6.Shading 1(Illumination,Shading)（照明和着色）"></a>6.Shading 1(Illumination,Shading)（照明和着色）</h1><p>小葵花妈妈课堂开课啦（误）</p>
+<hr>
+<h2 id="Z-Buffer（深度缓冲）"><a href="#Z-Buffer（深度缓冲）" class="headerlink" title="Z-Buffer（深度缓冲）"></a>Z-Buffer（深度缓冲）</h2><p>Visibiliy(可见性)：如何把多个物体显示在屏幕上，且位置的对应关系是对的</p>
+<p><strong>画家算法：先将远的物体光栅化，如何再逐渐光栅化近的物体</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416165624059.png" alt="image-20210416165624059"></p>
+<p>因为画家算法没有办法解决这种杠精问题</p>
+<p>所以大伙引入了Z-Buffer（深度缓冲）</p>
+<p><strong>Z-Buffer（深度缓冲）：</strong></p>
+<p>我们之前默认相机放在原点离-z方向看，这里假设z越小离我们越近</p>
+<p>同时生成一个frame buffer和一个z buffer（维护每个像素的深度）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416170341440.png" alt="image-20210416170341440"><br>就像这样<br><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416170526880.png" alt="image-20210416170526880"><br>算法如图所示<br><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416170801400.png" alt="image-20210416170801400"><br>假设这里的R是无限大，深度小的（即离我们更近）就会把深度大的遮挡住</p>
+<p>这里我们维护的对象是每一个像素</p>
+<p>透明物体没办法渲染！！！！！！</p>
+<hr>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p><strong>总结一下我们目前学习的内容</strong><br><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416172537811.png" alt="image-20210416173309456"></p>
+<ol>
+<li>将模型变换（model）</li>
+<li>将视图变换（view）</li>
+<li>三维投影到屏幕（projection）</li>
+<li>进行光栅化，得到采样结果（rasterization）</li>
+</ol>
+<p>だから</p>
+<p><strong>shading（着色）他来啦！！！</strong></p>
+<h2 id="shading（着色）"><a href="#shading（着色）" class="headerlink" title="shading（着色）"></a>shading（着色）</h2><p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416173309456.png" alt="image-20210416173309456"></p>
+<p>来跟我读：谢顶</p>
+<p>在图形学中，我们定义着色为对不同物体使用<strong>不同材质</strong>，不同材质和光线的相互作用有不同的方法</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416173814199.png" alt="image-20210416173814199"></p>
+<p>我们可以看到高光（specular highlight），漫反射（Diffuse reflection），环境光（ambient lighting）</p>
+<h2 id="diffuse-reflection-in-Blinn-Phong-Reflectance-Model（布林冯中的漫反射）"><a href="#diffuse-reflection-in-Blinn-Phong-Reflectance-Model（布林冯中的漫反射）" class="headerlink" title="diffuse reflection in Blinn-Phong Reflectance Model（布林冯中的漫反射）"></a>diffuse reflection in Blinn-Phong Reflectance Model（布林冯中的漫反射）</h2><p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416174102298.png" alt="image-20210416174102298"></p>
+<p>我们<strong>再</strong>来做一些定义：</p>
+<p>shading point：考虑一个点（在极小范围内的一个平面）的结果</p>
+<p>surface normal（平面法线）</p>
+<p>view direction（观察方向）</p>
+<p>light direction（光照方向）</p>
+<p>surface parameters（表面参数）：例如颜色，亮度</p>
+<p>此处所有向量为单位向量</p>
+<p><strong>shading！=shadow！！！！</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416182519198.png" alt="image-20210416182519198"></p>
+<p>为什么同一束光打到一个点，角度不同亮度就不同呢？</p>
+<p>我们假设光离散成六根光线，看得出来物体法线和光的夹角越小，物体表面受到的光就越少（看我们这里第一幅图，物体表面法线和光平行）</p>
+<p>更科学的理解：光是一种能量，所以考虑收到的能量有多少</p>
+<p>接下来是一个我并不想关心也不想记住推导过程的公式（请返回原视频56分处）</p>
+<p>若光源强度（能量）为I，则距离光源距离r的光强度（能量）等于I/r2</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/16/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A5/image-20210416184055283.png" alt="image-20210416184055283"></p>
+<p>我们可以算出光源到点的距离r，就可以求出点位置有多少能量，然后再和其余弦，漫反射系数，进行相乘。</p>
+<p>点位置的能量：<strong>（I/r2）</strong></p>
+<p>余弦是图中光照方向和法线点乘：<strong>max（0，n·l）</strong></p>
+<p>（也就是图中的，加上一个0取max是因为我们讨论光的反射，若余弦小于0/角度为负数则没有任何物理意义）</p>
+<p>定义漫反射系数:<strong>kd</strong></p>
+<p>(若kd=1，则表示这个点完全不吸收能量，若kd=0，emm你可以认为这个点是黑洞)</p>
+<p>最后就能求出<strong>ld</strong>（这个点应该表现多少光）</p>
+<p>我们看到公示里面没有涉及到观测方向，所以漫反射结果和观测方向没有关系</p>
+<hr>
+<p>完成啦完成啦，4.16 19:00，今天是周五玩游戏去啦</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

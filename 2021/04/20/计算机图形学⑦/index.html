@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 计算机图形学⑦</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>计算机图形学⑦ </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/20
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>闫令琪教授的games101课程笔记哒</p>
+<span id="more"></span>
+
+<h1 id="7-Shading-1-Shading，pipeline，texture-mapping-（着色，管线，纹理映射）"><a href="#7-Shading-1-Shading，pipeline，texture-mapping-（着色，管线，纹理映射）" class="headerlink" title="7.Shading 1(Shading，pipeline，texture mapping)（着色，管线，纹理映射）"></a>7.Shading 1(Shading，pipeline，texture mapping)（着色，管线，纹理映射）</h1><h2 id="specular-highlight-in-blinn-phong-model（布林冯中的高光）"><a href="#specular-highlight-in-blinn-phong-model（布林冯中的高光）" class="headerlink" title="specular highlight in  blinn-phong model（布林冯中的高光）"></a>specular highlight in  blinn-phong model（布林冯中的高光）</h2><p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420145528393.png" alt="image-20210420145528393"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420145344393.png" alt="image-20210420145344393"></p>
+<p>高光相：由于镜面反射光的方向和观测方向接近</p>
+<p>半程向量h=取l和v的角平分线，再做归一化</p>
+<p>此处h和n（半程向量和法线）接近相当于v和r（观测方向和反射光）接近</p>
+<p>真实情况依然要考虑表面的吸收率，我们在此处省略</p>
+<p>用h和n的情况比较多，因为更好计算（其实我也不知道为什么更好算）</p>
+<hr>
+<p>为什么要有指数p？</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420151229887.png" alt="image-20210420151229887"></p>
+<p>因为单单一个余弦图像的容忍度很大，用它生成的高光也很大</p>
+<p>在Blinn-Phong model中p一般采用100到200</p>
+<p>展示出来就是这样哒</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420151646275.png" alt="image-20210420151646275"></p>
+<p>ks表示了其亮度，p越大高光越小</p>
+<h2 id="ambient-lighting-in-Blinn-Phong-model（布林冯中的环境光）"><a href="#ambient-lighting-in-Blinn-Phong-model（布林冯中的环境光）" class="headerlink" title="ambient lighting in  Blinn-Phong model（布林冯中的环境光）"></a>ambient lighting in  Blinn-Phong model（布林冯中的环境光）</h2><p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420151923545.png" alt="image-20210420151923545"></p>
+<p>环境光不讲究光从哪进来，同时从哪看也没有关系，和法线也没有关系</p>
+<p>所以近似认为环境光是一个常数（以上都是大胆的假设，因为深究特别难）</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420152129644.png" alt="image-20210420152129644"></p>
+<p>总结一下Blinn-Phong model就是这样啦</p>
+<p>布林冯是经验模型，并不基于真实物理光照哦</p>
+<h2 id="Shading-Frequencies（着色频率）"><a href="#Shading-Frequencies（着色频率）" class="headerlink" title="Shading Frequencies（着色频率）"></a>Shading Frequencies（着色频率）</h2><p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420153547995.png" alt="image-20210420153547995"></p>
+<p>统一模型着色频率不相同会导致什么？</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420154241558.png" alt="image-20210420154241558"></p>
+<p>逐三角形着色：三角形表面就是一个平面，把三角形的法线求出（对边做一个叉积）</p>
+<p>这种也叫<strong>Flat Shading</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420154535326.png" alt="image-20210420154535326"></p>
+<p>逐顶点着色：每个顶点做一次着色（先不管顶点的法线怎么求），三个顶点组成三角形，其内部的颜色用插值获取</p>
+<p>这种也叫<strong>Gouraud Shading</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420154834246.png" alt="image-20210420154834246"></p>
+<p>逐像素着色：对前文提到的三角形内的每个像素都插值出独特的法线方向，对每个像素进行一次着色，得到相对比较好的结果</p>
+<p>这种也叫Phong Shading（这和前面那个布林冯不一样！虽然都是冯发明的，但这个是着色频率）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420155241044.png" alt="image-20210420155241044"></p>
+<p>哪一种更好呢？并无绝对</p>
+<p>几何足够复杂时，使用相对简单的着色模型也能得到不错的结果</p>
+<p>（不是很能理解的话具体看图，每一行都是同一种几何形体使用不同的着色模型，我们发现第三种几何形体已经很复杂了，但使用三种方法都相差无几，但使用冯着色模型会造成更大开销）</p>
+<hr>
+<p>历史遗留问题：我如何获得逐顶点和逐像素的法线</p>
+<hr>
+<p>逐顶点如下：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420160030815.png" alt="image-20210420160030815"></p>
+<p>求一个顶点的法线，取和他关联的平面的法线的平均值（好办法）</p>
+<hr>
+<p>逐像素如下：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420160210027.png" alt="image-20210420160210027"></p>
+<p>求得顶点的法线后，用重心坐标求出其中的法线过渡（记得归一化哦）</p>
+<h2 id="Graphics（Real-time-Rendering）Pipeline（图形管线-实时渲染管线）"><a href="#Graphics（Real-time-Rendering）Pipeline（图形管线-实时渲染管线）" class="headerlink" title="Graphics（Real-time Rendering）Pipeline（图形管线/实时渲染管线）"></a>Graphics（Real-time Rendering）Pipeline（图形管线/实时渲染管线）</h2><p>给我着色模型！给我三维模型！给我光照条件！就能得到渲染结果！</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420160938356.png" alt="image-20210420160938356"></p>
+<p>管线：从一个真实场景到演示一份图像，中间发生了什么？</p>
+<ol>
+<li>输入空间中的点</li>
+<li>将三维空间中的点投影到屏幕上</li>
+<li>这些点形成三角形</li>
+<li>光栅化（将三角形画在屏幕上）</li>
+<li>三角形离散成各个像素</li>
+<li>对每个像素进行着色</li>
+<li>输出图像</li>
+</ol>
+<p>现代GPU允许我们自己编程控制像素和顶点如何进行着色，这个过程我们称为<strong>shader</strong></p>
+<p>shader是每个顶点或每个像素通用的执行方法，只需要管每个顶点每个像素如何运作，而不是写循环。</p>
+<p>如果我们写的是顶点的操作，则这个shader被称为vertex shader（顶点着色器）</p>
+<p>如果我们写的是像素的操作，则这个shader被称为fragment/pixel shader（片段/像素着色器）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420162858944.png" alt="image-20210420162858944"></p>
+<p>此处使用的GLSL是OpenGL的着色语言，图片中是像素着色器的一个小程序</p>
+<p>接下来闫老师讲了一堆巴拉巴拉的不好总结</p>
+<p>硬要总结一下的话就是“非常简单”（圈起来要考的）</p>
+<p>讲了一堆硬件相关所以这里就先略过了</p>
+<h2 id="texture-mapping（纹理映射）"><a href="#texture-mapping（纹理映射）" class="headerlink" title="texture mapping（纹理映射）"></a>texture mapping（纹理映射）</h2><p>引入纹理映射的基本思路：希望在物体不同位置定义不同的属性（漫反射系数或其他）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420170509136.png" alt="image-20210420170509136"></p>
+<p>先做一个声明：任何三维物体的表面都是二维的</p>
+<p>所以texture（纹理）是什么：texture就是一张（image）图</p>
+<p>将这张图蒙在物体上（图上的点和物体上的点一一对应），这个过程就叫<strong>纹理映射</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/20/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A6/image-20210420170830752.png" alt="image-20210420170830752"></p>
+<p>（闫老师能不能用点阳间的图，san值狂掉）</p>
+<p>怎么把空间中的三角形映射到平面上？</p>
+<ol>
+<li>需要艺术家（美工）做出一个模型，然后展开贴在物体上，对美工来说这是一个繁重的过程</li>
+<li>给一个模型，我们将其展开为一个平面，希望三角形尽量少扭曲，这个过程很难，会是以后重要的研究方向（参数化）</li>
+</ol>
+<p>我们在纹理上定义一个坐标系（u，v）（uv的范围都在0到1）</p>
+<p>这样就可以把任意物体的三角形映射到纹理上显示出来</p>
+<p>接下来我们想知道：</p>
+<p><strong>如果知道三角形对应顶点的uv，那么如何知道三角形内部对应每个点的uv</strong></p>
+<p>下节课会着重介绍插值（通过三角形的三个顶点属性，在三角形内部做一个平滑的过渡）</p>
+<hr>
+<p>本文于4.20 17:25完成，终于明白什么是管线啦！（豁然开朗好开心）</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

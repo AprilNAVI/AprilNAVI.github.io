@@ -105,7 +105,82 @@
     </div>
 
     <div class="content" v-pre>
-        
+        <p>闫令琪教授的games101课程笔记哒</p>
+<span id="more"></span>
+
+<h1 id="9-Geometry-（introduction）（几何）"><a href="#9-Geometry-（introduction）（几何）" class="headerlink" title="9.Geometry （introduction）（几何）"></a>9.Geometry （introduction）（几何）</h1><h2 id="applications-of-texture（纹理的应用）"><a href="#applications-of-texture（纹理的应用）" class="headerlink" title="applications of texture（纹理的应用）"></a>applications of texture（纹理的应用）</h2><p>纹理本身是一张图，我们可以把纹理理解成线代GPU上内存上的一份数据，我们可以对它做快速的点查询和范围查询</p>
+<p>可以做mipmap</p>
+<p><strong>做environment map（环境光）</strong></p>
+<p>我们假设有一个球是镜面的，那么他储存的内容就是环境光的内容，我们把这个球平面展开就组成了spherical environment map</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424021527948.png" alt="image-20210424021527948"></p>
+<p>但显而易见的造成了扭曲</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424021629844.png" alt="image-20210424021629844"></p>
+<p>解决方案是采用cube map，把这个球外边构造一个包围盒，然后把内容储存到球切割开的六个面。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424021845824.png" alt="image-20210424021845824"></p>
+<p>效果就是这样啦</p>
+<p>两种方法本质都是一样的，都是为了描述不同方向的光照信息。</p>
+<hr>
+<p><strong>texture can affect shading</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424022826279.png" alt="image-20210424022826279"></p>
+<p>运用凹凸贴图就可以营造出球面凹凸不平的感觉，而不用使用更多三角形去构造</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424023316282.png" alt="image-20210424023316282"></p>
+<p>相当于是不把几何形体变复杂的情况下，通过复杂的材质来定义相对高度，通过影响法线的变化从而影响着色结果</p>
+<p>位移贴图（进化版）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424025128955.png" alt="image-20210424025128955"></p>
+<p>位移贴图真的移动了顶点</p>
+<p>虽然这样效果更好，但是也有相应的代价，构造的三角形得足够细，细到顶点间隔比纹理频率还要高，这样才能跟得上纹理的变化速度。</p>
+<hr>
+<p>3D procedural noise + solid modeling</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424030659154.png" alt="image-20210424030659154"></p>
+<p>用噪声算法算出大理石的纹理，或者是山脉的脉络之类</p>
+<hr>
+<p>provide precomputed shading</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424030912934.png" alt="image-20210424030912934"></p>
+<p>提供提前预计算的环境光遮蔽</p>
+<hr>
+<p><strong>volume rendering</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210424031121681.png" alt="image-20210424031121681"></p>
+<p>体积渲染</p>
+<hr>
+<h2 id="Geometry"><a href="#Geometry" class="headerlink" title="Geometry"></a>Geometry</h2><p>复杂几何存在的问题：</p>
+<ul>
+<li>不便存储</li>
+<li>不便渲染</li>
+</ul>
+<p>对几何做一个归类： </p>
+<p><strong>implicit geometry（隐式几何）</strong></p>
+<p>不给实际的点的位置，通过关系来表示位置，只要找出满足关系f（x，y，z）=0的所有点就能将几何表示出来。例如满足x2+y2+z2=1的话就能构造出三维的球面。</p>
+<p>优点：判定一个点和几何的相对位置很容易，（内，外，重合）</p>
+<p>缺点：从表达式很难看出几何的形状（不直观）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426110832195.png" alt="image-20210426110832195"></p>
+<p>explicit geometry（显式几何）</p>
+<p>直接给出或通过参数映射（例如f（u，v）=xxxx，和隐式的不一样！）给出点的位置，以此来构造曲面。</p>
+<p>优点：每个参数都写的清清楚楚</p>
+<p>缺点：想判断一个点和几何的相对位置比较难（内，外，重合）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426111159040.png" alt="image-20210426111159040"></p>
+<p><strong>根据问题的不同需要来选择隐式或显式</strong></p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426112236949.png" alt="image-20210426112236949"></p>
+<p>CSG：通过结合隐性几何进行布尔运算，将简单几何变成复杂几何</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426112458552.png" alt="image-20210426112458552"></p>
+<p>距离函数：空间中一个点到需要的几何形体的距离（可以是正的也可以是负的）</p>
+<p>因为距离函数f（x）=0的时候，得到的就是物体表面</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426112653121.png" alt="image-20210426112653121"></p>
+<p>应用距离函数：A和B如果制作一个简单blend，就会得到左边黑中间灰右边白</p>
+<p>而我们将A和B各自做一个有向距离函数（scene distance function），然后将SDF（A）和SDF（B）做一个blend，得到的就是左边黑右边白的结果（我们需要的）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426114323480.png" alt="image-20210426114323480"></p>
+<p>所以两个几何最后得到这种结果</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426114458470.png" alt="image-20210426114458470"></p>
+<p>水平集的原理和距离函数有点类似，应用在地理上是等高线（在不同位置有相同的值）</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A8/image-20210426114814717.png" alt="image-20210426114814717"></p>
+<p>fractals（分形）也叫自相似，和计算机中的递归是一个道理</p>
+<p>（简单来说就是套娃）</p>
+<hr>
+<p>本文于4.27 13:35完成</p>
+
     </div>
 
     
