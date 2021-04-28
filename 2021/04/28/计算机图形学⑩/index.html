@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 计算机图形学⑩</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>计算机图形学⑩ </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/28
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>10.Geometry 2（curves and surface）</p>
+<span id="more"></span>
+
+<h1 id="10-Geometry-2（curves-and-surface）"><a href="#10-Geometry-2（curves-and-surface）" class="headerlink" title="10.Geometry 2（curves and surface）"></a>10.Geometry 2（curves and surface）</h1><h2 id="explicit（显式几何）"><a href="#explicit（显式几何）" class="headerlink" title="explicit（显式几何）"></a>explicit（显式几何）</h2><h3 id="point-cloud（点云）"><a href="#point-cloud（点云）" class="headerlink" title="point cloud（点云）"></a>point cloud（点云）</h3><p>把每个点表示成一个点（？？？）</p>
+<p>解释成list of points比较好理解</p>
+<p>能轻易的表示任何的几何图形</p>
+<h3 id="polygon-mesh（多边形面）"><a href="#polygon-mesh（多边形面）" class="headerlink" title="polygon mesh（多边形面）"></a>polygon mesh（多边形面）</h3><p>应用的最多</p>
+<p>把面拆成各种各样的三角形，用三角形去描述复杂的问题</p>
+<h3 id="object-format（obj文件）"><a href="#object-format（obj文件）" class="headerlink" title="object format（obj文件）"></a>object format（obj文件）</h3><p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428091205538.png" alt="image-20210428091205538"></p>
+<p>用三角形面形成的物体用obj格式文件储存（和编译出来得到的obj不是一回事！）</p>
+<p>相当于一个储存了顶点，法线，纹理，坐标，并把他们组合起来的文本文件</p>
+<p>图中v储存顶点坐标，vn储存法线，vt存储纹理坐标，f表示这些数据如何组合在一起</p>
+<p>我们看到一行f有三组，一组三个数，每组决定了使用哪些vn和vt和f数据，而每行则定义一个三角形面（三个点）</p>
+<hr>
+<h2 id="curves"><a href="#curves" class="headerlink" title="curves"></a>curves</h2><h3 id="bezier-curve（贝塞尔曲线）"><a href="#bezier-curve（贝塞尔曲线）" class="headerlink" title="bezier curve（贝塞尔曲线）"></a>bezier curve（贝塞尔曲线）</h3><p>用一系列控制点去表示一条曲线</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428100210771.png" alt="image-20210428100210771"></p>
+<p>如图定义起点和终点在p3上</p>
+<p>曲线不一定要经过控制点</p>
+<hr>
+<p>如何画一条贝塞尔曲线？（属于显式表示）</p>
+<p>使用de castljau算法</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428101635465.png" alt="image-20210428101635465"></p>
+<p>如图所示b0开始，b2结束，b1表示往哪个方向弯</p>
+<p>定义一个范围为0到1的时间t，我们只需要算出任意一个时间t在空间中的位置算出就行</p>
+<p>我们设b0到b1为t，b1到b2也为t，b01和b11都为1/3t</p>
+<p>连接b01和b11，再取1/3，得到b02</p>
+<p>这个b02就是这条贝塞尔曲线在时间t的位置</p>
+<p>将所有的t都枚举出来并连接，就能得到所求的曲线</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428101819834.png" alt="image-20210428101819834"></p>
+<p>四个点也一样，我们找一个点（例如0.5），然后一直取点连接最后得到一个点（有点类似递归）</p>
+<hr>
+<p>evaluating bezier curve algebraic formula</p>
+<p>（代数表示方法）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428102210986.png" alt="image-20210428102210986"></p>
+<p>不难看出，我们上面一直在做两个位置的线性插值</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428102723162.png" alt="image-20210428102723162"></p>
+<p>显式的将公式表达出来（因为能用公示表达所以是显式的）</p>
+<p>我们考虑t是靠近左边的那段距离。为什么算式是这样的？</p>
+<p>想象t等于0时，即点在b0上，所表示的就应该是一个完全的t0，t等于1时也同样理解。</p>
+<p>所以第三个算式一样很好理解，第四个算式就是将第一二个算式带入到第三个中，同样很好理解。</p>
+<p>有没有发现第四个算式很像完全平方公式的展开？</p>
+<p>だから！</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428103657154.png" alt="image-20210428103657154"></p>
+<p>给n+1个控制点（0到n），得到一个n阶的贝塞尔曲线，这个贝塞尔曲线在任意时间t都是之前给定控制点的线性组合，组合的系数为一个多项式（如图所示的伯恩斯坦多项式，用来描述二项分布）</p>
+<p>伯恩斯坦多项式：相当于（s+t）的n次方，如果是三个点（二阶，n=2），就相当于s^2+2s*t+t^2，再把s换成1-t。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428105246173.png" alt="image-20210428105246173"></p>
+<p>我们不需要限制这些点是否在同一平面内，同样可以进行插值</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428105510396.png" alt="image-20210428105510396"></p>
+<p>这个是伯恩斯坦多项式的图像</p>
+<p>（个人感觉看看就好）</p>
+<hr>
+<p>贝塞尔曲线有些不错的性质：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428105908515.png" alt="image-20210428105908515"></p>
+<ul>
+<li>规定了贝塞尔曲线一定过起点和终点</li>
+<li>如果是三阶（四个控制点），起点方向切线一定是3倍的（b1-b0），终点是3倍的（b3-b2）</li>
+<li>对控制点做仿射变换后，得到的贝塞尔曲线相当于对原来的贝塞尔曲线做相同的仿射变换（对于投影变换就并不是如此）</li>
+<li>凸包性质：贝塞尔曲线一定在控制点组成的凸包内</li>
+</ul>
+<hr>
+<p>piecewise bezier curve（逐段定义贝塞尔曲线）</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428111739737.png" alt="image-20210428111739737"></p>
+<p>因为用很多的点定义一条贝塞尔曲线并不直观</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428111657841.png" alt="image-20210428111657841"></p>
+<p>所以发明了逐段定义方法，习惯用每四个点定义一段贝塞尔曲线</p>
+<p>应用：ps里的钢笔工具</p>
+<p>那我怎么保证连接处是光滑的呢？</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428112157881.png" alt="image-20210428112157881"></p>
+<p>如果前后的控制点共线且等距离（切线相同，导数连续）</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428112434811.png" alt="image-20210428112434811"></p>
+<p>在几何上，只要前后是在一块的，我们就认为是连续的，称为c0连续</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428112419305.png" alt="image-20210428112419305"></p>
+<p>如果方向相反，距离相等（一阶导数连续）</p>
+<p>称为c1连续</p>
+<p>在制造上c1连续可能是不够的，所以同样也有高阶导数的连续，我们称为曲率连续。</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428112834632.png" alt="image-20210428112834632"></p>
+<p>由一系列控制点控制的曲线叫样条，能满足一定的连续性</p>
+<p>其中B样条应用较多</p>
+<p><img src="/images/loading.jpg" data-original="/2021/04/28/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9B%BE%E5%BD%A2%E5%AD%A6%E2%91%A9/image-20210428113113746.png" alt="image-20210428113113746"></p>
+<p>b表示的是basis，基函数样条，能保证曲线的局部性，能保证挪动一个控制点后，对曲线的变化控制在一个范围内。</p>
+<p>因为b样条太复杂所以不多bb</p>
+<hr>
+<p>4.28 11:52完成 今天节奏特别好</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
