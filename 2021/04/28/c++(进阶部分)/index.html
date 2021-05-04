@@ -1,0 +1,362 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || c++(进阶部分)</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>c++(进阶部分) </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/28
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>新开了进阶的坑啦，上接基础部分</p>
+<span id="more"></span>
+
+<h1 id="7-模板"><a href="#7-模板" class="headerlink" title="7.模板"></a>7.模板</h1><h2 id="函数模板"><a href="#函数模板" class="headerlink" title="函数模板"></a>函数模板</h2><p>在c++中，数据的类型也可以通过参数来传递，在函数定义时可以不指明具体的数据类型，当发生函数调用时，编译器可以根据传入的实参自动推断数据类型。这就是类型的参数化。</p>
+<p>建立一个通用函数，它所用到的数据的类型（包括返回值类型、形参类型、局部变量类型）可以不具体指定，而是用一个虚拟的类型来代替（实际上是用一个标识符来占位），等发生函数调用时再根据传入的实参来逆推出真正的类型。这个通用函数就称为<strong>函数模板（Function Template）</strong>。</p>
+<p>在函数模板中，数据的值和类型都被参数化了，发生函数调用时编译器会根据传入的实参来推演形参的值和类型。</p>
+<p><strong>一但定义了函数模板，就可以将类型参数用于函数定义和函数声明了。</strong>即原来使用 int、float、char 等内置类型的地方，都可以用类型参数来代替。</p>
+<pre><code class="c++">//交换 int 变量的值
+void Swap(int *a, int *b)&#123;
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+&#125;
+//交换 float 变量的值
+void Swap(float *a, float *b)&#123;
+    float temp = *a;
+    *a = *b;
+    *b = temp;
+&#125;
+//交换 char 变量的值
+void Swap(char *a, char *b)&#123;
+    char temp = *a;
+    *a = *b;
+    *b = temp;
+&#125;
+//交换 bool 变量的值
+void Swap(bool *a, bool *b)&#123;
+    char temp = *a;
+    *a = *b;
+    *b = temp;
+&#125;
+</code></pre>
+<p>记得这些函数吗，我们通过一个函数模板来改进他们</p>
+<pre><code class="c++">template&lt;typename T&gt; void Swap(T &amp;a, T &amp;b)&#123;
+    T temp = a;
+    a = b;
+    b = temp;
+&#125;
+int main()&#123;
+    //交换 int 变量的值
+    int n1 = 100, n2 = 200;
+    Swap(n1, n2);
+    cout&lt;&lt;n1&lt;&lt;&quot;, &quot;&lt;&lt;n2&lt;&lt;endl;
+   
+    //交换 float 变量的值
+    float f1 = 12.5, f2 = 56.93;
+    Swap(f1, f2);
+    cout&lt;&lt;f1&lt;&lt;&quot;, &quot;&lt;&lt;f2&lt;&lt;endl;
+   
+    //交换 char 变量的值
+    char c1 = &#39;A&#39;, c2 = &#39;B&#39;;
+    Swap(c1, c2);
+    cout&lt;&lt;c1&lt;&lt;&quot;, &quot;&lt;&lt;c2&lt;&lt;endl;
+   
+    //交换 bool 变量的值
+    bool b1 = false, b2 = true;
+    Swap(b1, b2);
+    cout&lt;&lt;b1&lt;&lt;&quot;, &quot;&lt;&lt;b2&lt;&lt;endl;
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>200, 100<br>56.93, 12.5<br>B, A<br>1, 0</p>
+<p><code>template</code>是定义函数模板的关键字，它后面紧跟尖括号<code>&lt;&gt;</code>，尖括号包围的是类型参数。<code>typename</code>是另外一个关键字，用来声明具体的类型参数，这里的类型参数就是<code>T</code>。从整体上看，<code>template&lt;typename T&gt;</code>被称为模板头。</p>
+<p>为了加深对函数模板的理解，我们再来看一个求三个数的最大值的例子：</p>
+<pre><code class="c++">//声明函数模板
+template&lt;typename T&gt; T max(T a, T b, T c);
+//定义函数模板
+template&lt;typename T&gt;  //模板头，这里不能有分号
+T max(T a, T b, T c)&#123; //函数头
+    T max_num = a;
+    if(b &gt; max_num) max_num = b;
+    if(c &gt; max_num) max_num = c;
+    return max_num;
+&#125;
+int main( )&#123;
+    //求三个整数的最大值
+    int i1, i2, i3, i_max;
+    cin &gt;&gt; i1 &gt;&gt; i2 &gt;&gt; i3;
+    i_max = max(i1,i2,i3);
+    cout &lt;&lt; &quot;i_max=&quot; &lt;&lt; i_max &lt;&lt; endl;
+    //求三个浮点数的最大值
+    double d1, d2, d3, d_max;
+    cin &gt;&gt; d1 &gt;&gt; d2 &gt;&gt; d3;
+    d_max = max(d1,d2,d3);
+    cout &lt;&lt; &quot;d_max=&quot; &lt;&lt; d_max &lt;&lt; endl;
+    //求三个长整型数的最大值
+    long g1, g2, g3, g_max;
+    cin &gt;&gt; g1 &gt;&gt; g2 &gt;&gt; g3;
+    g_max = max(g1,g2,g3);
+    cout &lt;&lt; &quot;g_max=&quot; &lt;&lt; g_max &lt;&lt; endl;
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>12 34 100↙<br>i_max=100<br>73.234 90.2 878.23↙<br>d_max=878.23<br>344 900 1000↙<br>g_max=1000</p>
+<p>看得出来，模板可以提前声明，就像函数一样。模板头可以换行，但不能有分号。</p>
+<h2 id="类模板"><a href="#类模板" class="headerlink" title="类模板"></a>类模板</h2><p>c++除了支持函数模板，还支持<strong>类模板（Class Template）</strong>。</p>
+<p>函数模板中定义的类型参数可以用在函数声明和函数定义中，类模板中定义的类型参数可以用在类声明和类实现中。类模板的目的同样是将数据的类型参数化。</p>
+<p>声明类模板的语法为：</p>
+<pre><code class="c++">template&lt;typename 类型参数1 , typename 类型参数2 , …&gt; class 类名&#123;
+  //TODO:
+&#125;;
+</code></pre>
+<p>类模板和函数模板都是以 template 开头，后跟类型参数；类型参数不能为空，多个类型参数用逗号隔开。</p>
+<p>一但声明了类模板，就可以将类型参数用于类的成员函数和成员变量了。即原来使用 int、float、char 等内置类型的地方，都可以用类型参数来代替。</p>
+<p>请看下面的代码：</p>
+<pre><code class="c++">template&lt;typename T1, typename T2&gt;  //这里不能有分号
+class Point&#123;
+public:
+    Point(T1 x, T2 y): m_x(x), m_y(y)&#123; &#125;
+public:
+    T1 getX() const;  //获取x坐标
+    void setX(T1 x);  //设置x坐标
+    T2 getY() const;  //获取y坐标
+    void setY(T2 y);  //设置y坐标
+private:
+    T1 m_x;  //x坐标
+    T2 m_y;  //y坐标
+&#125;;
+</code></pre>
+<p>上面的代码仅仅是类的声明，我们还需要在类外定义成员函数。在类外定义成员函数时仍然需要带上模板头。下面就对 Point 类的成员函数进行定义：</p>
+<pre><code class="c++">template&lt;typename T1, typename T2&gt;  //模板头
+T1 Point&lt;T1, T2&gt;::getX() const /*函数头*/ &#123;
+    return m_x;
+&#125;
+template&lt;typename T1, typename T2&gt;
+void Point&lt;T1, T2&gt;::setX(T1 x)&#123;
+    m_x = x;
+&#125;
+template&lt;typename T1, typename T2&gt;
+T2 Point&lt;T1, T2&gt;::getY() const&#123;
+    return m_y;
+&#125;
+template&lt;typename T1, typename T2&gt;
+void Point&lt;T1, T2&gt;::setY(T2 y)&#123;
+    m_y = y;
+&#125;
+</code></pre>
+<p>除了 template 关键字后面要指明类型参数,<strong>类名 Point 后面也要带上类型参数</strong>，只是不加 typename 关键字了。另外需要注意的是，在类外定义成员函数时，<strong>template 后面的类型参数要和类声明时的一致。</strong></p>
+<p>接下来我们使用类模板创建对象：</p>
+<pre><code class="c++">Point&lt;int, int&gt; p1(10, 20);
+Point&lt;int, float&gt; p2(10, 15.5);
+Point&lt;float, char*&gt; p3(12.4, &quot;东经180度&quot;);
+</code></pre>
+<p><strong>与函数模板不同的是，类模板在实例化时必须显式地指明数据类型，编译器不能根据给定的数据推演出数据类型。</strong></p>
+<p>除了对象变量，我们也可以使用对象指针的方式来实例化：</p>
+<pre><code class="c++">Point&lt;float, float&gt; *p1 = new Point&lt;float, float&gt;(10.6, 109.3);
+Point&lt;char*, char*&gt; *p = new Point&lt;char*, char*&gt;(&quot;东经180度&quot;, &quot;北纬210度&quot;);
+</code></pre>
+<p><strong>赋值号两边都要指明具体的数据类型，且要保持一致。</strong></p>
+<p>例如不能出现</p>
+<pre><code class="c++">//赋值号两边的数据类型不一致
+Point&lt;float, float&gt; *p = new Point&lt;float, int&gt;(10.6, 109);
+//赋值号右边没有指明数据类型
+Point&lt;float, float&gt; *p = new Point(10.6, 109);
+</code></pre>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
