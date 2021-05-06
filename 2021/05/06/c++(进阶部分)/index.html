@@ -96,7 +96,7 @@
             <span class="icon">
                 <a-icon type="calendar" theme="filled" />
             </span>
-            2021/4/28
+            2021/5/6
         </span>
 
         
@@ -260,6 +260,167 @@ Point&lt;float, float&gt; *p = new Point&lt;float, int&gt;(10.6, 109);
 //赋值号右边没有指明数据类型
 Point&lt;float, float&gt; *p = new Point(10.6, 109);
 </code></pre>
+<hr>
+<h1 id="8-各种构造函数"><a href="#8-各种构造函数" class="headerlink" title="8.各种构造函数"></a>8.各种构造函数</h1><h2 id="拷贝构造函数"><a href="#拷贝构造函数" class="headerlink" title="拷贝构造函数"></a>拷贝构造函数</h2><p>c++中“拷贝”是指用已经存在的对象创建出一个新的对象。对象的创建包括两个阶段，首先要分配内存空间，然后再进行初始化：</p>
+<ul>
+<li>分配内存，就是在堆区、栈区或者全局数据区留出足够多的字节。</li>
+<li>初始化就是首次对内存赋值，让它的数据有意义。注意是首次赋值，再次赋值不叫初始化。</li>
+</ul>
+<p>用拷贝的方式来初始化一个对象：</p>
+<pre><code class="c++">void func(string str)&#123;
+    cout&lt;&lt;str&lt;&lt;endl;
+&#125;   
+string s1 = &quot;http://c.biancheng.net&quot;;
+    string s2(s1);
+    string s3 = s1;
+    string s4 = s1 + &quot; &quot; + s2;
+</code></pre>
+<p>对于 s1、s2、s3、s4，都是将其它对象的数据拷贝给当前对象，以完成当前对象的初始化。（<strong>对于 s1，，实际上在内部进行了类型转换，将 const char * 类型转换为 string 类型后才赋值</strong>）</p>
+<p>对于 func() 的形参 str，其实在定义时就为它分配了内存，但是此时并没有初始化，只有等到调用 func() 时，才会将其它对象的数据拷贝给 str 以完成初始化。</p>
+<p>当以拷贝的方式初始化一个对象时，会调用一个特殊的构造函数，就是<strong>拷贝构造函数（Copy Constructor）。</strong></p>
+<hr>
+<p>下面的例子演示了拷贝构造函数的定义和使用：</p>
+<pre><code class="c++">class Student&#123;
+public:
+   //普通构造函数
+    Student(string name = &quot;&quot;, int age = 0, float score = 0.0f); 
+   //拷贝构造函数（声明）
+    Student(const Student &amp;stu);  
+public:
+    void display();
+private:
+    string m_name;
+    int m_age;
+    float m_score;
+&#125;;
+Student::Student(string name, int age, float score): m_name(name), m_age(age), m_score(score)&#123; &#125;
+//拷贝构造函数（定义）
+Student::Student(const Student &amp;stu)&#123;
+    this-&gt;m_name = stu.m_name;
+    this-&gt;m_age = stu.m_age;
+    this-&gt;m_score = stu.m_score;
+   
+    cout&lt;&lt;&quot;Copy constructor was called.&quot;&lt;&lt;endl;
+&#125;
+void Student::display()&#123;
+    cout&lt;&lt;m_name&lt;&lt;&quot;的年龄是&quot;&lt;&lt;m_age&lt;&lt;&quot;，成绩是&quot;&lt;&lt;m_score&lt;&lt;endl;
+&#125;
+int main()&#123;
+    Student stu1(&quot;小明&quot;, 16, 90.5);
+    Student stu2 = stu1;  //调用拷贝构造函数
+    Student stu3(stu1);  //调用拷贝构造函数
+    stu1.display();
+    stu2.display();
+    stu3.display();
+   
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>Copy constructor was called.<br>Copy constructor was called.<br>小明的年龄是16，成绩是90.5<br>小明的年龄是16，成绩是90.5<br>小明的年龄是16，成绩是90.5</p>
+<hr>
+<p>拷贝构造函数只有一个参数，它的类型是当前类的引用，而且一般都是 const 引用。</p>
+<p><strong>为什么用const引用？</strong></p>
+<ul>
+<li>拷贝构造函数的目的是用其它对象的数据来初始化当前对象，并没有期望更改其它对象的数据。添加 const 限制后，这个含义更加明确。</li>
+<li>添加 const 限制后，可以将 const 对象和非 const 对象传递给形参了，因为非 const 类型可以转换为 const 类型。如果没有 const 限制，就不能将 const 对象传递给形参，因为 const 类型不能转换为非 const 类型，这就意味着，不能使用 const 对象来初始化当前对象了。</li>
+</ul>
+<p>此时这串代码就会出错：</p>
+<pre><code class="c++">const Student stu1(&quot;小明&quot;, 16, 90.5);
+Student stu2 = stu1;
+Student stu3(stu1);
+</code></pre>
+<p>stu1 是 const 类型，在初始化 stu2、stu3 时，编译器希望调用<code>Student::Student(const Student &amp;stu)</code>，但是这个函数却不存在，又不能将 const Student 类型转换为 Student 类型去调用<code>Student::Student(Student &amp;stu)</code>，所以最终调用失败了。</p>
+<p><strong>默认拷贝构造函数：</strong></p>
+<p>如果没有显式地定义拷贝构造函数，那么编译器会自动生成一个默认的拷贝构造函数。这个默认的拷贝构造函数很简单，就是使用“老对象”的成员变量对“新对象”的成员变量进行一一赋值，和上面 Student 类的拷贝构造函数非常类似。</p>
+<p>当类持有其它资源时，如动态分配的内存、打开的文件、指向其他数据的指针、网络连接等，默认拷贝构造函数就不能拷贝这些资源，我们必须显式地定义拷贝构造函数，以完整地拷贝对象的所有数据。</p>
+<hr>
+<h2 id="何时使用拷贝构造函数？"><a href="#何时使用拷贝构造函数？" class="headerlink" title="何时使用拷贝构造函数？"></a>何时使用拷贝构造函数？</h2><p>「以拷贝的方式」和「初始化对象」时会调用拷贝构造函数。</p>
+<p><strong>初始化和赋值的区别：</strong></p>
+<pre><code class="c++">int a = 100;  //以赋值的方式初始化
+a = 200;  //赋值
+a = 300;  //赋值
+int b;  //默认初始化
+b = 29;  //赋值
+b = 39;  //赋值
+</code></pre>
+<p>在定义的同时进行赋值叫做初始化（Initialization），定义完成以后再赋值（不管在定义的时候有没有赋值）就叫做赋值（Assignment）。初始化只能有一次，赋值可以有多次。</p>
+<pre><code class="c++"> //stu1、stu2、stu3都会调用普通构造函数Student(string name, int age, float score)
+    Student stu1(&quot;小明&quot;, 16, 90.5);
+    Student stu2(&quot;王城&quot;, 17, 89.0);
+    Student stu3(&quot;陈晗&quot;, 18, 98.0);
+   
+    Student stu4 = stu1;  //调用拷贝构造函数Student(const Student &amp;stu)
+    stu4 = stu2;  //调用operator=()
+    stu4 = stu3;  //调用operator=()
+   
+    Student stu5;  //调用普通构造函数Student()
+    stu5 = stu1;  //调用operator=()
+    stu5 = stu2;  //调用operator=()
+</code></pre>
+<p><strong>如何以拷贝的方式初始化对象？</strong></p>
+<ol>
+<li><p>将其他对象作为实参<code>Student stu2(stu1);</code></p>
+</li>
+<li><p>创建对象时同时赋值<code>Student stu2 = stu1;</code></p>
+</li>
+<li><p>函数形参为类类型<code>void func(Student s)</code>。只有等到真正调用函数时才会为局部数据（形参和局部变量）在栈上分配内存。在定义函数时 s 对象并没有被创建，只有等到调用函数时才会真正地创建 s 对象，并在栈上为它分配内存。等价于<code>Student s = stu;</code></p>
+</li>
+<li><p>函数返回值为类类型。函数的返回值为类类型时，return 语句会返回一个对象，编译器并不会直接返回这个对象，而是根据这个对象先创建出一个临时对象（匿名对象），再将这个临时对象返回。而创建临时对象的过程以拷贝的方式进行。</p>
+</li>
+</ol>
+<pre><code class="c++">Student func()&#123;
+    Student s(&quot;小明&quot;, 16, 90.5);
+    return s;
+&#125;
+Student stu = func();
+</code></pre>
+<p>理论上讲，运行代码后会调用两次拷贝构造函数，一次是返回 s 对象时，另外一次是创建 stu 对象时。</p>
+<hr>
+<h2 id="深拷贝和浅拷贝"><a href="#深拷贝和浅拷贝" class="headerlink" title="深拷贝和浅拷贝"></a>深拷贝和浅拷贝</h2><p>对于基本类型的数据以及简单的对象，它们之间的拷贝非常简单，就是按位复制内存。</p>
+<pre><code class="c++">int main()&#123;
+    int a = 10;
+    int b = a;  //拷贝
+    Base obj1(10, 20);
+    Base obj2 = obj1;  //拷贝
+    return 0;
+&#125;
+</code></pre>
+<p>b 和 obj2 都是以拷贝的方式初始化的，是将 a 和 obj1 所在内存中的数据按照二进制位（Bit）复制到 b 和 obj2 所在的内存，这种默认的拷贝行为就是<strong>浅拷贝</strong>。</p>
+<p>对于简单的类，默认的拷贝构造函数一般就够用了。但是当类持有其它资源时，例如动态分配的内存、指向其他数据的<a target="_blank" rel="noopener" href="http://c.biancheng.net/c/80/">指针</a>等，默认的拷贝构造函数就不能拷贝这些资源了，我们必须显式地定义拷贝构造函数，以完整地拷贝对象的所有数据。</p>
+<p>在边长数组中，使用拷贝构造函数：</p>
+<pre><code class="c++">Array::Array(int len): m_len(len)&#123;
+    m_p = (int*)calloc( len, sizeof(int) );
+&#125;
+Array::Array(const Array &amp;arr)&#123;  //拷贝构造函数
+    this-&gt;m_len = arr.m_len;
+    this-&gt;m_p = (int*)calloc( this-&gt;m_len, sizeof(int) );
+    memcpy( this-&gt;m_p, arr.m_p, m_len * sizeof(int) );
+&#125;
+int main()&#123;
+    Array arr1(10);
+    for(int i=0; i&lt;10; i++)&#123;
+        arr1[i] = i;
+    &#125;
+   
+    Array arr2 = arr1;
+    arr2[5] = 100;
+    arr2[3] = 29;
+   
+    printArray(arr1);
+    printArray(arr2);
+   
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>0, 1, 2, 3, 4, 5, 6, 7, 8, 9<br>0, 1, 2, 29, 4, 100, 6, 7, 8, 9</p>
+<p>本例中我们显式地定义了拷贝构造函数，它除了会将原有对象的所有成员变量拷贝给新对象，还会为新对象再分配一块内存，并将原有对象所持有的内存也拷贝过来。这样原有对象和新对象所持有的动态内存是相互独立的，更改一个对象的数据不会影响另外一个对象，本例中我们更改了 arr2 的数据，就没有影响 arr1。</p>
+<p>这种将对象所持有的其它资源一并拷贝的行为叫做<strong>深拷贝</strong>，我们必须显式地定义拷贝构造函数才能达到深拷贝的目的。</p>
+<p>将上例中的拷贝构造函数删除，那么运行结果将变为：</p>
+<p>0, 1, 2, 29, 4, 100, 6, 7, 8, 9<br>0, 1, 2, 29, 4, 100, 6, 7, 8, 9</p>
+<hr>
+<p>如果一个类拥有指针类型的成员变量，那么绝大部分情况下就需要深拷贝，因为只有这样，才能将指针指向的内容再复制出一份来，让原有对象和新生对象相互独立，彼此之间不受影响。</p>
+<hr>
+<p>5.6 22:00完成啦</p>
 <hr>
 
     </div>
