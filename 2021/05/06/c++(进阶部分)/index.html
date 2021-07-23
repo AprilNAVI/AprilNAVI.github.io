@@ -261,7 +261,373 @@ Point&lt;float, float&gt; *p = new Point&lt;float, int&gt;(10.6, 109);
 Point&lt;float, float&gt; *p = new Point(10.6, 109);
 </code></pre>
 <hr>
-<h1 id="8-各种构造函数"><a href="#8-各种构造函数" class="headerlink" title="8.各种构造函数"></a>8.各种构造函数</h1><h2 id="拷贝构造函数"><a href="#拷贝构造函数" class="headerlink" title="拷贝构造函数"></a>拷贝构造函数</h2><p>c++中“拷贝”是指用已经存在的对象创建出一个新的对象。对象的创建包括两个阶段，首先要分配内存空间，然后再进行初始化：</p>
+<p>之前断更去准备西山居的事情啦，现在恢复更新！（修炼不能断）</p>
+<hr>
+<h1 id="8-c-异常"><a href="#8-c-异常" class="headerlink" title="8.c++异常"></a>8.c++异常</h1><p>用途：程序运行时常会碰到一些错误，例如除数为 0、年龄为负数、数组下标越界等，这些错误如果不能发现并加以处理，很可能会<strong>导致程序崩溃</strong>。</p>
+<p><strong>C++ 异常处理机制</strong>就可以让我们捕获并处理这些错误，然后我们可以让程序沿着一条不会出错的路径继续执行，或者不得不结束程序，但在结束前可以做一些必要的工作，例如将内存中的数据写入文件、关闭打开的文件、释放分配的内存等。</p>
+<h2 id="try-catch入门"><a href="#try-catch入门" class="headerlink" title="try catch入门"></a>try catch入门</h2><p>程序的错误大致可以分为三种，分别是语法错误、逻辑错误和运行时错误：</p>
+<ol>
+<li>语法错误<strong>在编译和链接阶段</strong>就能发现，只有 100% 符合语法规则的代码才能生成可执行程序。</li>
+<li>逻辑错误是说编写的<strong>代码思路有问题</strong>，不能够达到最终的目标，这种错误可以通过调试来解决。</li>
+<li>运行时错误是指程序在<strong>运行期间发生的错误</strong>，例如除数为 0、内存分配失败、数组越界、文件不存在等。C++异常（Exception）机制就是为解决运行时错误而引入的。</li>
+</ol>
+<p>运行时错误如果放任不管，系统就会执行默认的操作，终止程序运行，也就是我们常说的<strong>程序崩溃（Crash）</strong>。C++ 提供了异常（Exception）机制，让我们能够捕获运行时错误，给程序一次“起死回生”的机会，或者至少告诉用户发生了什么再终止程序。</p>
+<p>一个发生运行时错误的程序：</p>
+<pre><code class="c++">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int main()&#123;
+    string str = &quot;http://c.biancheng.net&quot;;
+    char ch1 = str[100];  //下标越界，ch1为垃圾值
+    cout&lt;&lt;ch1&lt;&lt;endl;
+    char ch2 = str.at(100);  //下标越界，抛出异常
+    cout&lt;&lt;ch2&lt;&lt;endl;
+    return 0;
+&#125;
+</code></pre>
+<p>at() 是 string 类的一个成员函数，它会<strong>根据下标来返回字符串的一个字符</strong>。与<code>[ ]</code>不同，at() 会<strong>检查下标是否越界，如果越界就抛出一个异常</strong>；而<code>[ ]</code>不做检查，不管下标是多少都会照常访问。</p>
+<p> <strong>所谓抛出异常，就是报告一个运行时错误，程序员可以根据错误信息来进一步处理。</strong></p>
+<hr>
+<h3 id="捕获异常"><a href="#捕获异常" class="headerlink" title="捕获异常"></a>捕获异常</h3><p>可以借助 C++ 异常机制来捕获上面的异常，避免程序崩溃。捕获异常的语法为：</p>
+<pre><code class="c++">try&#123;
+    // 可能抛出异常的语句
+&#125;catch(exceptionType variable)&#123;
+    // 处理异常的语句
+&#125;
+</code></pre>
+<p><code>try</code>和<code>catch</code>都是 C++ 中的关键字，后跟语句块，不能省略<code>&#123; &#125;</code>。</p>
+<p>try 中包含可能会抛出异常的语句，一旦有异常抛出就会被后面的 catch 捕获。从 try 的意思可以看出，它只是“检测”语句块有没有异常，如果没有发生异常，它就“检测”不到。</p>
+<p>catch 是“抓住”的意思，用来捕获并处理 try 检测到的异常；如果 try 语句块没有检测到异常（没有异常抛出），那么就不会执行 catch 中的语句。</p>
+<p>即：</p>
+<p><code> catch 告诉 try：你去检测一下程序有没有错误，有错误的话就告诉我，我来处理，没有的话就不要理我！</code></p>
+<p>catch 关键字后面的<code>exceptionType variable</code>指明了当前 catch 可以处理的异常类型，以及具体的出错信息。</p>
+<hr>
+<p>修改上面的代码，加入捕获异常的语句：</p>
+<pre><code class="c++">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;exception&gt;
+using namespace std;
+
+int main()&#123;
+    string str = &quot;http://c.biancheng.net&quot;;
+  
+    try&#123;
+        char ch1 = str[100];
+        cout&lt;&lt;ch1&lt;&lt;endl;
+    &#125;catch(exception e)&#123;
+        cout&lt;&lt;&quot;[1]out of bound!&quot;&lt;&lt;endl;
+    &#125;
+
+    try&#123;
+        char ch2 = str.at(100);
+        cout&lt;&lt;ch2&lt;&lt;endl;
+    &#125;catch(exception &amp;e)&#123;  //exception类位于&lt;exception&gt;头文件中
+        cout&lt;&lt;&quot;[2]out of bound!&quot;&lt;&lt;endl;
+    &#125;
+
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：</p>
+<p>(</p>
+<p>[2]out of bound!</p>
+<p>第一个 try 没有捕获到异常，输出了一个没有意义的字符（垃圾值）。因为<code>[ ]</code>不会检查下标越界，不会抛出异常，所以即使有错误，try 也检测不到。换句话说，<strong>发生异常时必须将异常明确地抛出，try 才能检测到；如果不抛出来，即使有异常 try 也检测不到。</strong></p>
+<p>第二个 try 检测到了异常，并交给 catch 处理，执行 catch 中的语句。需要说明的是，<strong>异常一旦抛出，会立刻被 try 检测到，并且不会再执行异常点（异常发生位置）后面的语句。</strong>本例中抛出异常的位置是第 17 行的 at() 函数，它后面的 cout 语句就不会再被执行，所以看不到它的输出。</p>
+<p><strong>检测到异常后程序的执行流会发生跳转，从异常点跳转到 catch 所在的位置，位于异常点之后的、并且在当前 try 块内的语句就都不会再执行了；</strong></p>
+<p><strong>即使 catch 语句成功地处理了错误，程序的执行流也不会再回退到异常点，所以这些语句永远都没有执行的机会了</strong></p>
+<p>异常的处理流程：</p>
+<p><code>抛出（Throw）--&gt; 检测（Try） --&gt; 捕获（Catch）</code></p>
+<hr>
+<h3 id="发生异常的位置"><a href="#发生异常的位置" class="headerlink" title="发生异常的位置"></a>发生异常的位置</h3><p>异常可以发生在当前的 try 块中，也可以发生在 try 块所调用的某个函数中，或者是所调用的函数又调用了另外的一个函数，这个另外的函数中发生了异常。这些异常，都可以被 try 检测到。</p>
+<p>例如：</p>
+<pre><code class="c++">try&#123;
+        throw &quot;Unknown Exception&quot;;  //抛出异常
+        cout&lt;&lt;&quot;This statement will not be executed.&quot;&lt;&lt;endl;
+    &#125;catch(const char* &amp;e)&#123;
+        cout&lt;&lt;e&lt;&lt;endl;
+    &#125;
+</code></pre>
+<pre><code class="c++">void func()&#123;
+    throw &quot;Unknown Exception&quot;;  //抛出异常
+    cout&lt;&lt;&quot;[1]This statement will not be executed.&quot;&lt;&lt;endl;
+&#125;
+
+try&#123;
+        func();
+        cout&lt;&lt;&quot;[2]This statement will not be executed.&quot;&lt;&lt;endl;
+    &#125;catch(const char* &amp;e)&#123;
+        cout&lt;&lt;e&lt;&lt;endl;
+    &#125;
+</code></pre>
+<pre><code class="c++">void func_inner()&#123;
+    throw &quot;Unknown Exception&quot;;  //抛出异常
+    cout&lt;&lt;&quot;[1]This statement will not be executed.&quot;&lt;&lt;endl;
+&#125;
+
+void func_outer()&#123;
+    func_inner();
+    cout&lt;&lt;&quot;[2]This statement will not be executed.&quot;&lt;&lt;endl;
+&#125;
+
+try&#123;
+        func_outer();
+        cout&lt;&lt;&quot;[3]This statement will not be executed.&quot;&lt;&lt;endl;
+    &#125;catch(const char* &amp;e)&#123;
+        cout&lt;&lt;e&lt;&lt;endl;
+    &#125;
+</code></pre>
+<h2 id="异常类型以及多级catch匹配"><a href="#异常类型以及多级catch匹配" class="headerlink" title="异常类型以及多级catch匹配"></a>异常类型以及多级catch匹配</h2><h3 id="异常类型"><a href="#异常类型" class="headerlink" title="异常类型"></a>异常类型</h3><p>try-catch 的用法：</p>
+<pre><code class="c++">try&#123;
+    // 可能抛出异常的语句
+&#125;catch(exceptionType variable)&#123;
+    // 处理异常的语句
+&#125;
+</code></pre>
+<p>catch 关键字后边的<code>exceptionType variable</code>是什么？</p>
+<p><code>exceptionType</code>是异常类型，它指明了当前的 catch 可以处理什么类型的异常；<code>variable</code>是一个变量，用来接收异常信息。当<strong>程序抛出异常时，会创建一份数据</strong>，这份数据包含了错误信息，程序员可以根据这些信息来判断到底出了什么问题，接下来怎么处理。</p>
+<p>异常类型可以是 <strong>int、char、float、bool</strong> 等基本类型，也可以<strong>是指针、数组、字符串、结构体、类等聚合类型。</strong>C++ 语言本身以及标准库中的函数抛出的异常，都是 exception 类或其子类的异常。也就是说，抛出异常时，会<strong>创建一个 exception 类或其子类的对象</strong>。</p>
+<p><code>exceptionType variable</code>和函数的形参非常类似；</p>
+<p>当异常发生后，会将异常数据传递给 variable 这个变量，这和函数传参的过程类似。</p>
+<p><strong>只有跟 exceptionType 类型匹配的异常数据才会被传递给 variable，否则 catch 不会接收这份异常数据，也不会执行 catch 块中的语句。</strong></p>
+<p>但是 catch 和真正的函数调用又有区别：</p>
+<ul>
+<li>真正的函数调用，形参和实参的类型必须要匹配，或者可以自动转换，否则在编译阶段就报错了。</li>
+<li>而对于 catch，异常是在运行阶段产生的，它可以是任何类型，没法提前预测，所以不能在编译阶段判断类型是否正确。<strong>只能等到程序运行后，真的抛出异常了，再将异常类型和 catch 能处理的类型进行匹配</strong>，匹配成功的话就“调用”当前的 catch，否则就忽略当前的 catch。</li>
+</ul>
+<p>catch 和真正的函数调用相比，多了一个「在运行阶段将实参和形参匹配」的过程。</p>
+<p>如果不希望 catch 处理异常数据，也可以将 variable 省略掉，也即写作：</p>
+<pre><code class="c++">try&#123;
+  // 可能抛出异常的语句
+&#125;catch(exceptionType)&#123;
+  // 处理异常的语句
+&#125;
+</code></pre>
+<p>这样只会将异常类型和 catch 所能处理的类型进行匹配，不会传递异常数据了。</p>
+<hr>
+<h3 id="多级-catch"><a href="#多级-catch" class="headerlink" title="多级 catch"></a>多级 catch</h3><p>前面的例子中，一个 try 对应一个 catch，这只是最简单的形式。其实，一个 try 后面可以跟多个 catch：</p>
+<pre><code class="c++">try&#123;
+    //可能抛出异常的语句
+&#125;catch (exception_type_1 e)&#123;
+    //处理异常的语句
+&#125;catch (exception_type_2 e)&#123;
+    //处理异常的语句
+&#125;
+//其他的catch
+catch (exception_type_n e)&#123;
+    //处理异常的语句
+&#125;
+</code></pre>
+<p>当异常发生时，程序会按照<strong>从上到下的顺序，将异常类型和 catch 所能接收的类型逐个匹配。</strong>一旦找到类型匹配的 catch 就停止检索，并将异常交给当前的 catch 处理（其他的 catch 不会被执行）。<strong>如果最终也没有找到匹配的 catch，就只能交给系统处理，终止程序的运行。</strong></p>
+<p>下面的例子演示了多级 catch 的使用：</p>
+<pre><code class="c++">#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+class Base&#123; &#125;;
+class Derived: public Base&#123; &#125;;
+int main()&#123;
+    try&#123;
+        throw Derived();  //抛出自己的异常类型，实际上是创建一个Derived类型的匿名对象
+        cout&lt;&lt;&quot;This statement will not be executed.&quot;&lt;&lt;endl;
+    &#125;catch(int)&#123;
+        cout&lt;&lt;&quot;Exception type: int&quot;&lt;&lt;endl;
+    &#125;catch(char *)&#123;
+        cout&lt;&lt;&quot;Exception type: cahr *&quot;&lt;&lt;endl;
+    &#125;catch(Base)&#123;  //匹配成功（向上转型）
+        cout&lt;&lt;&quot;Exception type: Base&quot;&lt;&lt;endl;
+    &#125;catch(Derived)&#123;
+        cout&lt;&lt;&quot;Exception type: Derived&quot;&lt;&lt;endl;
+    &#125;
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>Exception type: Base</p>
+<p>我们定义了一个基类 Base，又从 Base 派生类出了 Derived。抛出异常时，我们创建了一个 Derived 类的匿名对象，也就是说，异常的类型是 Derived。</p>
+<p>我们期望的是，异常被<code>catch(Derived)</code>捕获，但是从输出结果可以看出，异常提前被<code>catch(Base)</code>捕获了，这说明 catch 在匹配异常类型时发生了<a target="_blank" rel="noopener" href="http://c.biancheng.net/view/2284.html">向上转型（Upcasting）</a>。</p>
+<hr>
+<h3 id="catch-在匹配过程中的类型转换"><a href="#catch-在匹配过程中的类型转换" class="headerlink" title="catch 在匹配过程中的类型转换"></a>catch 在匹配过程中的类型转换</h3><p>C/C++ 中存在多种多样的类型转换，以<strong>普通函数（非模板函数）为例</strong>，发生函数调用时，如果实参和形参的类型不是严格匹配，那么会将实参的类型进行适当的转换，以适应形参的类型，这些转换包括：</p>
+<ul>
+<li>算数转换：例如 int 转换为 float，char 转换为 int，double 转换为 int 等。</li>
+<li>向上转型：也就是派生类向基类的转换，请猛击《<a target="_blank" rel="noopener" href="http://c.biancheng.net/view/2284.html">C++向上转型（将派生类赋值给基类）</a>》了解详情。</li>
+<li>const 转换：也即将非 const 类型转换为 const 类型，例如将 char * 转换为 const char *。</li>
+<li>数组或函数指针转换：如果函数形参不是引用类型，那么数组名会转换为数组指针，函数名也会转换为函数指针。</li>
+<li>用户自定的类型转换。</li>
+</ul>
+<p>catch 在匹配异常类型的过程中，也会进行类型转换，但是这种转换受到了更多的限制，仅能进行「向上转型」、「const 转换」和「数组或函数指针转换」，其他的都不能应用于 catch。</p>
+<p>演示 const 转换以及数组和指针的转换：</p>
+<pre><code class="c++">#include &lt;iostream&gt;
+using namespace std;
+int main()&#123;
+    int nums[] = &#123;1, 2, 3&#125;;
+    try&#123;
+        throw nums;
+        cout&lt;&lt;&quot;This statement will not be executed.&quot;&lt;&lt;endl;
+    &#125;catch(const int *)&#123;
+        cout&lt;&lt;&quot;Exception type: const int *&quot;&lt;&lt;endl;
+    &#125;
+    return 0;
+&#125;
+</code></pre>
+<p>Exception type: const int *</p>
+<p>nums 本来的类型是<code>int [3]</code>，但是 catch 中没有严格匹配的类型，所以先转换为<code>int *</code>，再转换为<code>const int *</code>。</p>
+<hr>
+<h2 id="throw（抛出异常）"><a href="#throw（抛出异常）" class="headerlink" title="throw（抛出异常）"></a>throw（抛出异常）</h2><p>异常处理的流程，具体为：</p>
+<p>抛出（Throw）–&gt; 检测（Try） –&gt; 捕获（Catch）</p>
+<p>异常必须显式地抛出，才能被检测和捕获到；如果没有显式的抛出，即使有异常也检测不到。</p>
+<p>在 C++ 中，我们使用 throw 关键字来显式地抛出异常，它的用法为：</p>
+<p><code>throw exceptionData;</code></p>
+<p>exceptionData 是“异常数据”的意思，它可以包含任意的信息，完全有程序员决定。exceptionData 可以是 int、float、bool 等基本类型，也可以是<a target="_blank" rel="noopener" href="http://c.biancheng.net/c/80/">指针</a>、数组、字符串、结构体、类等聚合类型，请看下面的例子：</p>
+<pre><code class="c++">char str[] = &quot;http://c.biancheng.net&quot;;
+char *pstr = str;
+class Base&#123;&#125;;
+Base obj;
+throw 100;  //int 类型
+throw str;  //数组类型
+throw pstr;  //指针类型
+throw obj;  //对象类型
+</code></pre>
+<hr>
+<h3 id="经典异常使用场景"><a href="#经典异常使用场景" class="headerlink" title="经典异常使用场景"></a>经典异常使用场景</h3><p>确实是有些长了</p>
+<pre><code class="c++">#include &lt;iostream&gt;
+#include &lt;cstdlib&gt;
+using namespace std;
+
+//自定义的异常类型
+class OutOfRange&#123;
+public:
+    OutOfRange(): m_flag(1)&#123; &#125;;
+    OutOfRange(int len, int index): m_len(len), m_index(index), m_flag(2)&#123; &#125;
+public:
+    void what() const;  //获取具体的错误信息
+private:
+    int m_flag;  //不同的flag表示不同的错误
+    int m_len;  //当前数组的长度
+    int m_index;  //当前使用的数组下标
+&#125;;
+
+void OutOfRange::what() const &#123;
+    if(m_flag == 1)&#123;
+        cout&lt;&lt;&quot;Error: empty array, no elements to pop.&quot;&lt;&lt;endl;
+    &#125;else if(m_flag == 2)&#123;
+        cout&lt;&lt;&quot;Error: out of range( array length &quot;&lt;&lt;m_len&lt;&lt;&quot;, access index &quot;&lt;&lt;m_index&lt;&lt;&quot; )&quot;&lt;&lt;endl;
+    &#125;else&#123;
+        cout&lt;&lt;&quot;Unknown exception.&quot;&lt;&lt;endl;
+    &#125;
+&#125;
+
+//实现动态数组
+class Array&#123;
+public:
+    Array();
+    ~Array()&#123; free(m_p); &#125;;
+public:
+    int operator[](int i) const;  //获取数组元素
+    int push(int ele);  //在末尾插入数组元素
+    int pop();  //在末尾删除数组元素
+    int length() const&#123; return m_len; &#125;;  //获取数组长度
+private:
+    int m_len;  //数组长度
+    int m_capacity;  //当前的内存能容纳多少个元素
+    int *m_p;  //内存指针
+private:
+    static const int m_stepSize = 50;  //每次扩容的步长
+&#125;;
+
+Array::Array()&#123;
+    m_p = (int*)malloc( sizeof(int) * m_stepSize );
+    m_capacity = m_stepSize;
+    m_len = 0;
+&#125;
+int Array::operator[](int index) const &#123;
+    if( index&lt;0 || index&gt;=m_len )&#123;  //判断是否越界
+        throw OutOfRange(m_len, index);  //抛出异常（创建一个匿名对象）
+    &#125;
+
+    return *(m_p + index);
+&#125;
+int Array::push(int ele)&#123;
+    if(m_len &gt;= m_capacity)&#123;  //如果容量不足就扩容
+        m_capacity += m_stepSize;
+        m_p = (int*)realloc( m_p, sizeof(int) * m_capacity );  //扩容
+    &#125;
+
+    *(m_p + m_len) = ele;
+    m_len++;
+    return m_len-1;
+&#125;
+int Array::pop()&#123;
+    if(m_len == 0)&#123;
+         throw OutOfRange();  //抛出异常（创建一个匿名对象）
+    &#125;
+
+    m_len--;
+    return *(m_p + m_len);
+&#125;
+
+//打印数组元素
+void printArray(Array &amp;arr)&#123;
+    int len = arr.length();
+
+    //判断数组是否为空
+    if(len == 0)&#123;
+        cout&lt;&lt;&quot;Empty array! No elements to print.&quot;&lt;&lt;endl;
+        return;
+    &#125;
+
+    for(int i=0; i&lt;len; i++)&#123;
+        if(i == len-1)&#123;
+            cout&lt;&lt;arr[i]&lt;&lt;endl;
+        &#125;else&#123;
+            cout&lt;&lt;arr[i]&lt;&lt;&quot;, &quot;;
+        &#125;
+    &#125;
+&#125;
+
+int main()&#123;
+    Array nums;
+    //向数组中添加十个元素
+    for(int i=0; i&lt;10; i++)&#123;
+        nums.push(i);
+    &#125;
+    printArray(nums);
+
+    //尝试访问第20个元素
+    try&#123;
+        cout&lt;&lt;nums[20]&lt;&lt;endl;
+    &#125;catch(OutOfRange &amp;e)&#123;
+        e.what();
+    &#125;
+
+    //尝试弹出20个元素
+    try&#123;
+        for(int i=0; i&lt;20; i++)&#123;
+            nums.pop();
+        &#125;
+    &#125;catch(OutOfRange &amp;e)&#123;
+        e.what();
+    &#125;
+
+    printArray(nums);
+
+    return 0;
+&#125;
+</code></pre>
+<p>运行结果：<br>0, 1, 2, 3, 4, 5, 6, 7, 8, 9<br>Error: out of range( array length 10, access index 20 )<br>Error: empty array, no elements to pop.<br>Empty array! No elements to print.</p>
+<p>Array 类实现了动态数组，它的主要思路是：在创建对象时预先分配出一定长度的内存（通过 malloc() 分配），内存不够用时就再扩展内存（通过 realloc() 重新分配）。</p>
+<p>通过重载过的<code>[ ]</code>运算符来访问数组元素，如果下标过小或过大，就会抛出异常（第53行代码）；在抛出异常的同时，我们还记录了当前数组的长度和要访问的下标。</p>
+<p>在使用 pop() 删除数组元素时，如果当前数组为空，也会抛出错误。</p>
+<hr>
+<h2 id="exception类：C-标准异常的基类"><a href="#exception类：C-标准异常的基类" class="headerlink" title="exception类：C++标准异常的基类"></a>exception类：C++标准异常的基类</h2><p>c++语言本身或者标准库抛出的异常都是 exception 的子类，称为标准异常（Standard Exception）。你可以通过下面的语句来捕获所有的标准异常：</p>
+<pre><code class="c++">try&#123;
+    //可能抛出异常的语句
+&#125;catch(exception &amp;e)&#123;
+    //处理异常的语句
+&#125;
+</code></pre>
+<hr>
+<p>现在是6.21 22:26，是恢复学习cpp的第一篇笔记（其实就是copy），之前也有抽空复习cpp和图形学，所以学习状态还不错，学期结束前把接下来的补齐吧。</p>
+<hr>
+<h1 id="9-各种构造函数"><a href="#9-各种构造函数" class="headerlink" title="9.各种构造函数"></a>9.各种构造函数</h1><h2 id="拷贝构造函数"><a href="#拷贝构造函数" class="headerlink" title="拷贝构造函数"></a>拷贝构造函数</h2><p>c++中“拷贝”是指用已经存在的对象创建出一个新的对象。对象的创建包括两个阶段，首先要分配内存空间，然后再进行初始化：</p>
 <ul>
 <li>分配内存，就是在堆区、栈区或者全局数据区留出足够多的字节。</li>
 <li>初始化就是首次对内存赋值，让它的数据有意义。注意是首次赋值，再次赋值不叫初始化。</li>
