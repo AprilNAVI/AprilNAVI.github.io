@@ -117,6 +117,46 @@
 
 <div class="post">
 
+    <a href="/2021/08/16/2021-08-16-游戏编程模式①（命令模式，享元模式）/">
+        <h2>
+            游戏编程模式①（命令模式，享元模式）
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/8/16
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            <p>本文作为《Game Programming Pattern》（游戏编程原理）的摘要总结，记录为期一个月的阅读感想与心得体会。</p>
+            
+            
+        </div>
+    </div>
+
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2021/08/16/2021-08-16-游戏编程模式①（命令模式，享元模式）/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
     <a href="/2021/08/02/Unity中支持管理多种对象的对象池/">
         <h2>
             Unity中支持管理多种对象的对象池
@@ -139,96 +179,8 @@
     <div class="excerpt">
         <div class="content" v-pre>
             
+            <p>嘿嘿~</p>
             
-            <span id="more"></span>
-
-<h2 id="关于对象池"><a href="#关于对象池" class="headerlink" title="关于对象池"></a>关于对象池</h2><p>对象池技术是常用的设计模式之一，可以减少因大量创建和销毁实例而消耗的开销。</p>
-<p>在unity中使用简单的对象池来管理对象时，我们一般采用队列。在创建对象时出队并将对象setActive(true)，在销毁对象时将对象入队并setActive(false)。</p>
-<hr>
-<h2 id="选用数据结构"><a href="#选用数据结构" class="headerlink" title="选用数据结构"></a>选用数据结构</h2><p>之前写的对象池一般用来管理单种物体，我们希望编写一种对象池来管理多种对象，这样就不用为每种对象都编写各自的对象池。</p>
-<p>我们计划让使用者提供预制件，作为参数传递给对象池，达到自动管理的目的。调用时对象池会在池子里面寻找同类物品，若找不到则创建新的物品种类并登记。在简单的对象池中我们使用队列来管理对象，由于此处要管理多种对象，因此我们使用字典嵌套队列Pool，其键为int（预制件的数字id），值为Queue&lt; GameObject &gt;。同时我们也需要一个容器OutObj来记录离开的对象，采用GameObject作为键，int作为值。</p>
-<p>关于物品id：正在使用中的每个物品id是唯一的，销毁后id便会失效，但我们使用的预制件本身是不会销毁的，创建的实例都是预制件的clone，因此可以使用。</p>
-<p>数据结构定义如下：</p>
-<pre><code class="c#">public class ObjPool : MonoBehaviour
-&#123;
-    private Dictionary&lt;int, Queue&lt;GameObject&gt;&gt; ObjPool = new Dictionary&lt;int, Queue&lt;GameObject&gt;&gt;();
-    private Dictionary&lt;GameObject, int&gt; OutObj = new Dictionary&lt;GameObject, int&gt;();
-&#125;
-</code></pre>
-<hr>
-<h2 id="实现逻辑"><a href="#实现逻辑" class="headerlink" title="实现逻辑"></a>实现逻辑</h2><p>编写一个比较复杂的代码块需要许多细节，因此我们先列一个大纲来整理我们的逻辑。</p>
-<p>创建物品时：</p>
-<ol>
-<li>创建物体的Create方法需要提供Prefab作为参数，我们把这个预制件使用<code>prefab.GameInstanceID()</code>转化为物品id。</li>
-<li>查询ObjPool有没有这个id的键。</li>
-<li>如果同类物品有可以直接使用的，就取出一个。</li>
-<li>如果没有现成物品，则直接使用预制件实例化一个新的物品。如果这个类型的物品是第一次出现，则在字典添加一个新的元素，键为这个id，值为新的队列。</li>
-<li>在方法返回前，在OutObj对物品做好登记。</li>
-</ol>
-<p>销毁物品时：</p>
-<ol>
-<li>先检查销毁的物品是否在OutObj字典中，若不存在，则表明该对象不是从对象池中取出的，发出一个警告。</li>
-<li>把物品从OutObj删除，在ObjPool中添加。</li>
-</ol>
-<hr>
-<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code class="c#">public class Objpool : MonoBehaviour
-&#123;
-    private Dictionary&lt;int, Queue&lt;GameObject&gt;&gt; ObjPool = new Dictionary&lt;int, Queue&lt;GameObject&gt;&gt;();
-    private Dictionary&lt;GameObject, int&gt; OutObj = new Dictionary&lt;GameObject, int&gt;();
-
-    public GameObject Create(GameObject prefab)
-    &#123;
-        int id = prefab.GetInstanceID();
-        GameObject obj = _GetFromPool(id);
-        if(obj==null)
-        &#123;
-            obj = Instantiate&lt;GameObject&gt;(prefab);
-            if(!ObjPool.ContainsKey(id))
-            &#123;
-                ObjPool.Add(id, new Queue&lt;GameObject&gt;());
-            &#125;
-        &#125;
-
-        OutObj.Add(obj, id);
-        return obj;
-    &#125;
-
-
-    public void Destory(GameObject obj)
-    &#123;
-        if(!OutObj.ContainsKey(obj))
-        &#123;
-            Debug.LogWarning(obj + &quot;并不是对象池创建的！&quot;);
-            return;
-        &#125;
-
-        int id = OutObj[obj];
-
-        obj.transform.parent = transform;
-        obj.SetActive(false);
-
-        ObjPool[id].Enqueue(obj);
-        OutObj.Remove(obj);
-
-    &#125;
-
-    private GameObject _GetFromPool(int id)
-    &#123;
-        if(!ObjPool.ContainsKey(id)||ObjPool.Count==0)
-        &#123;
-            return null;
-        &#125;
-
-        GameObject obj = ObjPool[id].Dequeue();
-        obj.SetActive(true);
-        return obj;
-    &#125;
-
-&#125;
-</code></pre>
-<hr>
-<p>作者水平非常有限，也是菜菜子。</p>
-
             
         </div>
     </div>
@@ -560,46 +512,6 @@
     </div>
 
     <a href="/2021/04/26/计算机图形学⑨/ " class="go-post">
-        阅读全文
-    </a>
-</div>
-
-<div class="post">
-
-    <a href="/2021/04/26/一周日程（4.19到4.25）/">
-        <h2>
-            一周日程（4.19到4.25）
-        </h2>
-    </a>
-
-    <div class="category-and-date">
-
-        
-
-        <span class="date">
-            <span class="icon">
-                <a-icon type="calendar" theme="filled" />
-            </span>
-            2021/4/26
-        </span>
-
-    </div>
-
-    <div class="excerpt">
-        <div class="content" v-pre>
-            
-            <p>上周的日程反倒变成了反思</p>
-            
-            
-        </div>
-    </div>
-
-    <div class="post-tags">
-        
-        
-    </div>
-
-    <a href="/2021/04/26/一周日程（4.19到4.25）/ " class="go-post">
         阅读全文
     </a>
 </div>

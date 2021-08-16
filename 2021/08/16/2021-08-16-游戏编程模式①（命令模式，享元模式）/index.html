@@ -1,0 +1,475 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏编程模式①（命令模式，享元模式）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏编程模式①（命令模式，享元模式） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/8/16
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文作为《Game Programming Pattern》（游戏编程原理）的摘要总结，记录为期一个月的阅读感想与心得体会。</p>
+<span id="more"></span>
+
+<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>撰写本文时，希望可以尽量遵循<strong>star法则</strong>，此后的文章同样以这四个要点作为大纲。</p>
+<p><strong>s</strong>ituation（情境）</p>
+<p><strong>t</strong>ask（任务）</p>
+<p><strong>a</strong>ction（行为）</p>
+<p><strong>r</strong>esult（结果）</p>
+<p>本文代码尽量以unity和c#进行演示</p>
+<hr>
+<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p><strong>将一个请求（request）封装成一个对象，从而允许使用不同的请求，队列，或日志将客户端参数化，同时支持操作的撤销与恢复。</strong></p>
+<p>ps：因为所有的”请求“将会被封装成对象，所以我们就可以将他们像参数一样传递和存储。这实际上允许我们，使用链表或者数组等的连续存储类型，先存储一部分的命令，然后到一定的时机再一次过执行。在许多的回合制策略型游戏中，这非常有用。我们甚至还可以允许玩家取消自己不小心做错的行为。</p>
+<hr>
+<h3 id="situation"><a href="#situation" class="headerlink" title="situation"></a><strong>s</strong>ituation</h3><p>玩家可能需要自定义更改某个输入的按键，同时我们希望只写一套接口供玩家和AI系统都能调用。</p>
+<hr>
+<h3 id="task"><a href="#task" class="headerlink" title="task"></a>task</h3><p>我需要将一个命令/请求/概念转化为数据。同时我希望可以将游戏中的输入解耦成一个独立的接口，然后我们还可以进行命令的撤销和重做。</p>
+<hr>
+<h3 id="action"><a href="#action" class="headerlink" title="action"></a>action</h3><p>我们通常会将输入这样写</p>
+<pre><code class="c#">public void InputHandler()&#123;
+    if (Input.GetKeyDown(KeyCode.Space)
+    &#123;
+       Jump();
+    &#125;
+    if (Input.GetKeyDown(KeyCode.F)
+    &#123;
+       Fire();
+    &#125;
+    if (Input.GetKeyDown(KeyCode.K)
+    &#123;
+       Attack();
+    &#125;
+    ...
+&#125;
+</code></pre>
+<p>不难看出，上面的代码中，用户输入和游戏动作是捆绑的</p>
+<p><strong>将按键和命令解耦吧，让我们的命令变成可被存储的数据。</strong></p>
+<p>我们定义一个基类Command来代表可触发的游戏命令：</p>
+<pre><code class="c#">public abstract class Command&#123;
+   public abstract void execute();
+&#125;
+</code></pre>
+<p>然后，我们让每个游戏动作继承这个基类，并创建子类。</p>
+<pre><code class="c#">public class JumpCommand : Command&#123;
+   public override void execute()&#123;
+      Jump();
+   &#125;
+&#125;
+public class FireCommand : Command&#123;
+   public override void execute()&#123;
+      Fire();
+   &#125;
+&#125;
+public class AttackCommand : Command&#123;
+   public override void execute()&#123;
+      Attack();
+   &#125;
+&#125;
+</code></pre>
+<p>接着我们在调用update()的类里面创建他们的实例。</p>
+<pre><code class="c#">private JumpCommand Jump;
+private FireCommand Fire
+private AttackCommand Attack;
+</code></pre>
+<p>最后，InpuHandler()会变成这样：</p>
+<pre><code class="c#">public void InputHandler()&#123;
+     if (Input.GetKeyDown(A)
+     &#123;
+        Jump.execute();
+     &#125;
+     if (Input.GetKeyDown(B)
+     &#123; 
+        Fire.execute();
+     &#125;
+     if (Input.GetKeyDown(C)
+     &#123;
+        Attack.execute();
+     &#125;
+     ...
+&#125;
+</code></pre>
+<p>在基类Command中，我们实现了一个等待被重写的抽象命令接口execute()，这样能迫使发送者（我们的例子中是InputHander）针对这个抽象命令编程。抽象的意义就在于此，只有实现了抽象命令接口的具体命令，比如Jump、Fire，它才能与玩家对象（接收者）关联。</p>
+<p>尚有不足的是，我们刚才定义的命令在上个例子中有效，但却存在着耦合性的假设来限制这些命令的使用范围，jump（）这些顶级函数能隐性的获知玩家游戏实体，所有的命令都集中被应用到一个玩家角色身上。</p>
+<p>我们对Command基类进行一些修改，<strong>传入一个角色对象</strong>，以便Command的子类能对其进行调用</p>
+<pre><code class="c#">public abstract class Command&#123;
+   public abstract void execute(Control actor);
+&#125;
+...
+public class JumpCommand : Command&#123;
+   public override void execute(Control actor)&#123;
+      actor.Jump();
+   &#125;
+&#125;
+</code></pre>
+<p>现在，只要我们在发出命令的同时传入想要控制的角色对象，那么我们的派生类就可以在对象角色身上调用跳跃方法。</p>
+<p>如今就能用InputHandler来控制任何角色，可我们却并不知道具体是哪个角色在操作。</p>
+<p>让我们再改进一下InputHandler，在这个控制器里延迟我们对命令的调用，让它回传我们需要用到的命令。</p>
+<pre><code class="c#">public Command InputHandler()&#123;
+     if (Input.GetKeyDown(A)
+     &#123;
+        return Jump;
+     &#125;
+     if (Input.GetKeyDown(B)
+     &#123; 
+        return Fire;
+     &#125;
+     if (Input.GetKeyDown(C)
+     &#123;
+        return Attack;
+     &#125;
+     ...
+     return null;
+&#125;
+         
+         
+....
+void Update()&#123; 
+        ...
+        Command command = InputHandler();
+        if (command != null)
+        &#123;
+            command.execute(Actor);
+        &#125;
+        ...
+&#125;
+</code></pre>
+<p>我们此时就成功将命令参数化了，这意味着他们能够传入队列，或组成命令流。</p>
+<p>在命令与角色加入间接层能使我们可以让玩家控制游戏中的任何角色，只要在调用命令的时候传入他们的引用就好了。</p>
+<p>我们在每次玩家做出一个动作时，都创建一个实例，我们由此来实现命令模式最成名的应用——撤销与重做。</p>
+<p>我们再修改一下command：</p>
+<pre><code class="c#">public abstract class Command&#123;
+   public abstract void execute(Control actor);
+   public abstract void undo(Control actor);
+&#125;
+
+...
+public class MoveCommand : Command&#123;
+    
+ public：
+   MoveCommand(Control Actor,int x,int y):
+    actor(Actor),x_(x),y_(y),xBefore(0),yBefore(0)&#123;&#125;
+       
+    
+    
+   public override void execute(Control actor)
+   &#123;
+      xBefore=actor.GetX();
+      yBefore=actor.GetY();
+      actor.Moveto(x_,y_);
+   &#125;
+    
+   public override void undo(Control actor)
+   &#123;
+       actor.Moveto(xBefore,yBefore);
+   &#125;
+    
+    
+    private:
+    Control actor;
+    int x_,y_;
+    int xBefore,yBefore;
+&#125;
+</code></pre>
+<p>我们在类中添加了一些状态，当单位移动时记录他们上一次的位置，调用undo方法便能撤销刚才的移动，再按一次就变为重做。</p>
+<p>若要支持多次撤销，我们就维护一个命令列表和一个对当前（current）命令的引用，当玩家执行一个命令就将这个命令添加到列表中，并将current指向它。如果在撤销后执行了一个新的命令，那么位于此命令之后所有命令都被丢弃掉。</p>
+<hr>
+<h3 id="result"><a href="#result" class="headerlink" title="result"></a>result</h3><p>我们成功使用命令模式将输入解耦，我们可以让玩家更改键位，可以控制任何一个角色（改变传入的对象），同时这套接口也能为AI模块所使用。</p>
+<p>它应该拥有一个这样的结构：</p>
+<ol>
+<li>Command基类：是一个抽象类，类中对需要被执行的命令进行声明，一般来说要对外公布一个 execute 方法用来执行命令，而有撤销需求的还会公布一个undo方法。</li>
+<li>xxxxxCommand派生类：Command类的实现类，需要重写Command类中声明的方法。</li>
+<li>Invoker：调用类，负责调用InputHandler处理命令。</li>
+<li>Receiver：接受类/接收者，在本例中为游戏玩家对象和其他游戏对象。</li>
+</ol>
+<p><strong>不建议使用的情况</strong>：</p>
+<p>当命令太多时，为每个命令都写一个实现类来进行封装会耗费大量的时间。</p>
+<p><strong>建议：</strong></p>
+<ol>
+<li>如果是单人玩家的情况，我们的Invoker，也就是Control类，会有且只有一个，可以用单例模式为Control类提供全局访问，同时限制它有且只有一个实例。</li>
+<li>很多的命令和实例，可用享元模式解决，避免内存的浪费</li>
+<li>使用事件队列将代码生成的命令放入流中，然后通过网络传输这个命令流，在另一些机器上重现这些命令，这是实现网络多人游戏的其中一种思路。</li>
+</ol>
+<hr>
+<h2 id="享元模式"><a href="#享元模式" class="headerlink" title="享元模式"></a>享元模式</h2><p><strong>建立起共享以高效的支持大量的细粒度对象</strong></p>
+<p>说到享元模式，第一个想到的应该就是池技术了，String常量池、数据库连接池、缓冲池等等都是享元模式的应用，所以说享元模式是池技术的重要实现方式。</p>
+<hr>
+<h3 id="situation-1"><a href="#situation-1" class="headerlink" title="situation"></a>situation</h3><p>我们知道分配太多的对象到应用程序中将有损程序的性能，同时还容易造成内存溢出。我们的系统有大量的对象，而这些对象又将消耗大量内存，且这些对象的状态大部分都可以外部化。</p>
+<hr>
+<h3 id="task-1"><a href="#task-1" class="headerlink" title="task"></a>task</h3><p>我们需要只发送一次对象们共享的数据，然后再单独的将每个实例的特有数据推送到需要的地方。减少对象的创建，降低程序内存的占用，提高效率。</p>
+<hr>
+<h3 id="action-1"><a href="#action-1" class="headerlink" title="action"></a>action</h3><p>享元模式通过将对象数据切分成内部状态和外部状态来解决问题。</p>
+<p><strong>外部状态</strong>指对象得以依赖的一个标记，是随环境改变而改变的、不可共享的状态。</p>
+<p><strong>内部状态</strong>指对象共享出来的信息，存储在享元对象内部并且不会随环境的改变而改变。</p>
+<p>例如围棋有大量的棋子对象，棋子只有黑白两色，所以棋子颜色就是棋子的<strong>内部状态</strong>；而各个棋子之间的差别就是位置的不同，我们落子嘛，落子颜色是定的，但位置是变化的，所以方位坐标就是棋子的<strong>外部状态</strong>。</p>
+<p>首先我们定义Flyweight抽象类，它是所有具体享元类的超类或接口，通过这个接口，Flyweight可以接受并作用于外部状态。该类通过工厂之外，没有任何方式来创建设置这些属性。</p>
+<pre><code class="c#">public abstract class Flyweight &#123;
+ 
+     //内部状态
+     public：
+         string mInside;
+    //外部状态
+     protected：
+         string mOutside;
+     //构造函数要求享元角色必须接受外部状态
+     public Flyweight(String Outside)：
+         mOutside(Outside) &#123;&#125;  
+     //定义操作
+     public abstract void Operate();;
+     
+    
+    
+    ....Get()
+    ....Set()
+  
+&#125;
+</code></pre>
+<p>接着我们创建ConcreteFlyweight类，它继承Flyweight超类或实现Flyweight接口，作用是为其内部状态增加存储空间。</p>
+<pre><code>public class ConcreteFlyWeight : FlyWeight
+&#123;
+    public ConcreteFlyWeight(string outside)
+        :base(outside)&#123;&#125;
+//调用基类构造函数，接受外部状态
+    public override void Operate()
+    &#123;
+        Debug.Log(&quot;外部状态：&quot; + mOutside);
+    &#125;
+&#125;
+</code></pre>
+<p>对内存使用的情况一般就是大量生产的内存对象情况才能明显的降低内存，因此可以一般在工厂（大量生产某种属性对象）中进行生产共享属性的具体设置。</p>
+<p>我们创建FlyweightFactory类作为享元工厂，用它来创建并管理Flyweight对象。当用户请求一个Flyweight时，FlyweightFactory对象提供一个已创建的实例或创建一个实例。</p>
+<pre><code class="c#">public class FlyWeightFactory
+&#123;
+    private Dictionary&lt;string, FlyWeight&gt; mFlyWeightDict;
+
+    public FlyWeightFactory()
+    &#123;
+        mFlyWeightDict = new Dictionary&lt;string, FlyWeight&gt;();
+    &#125;
+
+    // 获取FlyWeight
+    public FlyWeight GetFlyWeight(string name)
+    &#123;
+        //先检查是否已经存在所需享元
+        if (mFlyWeightDict.ContainsKey(name))
+        &#123;
+            Debug.Log(name + &quot;：已经存在字典中，直接返回&quot;);
+            return mFlyWeightDict[name];
+        &#125;
+        FlyWeight FlyWeight = new ConcreteFlyWeight(name);
+        mFlyWeightDict.Add(name, FlyWeight);
+        Debug.Log(name + &quot;：不存在字典中，加入字典再返回&quot;);
+        return FlyWeight;
+    &#125;
+
+    public void ShowAllFlyWeights()
+    &#123;
+        foreach (FlyWeight item in mFlyWeightDict.Values)
+        &#123;
+            Debug.Log(&quot;FlyWeight：&quot; + item.Outside);
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>我们使用字典来保存这些享元，在需要使用时要先判断共享属性工厂类的容器里是否有这种共享属性对象，有就返回这个共享属性的对象，没有就报出警告并将其添加进字典里进行管理。</p>
+<hr>
+<h3 id="result-1"><a href="#result-1" class="headerlink" title="result"></a>result</h3><p>我们成功让可共享的对象分离出来，让多个对象可以同时使用这个对象，从而避免减少了内存的销毁，尤其是在大量产生这种对象的时候，能有效的提高效率，与此同时我们也提高了系统的复杂度。</p>
+<p>对象池也运用了享元模式的思想，将子弹对象存在容器里。这样就可以只产生少量子弹对象，而不必要重复创建删除子弹对象，减少了GC操作，做到了性能的优化</p>
+<hr>
+<p>2021.8.16–19:41完成</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
