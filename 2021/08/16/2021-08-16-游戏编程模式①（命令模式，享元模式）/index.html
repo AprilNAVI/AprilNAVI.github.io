@@ -108,12 +108,12 @@
         <p>本文作为《Game Programming Pattern》（游戏编程原理）的摘要总结，记录为期一个月的阅读感想与心得体会。</p>
 <span id="more"></span>
 
-<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>撰写本文时，希望可以尽量遵循<strong>star法则</strong>，此后的文章同样以这四个要点作为大纲。</p>
+<p>撰写本文时，希望可以尽量遵循<strong>star法则</strong>，此后的文章同样以这四个要点作为大纲。</p>
 <p><strong>s</strong>ituation（情境）</p>
 <p><strong>t</strong>ask（任务）</p>
 <p><strong>a</strong>ction（行为）</p>
 <p><strong>r</strong>esult（结果）</p>
-<p>本文代码尽量以unity和c#进行演示</p>
+<p>本文代码尽量以unity c#进行演示（最近看的都是cpp代码，时常有被带偏的情况，本人实在太菜菜子了）</p>
 <hr>
 <h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><p><strong>将一个请求（request）封装成一个对象，从而允许使用不同的请求，队列，或日志将客户端参数化，同时支持操作的撤销与恢复。</strong></p>
 <p>ps：因为所有的”请求“将会被封装成对象，所以我们就可以将他们像参数一样传递和存储。这实际上允许我们，使用链表或者数组等的连续存储类型，先存储一部分的命令，然后到一定的时机再一次过执行。在许多的回合制策略型游戏中，这非常有用。我们甚至还可以允许玩家取消自己不小心做错的行为。</p>
@@ -243,8 +243,11 @@ void Update()&#123;
 public class MoveCommand : Command&#123;
     
  public：
-   MoveCommand(Control Actor,int x,int y):
-    actor(Actor),x_(x),y_(y),xBefore(0),yBefore(0)&#123;&#125;
+   MoveCommand(Control Actor,int x,int y)
+    &#123;
+
+     ...
+ &#125;
        
     
     
@@ -302,11 +305,9 @@ public class MoveCommand : Command&#123;
 <pre><code class="c#">public abstract class Flyweight &#123;
  
      //内部状态
-     public：
-         string mInside;
+     public string mInside;
     //外部状态
-     protected：
-         string mOutside;
+     protected string mOutside;
      //构造函数要求享元角色必须接受外部状态
      public Flyweight(String Outside)：
          mOutside(Outside) &#123;&#125;  

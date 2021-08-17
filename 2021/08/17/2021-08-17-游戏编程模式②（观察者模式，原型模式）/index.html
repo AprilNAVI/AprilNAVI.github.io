@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏编程模式②（观察者模式，原型模式）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏编程模式②（观察者模式，原型模式） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/8/17
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文作为《Game Programming Pattern》（游戏编程原理）的摘要总结，记录为期一个月的阅读感想与心得体会。</p>
+<span id="more"></span>
+
+<p>撰写本文时，希望可以尽量遵循<strong>star法则</strong>，此后的文章同样以这四个要点作为大纲。</p>
+<p><strong>s</strong>ituation（情境）</p>
+<p><strong>t</strong>ask（任务）</p>
+<p><strong>a</strong>ction（行为）</p>
+<p><strong>r</strong>esult（结果）</p>
+<p>本文代码尽量以unity c#进行演示（最近看的都是cpp代码，时常有被带偏的情况，本人实在太菜菜子了）</p>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><p>在对象间定义一种一对多的依赖关系，以便当某对象的状态改变时，与他存在依赖关系的所有对象都能收到通知并自动进行更新。</p>
+<p>观察者模式是最为人所知的设计模式之一，使用最为广泛。我们可以用它来实现成就系统（成就要要检测敌人死亡个数，被观察者就是敌人死亡，观察者就是成就系统。）。</p>
+<p>在c#中观察者模式被集成到了语言层面（event）</p>
+<h3 id="situation"><a href="#situation" class="headerlink" title="situation"></a>situation</h3><p>将一个系统分割成一个一些类相互协作的类有一个不好的副作用，那就是需要维护相关对象间的一致性。</p>
+<hr>
+<h3 id="task"><a href="#task" class="headerlink" title="task"></a>task</h3><p>我们不希望为了维持一致性而使各类紧密耦合，这样会给维护、扩展和重用都带来不便。</p>
+<hr>
+<h3 id="action"><a href="#action" class="headerlink" title="action"></a>action</h3><p>我们先写一个抽象观察者类</p>
+<pre><code class="c#">public abstract class Observe &#123;
+    //得到通知后的响应
+    public abstract void onNotify(const Entity entity，Event event);    
+&#125;
+</code></pre>
+<p>任何实现这个接口的具体类都会成为一个观察者。我们针对这个抽象类进行编程。</p>
+<p>我们来完成一个成就系统吧</p>
+<pre><code class="c#">public class Achivement:Observe
+    &#123;
+    public override void onNotify(const Entity entity，Event event)
+    &#123;
+        switch(event)
+        &#123;
+            case EVENT_1:
+                &#123;
+                    ...();
+                    break
+                &#125;
+            ...        
+        &#125;  
+&#125;
+</code></pre>
+<p> 成就系统作为观察者，能在被观察者更新时收到通知，任何进行更新。</p>
+<p>我们接下来编写被观察者Subject（这里我们创建一个观察者集合，使用委托来写观察者模式可能会更方便些，但使用集合可能更通用）。</p>
+<pre><code class="c#">public abstract class Subject
+&#123;
+
+    //观察者集合
+    protected List&lt;IObserver&gt; mObserverList;
+
+    public ISubject()
+    &#123;
+        mObserverList = new List&lt;IObserver&gt;();
+    &#125;
+    // 添加观察者
+    public void AddObserber(IObserver observer)
+    &#123;
+        //让我们检查一下吧
+        if (mObserverList.Contains(observer) == false &amp;&amp; observer != null)
+        &#123;
+            mObserverList.Add(observer);
+            return;
+        &#125;
+        Debug.Log(&quot;报错&quot;);
+    &#125;
+    // 移除观察者
+    public void RemoveObserber(IObserver observer)
+    &#123;
+        if (mObserverList.Contains(observer))
+        &#123;
+            mObserverList.Remove(observer);
+            return;
+        &#125;
+        Debug.Log(&quot;报错&quot;);
+    &#125;
+    // 通知所有观察者更新
+    protect void NotifyObserver()
+    &#123;
+        foreach (IObserver item in mObserverList)
+        &#123;
+            item.onNotify();
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>我们的被观察者类完成了两个职责。一是它维护一个观察者列表，这些观察者随时等待通知。二是被观察者对象的NotifyObserver方法能够发送通知，调动观察者内的onNotify进行更新，同时我们也保护了NotifyObserver方法。</p>
+<p>我们接下来只要使我们所需要的系统和Subject挂钩，就能将其登记到我们的成就系统上。我们可以调用NotifyObserver来发送通知，而任何地方都能调用添加和移除观察者的方法。</p>
+<hr>
+<h3 id="result"><a href="#result" class="headerlink" title="result"></a>result</h3><p>我们成功降低了耦合度，同时也满足开闭原则。</p>
+<p>我们的c#有垃圾回收机制，所以可以不需要管理动态内存分配，一切都很合理。</p>
+<p>与此同时我们得注意，观察者模式是同步的，这意味着所有的观察者得到通知后才能继续工作，而任何一个观察者对象都可能阻塞被观察者，我们需要更小心的处理线程。</p>
+<p>我们还得注意及时清理例如死去的敌人那样失效的观察者。 </p>
+<p>观察者只能被动的获取数据，并不能主动的获取到想要的数据。因此它适合一些不相关的模块之间的通信问题，而不适合按个紧凑的模块。</p>
+<hr>
+<h2 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h2><p>使用特定原型实例来创建特定种类的对象，并通过拷贝原型来创造新的对象。</p>
+<hr>
+<h3 id="situation-1"><a href="#situation-1" class="headerlink" title="situation"></a>situation</h3><p>假设我们为游戏里面用一个抽象Monster类开始进行编程，那么可能遇到很多种继承它的敌人，人类、动物、龙，恶魔，各种等等。如果我们想为每个敌人做一个生成器父类Spawner，也会有与monster对应数量的子类。</p>
+<p>这样就会产生类的数量很多，而且这些类的功能是重复的。这样造成了大量的冗余。（除非你的薪资以代码行数来计算）</p>
+<hr>
+<h3 id="task-1"><a href="#task-1" class="headerlink" title="task"></a>task</h3><p>我需要代码能够更加简洁。</p>
+<hr>
+<h3 id="action-1"><a href="#action-1" class="headerlink" title="action"></a>action</h3><p>为了解决最重要的冗余问题，我们先设计最开始的Monster，它有一个抽象方法clone。</p>
+<pre><code class="c#">public class Monster  &#123;
+    public string MonsterName;
+    public int attack;
+    public int defense;
+    public string weapon;
+
+
+   public abstract Monster clone();
+&#125;
+</code></pre>
+<p>C#数据类型大体分为值类型(valuetype)与引用类型 (referencetype)。</p>
+<p>对于引用型变量而言，复制时，其实只是复制了其引用。复制引用的方式叫浅复制，</p>
+<p>如果你想浅复制clone函数为：</p>
+<pre><code class="c#">  public Monster clone()
+    &#123;
+        return this;
+    &#125;
+</code></pre>
+<p>它返回它本身的引用</p>
+<p>若要深复制，就Instantiate一个新的：</p>
+<pre><code class="c#">  public  GameObject clone()
+    &#123;
+        return Instantiate(this.gameObject) as GameObject;
+    &#125;
+</code></pre>
+<p>回归正题！让我们来看看子类吧</p>
+<pre><code class="c#">public class Dragon : Monster
+&#123;
+    public Dragon()
+    &#123;
+        MonsterName = &quot;Dragon&quot;;
+        attack = 8;
+        defense = 15;
+        weapon = &quot;tooth&quot;;
+    &#125;
+    public override Monster clone()
+    &#123;
+        return new Dragon(a,b,c,d);
+    &#125;
+
+&#125;
+</code></pre>
+<p>只要让所有的这些子类都实现这些接口，我们就不需要单独再为每一个monster子类定义一个他们的spawner类了。</p>
+<p>我们只需要定义一个spawner类：</p>
+<pre><code class="c#">public class Spawner 
+    Monster mPrototype;
+   public Spawner(Monster Prototype)
+   &#123;
+       ...
+   &#125;
+   public void setPrototype(Monster prototype)
+    &#123;
+       ...
+   &#125;
+    
+  public  GameObject createMonster()
+    &#123;
+        return prototype.clone();
+    &#125;
+&#125;
+</code></pre>
+<p>使用时只需要：</p>
+<pre><code class="c#">spawner.setPrototype(A);
+spawner.createMonster();
+spawner.setPrototype(B);
+spawner.createMonster();
+</code></pre>
+<p>我们也可以通过实例化spawner来创造各种各样的生成器。</p>
+<p>这样就能创造出风龙水龙土龙大龙的生成器啦。</p>
+<hr>
+<h3 id="result-1"><a href="#result-1" class="headerlink" title="result"></a>result</h3><p>实际上我们并没有节省多少代码量，因为各种各样的怪物的clone方法可能也不一定相同。</p>
+<p>为每种怪物编写clone方法和实现单独的生成器其实差不了多少，但起码我们让自己的逻辑更加清晰了，代码也变得更加优雅。</p>
+<p>我们需要注意深拷贝和浅拷贝的问题，否则编写出来的clone方法可能是有问题的。</p>
+<p>如果我们想把代码变成实在的数据也是很方便的，就比如Monster里的属性都是相同的，我们只需要一个Monster类和一个存了各种敌人的数据的文件就行了。</p>
+<p>我们通过序列化和反序列化对原型进行数据建模，再将其传递给spawner。这在数据量大的游戏中尤为明显，能省去大量代码。使用JSON，XML，二进制等等都可以，这样也便于实现游戏的存档读档功能。我更喜欢json，因为它更易读。</p>
+<hr>
+<p>2021.8.16–19:04完成</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
