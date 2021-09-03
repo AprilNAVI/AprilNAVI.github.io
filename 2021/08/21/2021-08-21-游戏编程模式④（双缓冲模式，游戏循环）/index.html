@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏编程模式④（双缓冲模式，游戏循环）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏编程模式④（双缓冲模式，游戏循环） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/8/21
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文作为《Game Programming Pattern》（游戏编程原理）的摘要总结，记录为期一个月的阅读感想与心得体会。</p>
+<span id="more"></span>
+
+<p>撰写本文时，希望可以尽量遵循<strong>star法则</strong>，此后的文章同样以这四个要点作为大纲。</p>
+<p><strong>s</strong>ituation（情境）</p>
+<p><strong>t</strong>ask（任务）</p>
+<p><strong>a</strong>ction（行为）</p>
+<p><strong>r</strong>esult（结果）</p>
+<p>本文代码尽量以unity c#进行演示（最近看的都是cpp代码，时常有被带偏的情况，本人实在太菜菜子了）</p>
+<hr>
+<h2 id="双缓冲模式"><a href="#双缓冲模式" class="headerlink" title="双缓冲模式"></a>双缓冲模式</h2><p>我们的游戏世界以时间为单位更新，而每个引擎都必须处理渲染的问题。</p>
+<p>同一时间内只会渲染一块内容，如果在计算的同时就开始渲染，那么屏幕只会出现一部分的色彩，这样显示出来则会是割裂的。</p>
+<p>所以我们准备了一个缓冲区，我们在屏幕看到的色彩值其实往往是GPU算出的上一帧的数据。</p>
+<p>也就是说，为了维护画面的完整性，在渲染中我们准备了两个区域。</p>
+<p>一个是后台缓冲区，专门用于写入数据（可能需要一些时间但没关系）</p>
+<p>而另一个是当前缓冲区，它已经准备好展示数据了。</p>
+<p>当写入完成时两个缓冲区进行交换。</p>
+<p>将旧的后台缓冲区替换上去成为新的当前缓冲区，为我们所见；</p>
+<p>而之前的当前缓冲区则替换下来成为如今的后台缓冲区，用于写入新的数据。</p>
+<hr>
+<h3 id="situation"><a href="#situation" class="headerlink" title="situation"></a>situation</h3><p>我们需要维护一些被逐步改变着的状态量。</p>
+<p>同个状态可能会在其被修改的同时被访问到。</p>
+<p>我们希望避免访问状态的代码能看到具体的工作过程。</p>
+<p>我们希望能够读取状态但不希望等到写入操作的完成。</p>
+<hr>
+<h3 id="task"><a href="#task" class="headerlink" title="task"></a>task</h3><p>在渲染中，我们需要解决随时间计算并更新带来的画面割裂问题。</p>
+<p>在其他情况下，我们需要解决对状态同时进行访问和修改的冲突（渲染也在其中不是吗）</p>
+<hr>
+<h3 id="action"><a href="#action" class="headerlink" title="action"></a>action</h3><p>原文使用的是c++，交换只是一个指针重定向的过程。</p>
+<p>若不能支持指针重定向，则需要考虑数据拷贝。</p>
+<p>个人感觉这个东西很底层，在编写unity c#脚本时并不常用，所以这里分析一下原文的c++代码：</p>
+<pre><code class="c++">class Framebuffer
+    &#123;
+    public:
+        Framebuffer() &#123;&#125;
+        ~Framebuffer() &#123;&#125;
+
+        void clear()
+        &#123;
+            for (int i = 0; i &lt; kWidth*kHeight; ++i)
+            &#123;
+                pixels_[i] = 0;
+            &#125;
+        &#125;
+
+        void draw(int x, int y)
+        &#123;
+            pixels_[y*kWidth + x] = 1;
+        &#125;
+
+        const char* getPixels()
+        &#123;
+            return pixels_;
+        &#125;
+
+    private:
+        static const int kWidth = 160;
+        static const int kHeight = 120;
+        char pixels_[kWidth * kHeight];
+    &#125;;
+
+    class Scene
+    &#123;
+    public:
+        void draw()
+        &#123;
+            buffer_.clear();
+            buffer_.draw(1, 1);
+            buffer_.draw(1, 2);
+            buffer_.draw(3, 2);
+        &#125;
+
+        Framebuffer&amp; getBuffer()
+        &#123;
+            return buffer_;
+        &#125;
+
+    private:
+        Framebuffer buffer_;
+    &#125;;
+</code></pre>
+<p>以上是没有使用双缓冲模式的代码，不难看出，由于Scene将getBuffer（）这一接口暴露了出来，因此显卡驱动可以在任何时候调用getBuffer()，就好比这样：</p>
+<pre><code class="c++">buffer_.draw(1, 1);
+buffer_.draw(4, 1);
+//显卡驱动调用
+buffer_.draw(1, 3);
+buffer_.draw(2, 4);
+buffer_.draw(3, 4);
+buffer_.draw(4, 3);
+</code></pre>
+<p>发生这种情况时，我们的画面可能尚未渲染完成，割裂就因此产生了</p>
+<p>我们采取双缓冲模式。</p>
+<pre><code class="c++">class Scene
+&#123;
+public:
+  Scene()
+  : current_(&amp;buffers_[0]),
+    next_(&amp;buffers_[1])
+  &#123;&#125;
+ 
+  void draw()
+  &#123;
+    next_-&gt;clear();
+ 
+    next_-&gt;draw(1, 1);
+    // ...
+    next_-&gt;draw(4, 3);
+ 
+    swap();
+  &#125;
+ 
+  Framebuffer&amp; getBuffer() &#123; return *current_; &#125;
+ 
+private:
+  void swap()
+  &#123;
+    // Just switch the pointers.
+    Framebuffer* temp = current_;
+    current_ = next_;
+    next_ = temp;
+  &#125;
+ 
+  Framebuffer  buffers_[2];
+  Framebuffer* current_;
+  Framebuffer* next_;
+&#125;;
+</code></pre>
+<p>现在scene有两个缓冲区，被置于数组 buffers_中。我们通过current和next两个指针来引用指向数组。</p>
+<p>我们进行绘图时，往next这个后台缓冲区进行写入，当完成时就交换两个缓冲区。而无论何时我们尝试获取像素信息时，我们都从完整的一个当前缓冲区current中获取，这样就解决了因同时进行访问和修改的冲突造成的画面割裂问题。</p>
+<hr>
+<h3 id="result"><a href="#result" class="headerlink" title="result"></a>result</h3><p>我们需要考虑到缓冲区的粒度。</p>
+<p>假如缓冲区是单个整体（庞大的代码块），那么全局就只有一对缓冲区，也就是我们示例中的情况。我们只需要进行两次指针分配就行。</p>
+<p>若许多对象都持有一块数据，我们需要遍历对象集合，通知每个对象进行交换，这样可能会花去一定时间。</p>
+<hr>
+<h2 id="游戏循环"><a href="#游戏循环" class="headerlink" title="游戏循环"></a>游戏循环</h2><p>实现用户输入和处理器速度在游戏进行时间上的解耦。</p>
+<p>游戏循环将在游戏过程中持续运转，每循环一次，就非阻塞的处理用户的输入，更新游戏状态，并渲染游戏到屏幕上。</p>
+<hr>
+<h3 id="situation-1"><a href="#situation-1" class="headerlink" title="situation"></a>situation</h3><p>anytime</p>
+<p>只要是游戏开发必将使用到游戏循环。</p>
+<hr>
+<h3 id="task-1"><a href="#task-1" class="headerlink" title="task"></a>task</h3><p>随着pc和各类游戏机的性能日益提高，cpu的运转速度变得飞快，开发环境对比以前性能低下的红白机小霸王已经有了很大的改变，因此我们不得不考虑性能这一因素。</p>
+<p>同时我们也必须考虑让游戏在不同性能的机器上能尽量有相同的表现。大部分情况下我们并不了解自己游戏运行的硬件平台拥有怎样的性能，因此我们如果想让游戏适配多种机型，那就得让游戏在一个与性能无关的速度常量下运行。</p>
+<hr>
+<h3 id="action-1"><a href="#action-1" class="headerlink" title="action"></a>action</h3><p>让我们看看最简单的游戏循环：</p>
+<pre><code>while(true)
+&#123;
+processInput();
+update();
+render();
+&#125;
+</code></pre>
+<p>这个简单循环的主要问题是它忽略了时间，游戏会尽情的飞奔。</p>
+<p>在性能低下的机器上游戏会运行的很慢很卡，在运行飞快的机器上则会跑的飞快，可能需要玩家有超人的判断力。</p>
+<p>若我们希望游戏以恒定60帧运行，则大概有16毫秒处理每一帧。我们所需要做的则是在16毫秒内处理这一帧，然后等待下一帧进行。我们称之为恒定时间步长。</p>
+<pre><code class="c++">while(true)
+&#123;
+    double start=getCurrentTime();
+    processInput();
+    update();
+    render();
+    
+    sleep(start+MS_PER_FRAME-getCurrentTime());
+&#125;
+</code></pre>
+<p>我们可以自由调整MS_PER_FRAME。</p>
+<p>若我们性能足以在16毫秒内完成这一帧，就可以确保游戏不会运行的太快。但如果游戏运行过慢时，这将起到副作用。</p>
+<p>这个模式的特点是：</p>
+<p>它非常容易编写。</p>
+<p>防止整个游戏因为跳帧而引起画面的撕裂。</p>
+<p>性能较低的硬件会显得更慢；在性能低下的机器可能出现一步十卡、一卡十步的跳帧现象，这样的问题会毁掉你的游戏。</p>
+<p>而性能高的硬件则浪费了硬件资源。牛逼的机器运行这个游戏可以轻松的跑到300帧，但你却限制它最高只能以60帧更新，拥有牛逼硬件的玩家无法尽情发挥其硬件效果产生极大的挫败感。但在移动平台上这可能是一件好事，它能避免游戏持续高速运行导致的快速耗电。</p>
+<p>我们来看看下一种游戏循环。我们尝试用这一帧减去上一帧的时间来作为更新的步长，这样我们可以让游戏尽可能的飞奔，并且让依据FPS来决定游戏速度。这样游戏会越来越接近实际时间。我们称为变值/浮动时间步长：</p>
+<pre><code class="c++">double LastTime=getCurrentTime();
+while(true)
+&#123;
+    double current=getCurrentTime();
+    double elapsed=current-LastTime
+    processInput();
+    update(elapsed);
+    render();
+    current=LastTime;
+&#125;
+</code></pre>
+<p>我们达成了：</p>
+<p>随着每一帧所需的时间步长增加，子弹在每一帧越飞越远。而无论他在慢的机器（4大步）还是在快的机器上（10小步），都是在相同的时间中移动了同样的距离。</p>
+<p>游戏在不同的硬件上都能以相同的速率运行。</p>
+<p>且高端硬件玩家会有更流畅的游戏体验。</p>
+<p>但设计模式一直都是一个相对的东西，这种循环同样不是十全十美的：</p>
+<p>这使得游戏变得不再具有确定性（一样的输入会获得完全一致的输出）</p>
+<p>ps：计算机天生具有确定性，但当将现实世界的变量（诸如时间，网络，线程计时器）掺杂进来时，就会变得不确定。</p>
+<p>游戏大多使用浮点数进行运算，每两次浮点数相加就会产生一定的误差，而在更新频率越快的机器上这个误差将越大。而且不管运行它的硬件怎样，都可能出现严重的问题。</p>
+<p>我们来看看改进之后的方案。我们采取恒定的游戏步长和不固定的渲染步长：</p>
+<pre><code class="c++">double previous = getCurrentTime();
+double lag=0.0;
+while(true)
+&#123;
+    double current=getCurrentTime();
+    double elapsed=current-previous
+    previous=current;
+    lag+=elapsed;
+    processInput();
+    
+    while(lag&gt;=MS_PER_FRAME)
+    &#123;
+        update();
+        lag-=MS_PER_FRAME;
+    &#125;
+    render();
+&#125;
+</code></pre>
+<p>如此，游戏会以稳定的速度更新，渲染速度也尽可能的快。</p>
+<p>而且以固定步长更新将使物理系统和AI都更加稳定。</p>
+<p>同时我们将渲染从更新循环中分离出来，节省了CPU周期。</p>
+<p>如果渲染速度超过了更新速度的话，有一些帧的画面将会是完全相同的。</p>
+<p>也就是说渲染帧率最高等于游戏更新帧率。</p>
+<p>这看起来不错，但仍然有改进的空间：</p>
+<p>我们的更新是十分紧凑且固定的，而渲染的频率低于更新且不稳定，这导致我们可能并不在游戏更新的时候渲染，这样动作可能会显得并不那么流畅。</p>
+<p>我们引入：</p>
+<pre><code class="c++">render(lag/MS_PER_FRAME)
+</code></pre>
+<p>诸如这样的插值运算，以lag（渲染时两帧的时间间隔）和帧率来预言计算物体应该出现的位置。由于游戏速度是恒定的，计算错误的情况停留在画面上的时间极短，难以发现，并无大碍。</p>
+<p>在性能低的机器上，游戏循环会出现掉帧，但是游戏速度不受到影响。渲染速度会被降低。</p>
+<p>在性能高的机器上，游戏循环不会出现问题，屏幕更新却可以非常快。</p>
+<p>这种使游戏状态的更新独立于FPS的解决方案似乎是最好的游戏主循环实现。</p>
+<p>唯一的缺点可能是它有点复杂了，并不容易编写，有许多细节需要实现（需要协调在高端机器上能跑的足够平滑，低端机器上不会让游戏跑的太慢）。</p>
+<hr>
+<h3 id="result-1"><a href="#result-1" class="headerlink" title="result"></a>result</h3><p>游戏主循环对游戏的影响远远超乎你的想象。</p>
+<p>有一个方案是要坚决避免的，那就是可变帧率来决定游戏速度的方案（让游戏随着性能尽可能跑得快）。</p>
+<p>恒定的帧率的方案对移动设备而言可能是一个很好的实现。</p>
+<p>如果想展示你的硬件全部的实力，那么最好使用FPS独立于游戏速度的实现方案。</p>
+<p>如果不想麻烦的实现一个预言函数则需要找到一个帧率大小的平衡点。</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

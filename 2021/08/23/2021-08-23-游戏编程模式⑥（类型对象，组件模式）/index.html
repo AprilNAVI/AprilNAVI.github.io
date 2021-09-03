@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏编程模式⑥（类型对象，组件模式）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏编程模式⑥（类型对象，组件模式） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/8/23
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文作为《Game Programming Pattern》（游戏编程原理）的摘要总结，记录为期一个月的阅读感想与心得体会。</p>
+<span id="more"></span>
+
+<p>撰写本文时，希望可以尽量遵循<strong>star法则</strong>，此后的文章同样以这四个要点作为大纲。</p>
+<p><strong>s</strong>ituation（情境）</p>
+<p><strong>t</strong>ask（任务）</p>
+<p><strong>a</strong>ction（行为）</p>
+<p><strong>r</strong>esult（结果）</p>
+<p>本文代码尽量以unity c#进行演示（最近看的都是cpp代码，时常有被带偏的情况，本人实在太菜菜子了）</p>
+<hr>
+<h2 id="类型对象"><a href="#类型对象" class="headerlink" title="类型对象"></a>类型对象</h2><p>通过创建一个类来支持新类型的灵活创建，其每个实例都代表了一个不同的对象类型。</p>
+<p>我们传统的编程可能是一个monster基类，然后有诸如dragon，troll，witch这样的子类去继承他们。这样会导致几乎所有的时间都在编写简单且几乎相同的子类，而且每次都需要重新编译。</p>
+<hr>
+<h3 id="situation"><a href="#situation" class="headerlink" title="situation"></a>situation</h3><p>我们需要一个无需重新编译就能修改属性的模式，最好能在无程序员介入的情况下让设计师也能调整。</p>
+<p>当需要定义一系列不同种类的对象，又不希望把种类硬编码到类型系统时，本模式很适用。</p>
+<p>特别是不知道将来会有什么新的类型（诸如游戏更新，资源包下载），</p>
+<p>或者是需要不重新编译或修改代码情况下修改或添加新的类型时，此模式特别适用。</p>
+<hr>
+<h3 id="task"><a href="#task" class="headerlink" title="task"></a>task</h3><p>我们的任务很简单，游戏中有许多不同的怪物，我们想让他们共享一些特性。当然了他最好可以不需要重新编译就能支持修改。</p>
+<hr>
+<h3 id="action"><a href="#action" class="headerlink" title="action"></a>action</h3><p>我们重构我们的代码，使得每一种怪物都“has a”种类。我们仅声明单个Monster类和单个Breed类，而不是从Monster派生出各个种类。</p>
+<pre><code class="c++">class Breed
+&#123;
+    public:
+    Breed(int health_,const char* _attack)
+        :health(health_),attack(_attack)&#123;&#125;
+    
+    Get()&#123;...&#125;
+        
+    private:
+    int health;
+    const char* attack;
+&#125;
+</code></pre>
+<p>我们创建了一个包含两个数据字段的容器，让我们看看monster如何使用它</p>
+<pre><code class="c++">class Monster
+&#123;
+    public:
+    Monster(Breed&amp; breed_)
+        :breed(breed_),health(breed_.GetHealth())
+    
+    const char* GetAttack()
+        &#123;
+            return breed.GetAttack();
+        &#125;
+    
+    private:
+    int health;
+    Breed&amp; breed;
+   
+&#125;
+</code></pre>
+<p>我们构造一个怪物时，给他一个种族对象的印象，由此来取代之前的派生关系。在构造函数中，怪物使用种族对象来获取他的初始生命值，其他所需的也只需要调取他所属Breed的方法。这是这个模式的核心思想。</p>
+<p>我们成功的将一部分数据从硬编码的类继承中解放了出来，成为了可在运行时定义的数据。</p>
+<p>我们最终会有成百上千个种类，我们可以仿照多个怪物子类通过类型的基类来共享特性一样，我们直接让种族之间共享特性。我们通过派生来实现，只不过不采用语言层面上的派生，而是自己实现。</p>
+<pre><code class="c++">class Breed
+&#123;
+    public:
+    Breed(Breed* parent_,int health_,const char* _attack)
+        :parent(parent_),health(health_),attack(_attack)&#123;&#125;
+    
+    int GetHealth()
+    &#123;
+        if(health!=0||parent=NULL)
+        &#123;
+            return health;
+        &#125;
+        else
+        &#123;
+            return parent.GetHealth();
+        &#125;
+    &#125;
+        
+    private:
+    Breed* parent;
+    int health;
+    const char* attack;
+&#125;
+</code></pre>
+<p>这样做即使在运行时修改种类，他也能正常运行。另一方面会占用更多内存，而且更慢，这方面值得好好权衡利弊。如果能保证基类不变，可以直接在构造函数里面将基类的值拷贝过来，这样会更快些。</p>
+<p>上述过程中，我们是相当于是先分配了一段空内存，然后给他赋予了类型。我们希望能调用类自身的构造函数，由它为我们创造新的实例。</p>
+<pre><code class="c++">class Breed
+&#123;
+    public:
+    Monster* NewMonster()
+    &#123;
+    return new Monster(*this);
+    &#125;
+&#125;
+</code></pre>
+<pre><code class="c++">class Monster
+&#123;
+    friend class Breed;
+    
+    public:
+    const char* GetAttack()
+        &#123;
+            return breed.GetAttack();
+        &#125;
+    
+    private:
+    
+    Monster(Breed&amp; breed_)
+        :breed(breed_),health(breed_.GetHealth())
+    int health;
+    Breed&amp; breed;
+   
+&#125;
+</code></pre>
+<p>我们创建怪物由new Monster（anyBreed）变成了anyBreed.newMonster（）</p>
+<p>我们将构造方法设为私有，同时将Breed设为友元类，意味着Breed仍然能访问到这个构造方法，newMonster成为了创建怪物的唯一方法。</p>
+<p>初始化一般在内存分配后，我们提前获得了用于储存它的内存。</p>
+<p>在Breed里定义一个构造函数，能让我们在控制权被移交到初始化函数前，从一个池或者自定义的堆里面获取内存，我们能因此自己控制对象在内存中存在的位置和时间。</p>
+<hr>
+<h3 id="result"><a href="#result" class="headerlink" title="result"></a>result</h3><p>类型模式让我们像设计自己的语言一样设计我们的系统，但时间开销是不可忽略的。</p>
+<p>我们成功做到了不同的对象之间能共享数据，另一个角度上解决这个问题的是原型模式。</p>
+<p>享元模式也很接近，但享元模式更倾向节约内存，而类型对象重点在于灵活性。</p>
+<p>这个模式和状态模式相同，都把对象的部分定义工作交给了另一个代理对象来实现。但这个模式的代理对象往往是一些静态的内容，而状态模式的代理对象则是描述对象当前状态的临时数据。</p>
+<hr>
+<h2 id="组件模式"><a href="#组件模式" class="headerlink" title="组件模式"></a>组件模式</h2><p>允许一个单一的实体跨越多个不同域而不会导致耦合</p>
+<p>软件设计的趋势是尽可能多的使用组合而不是继承，为了两个类之间代码共享他们应该拥有同一个类，而不是继承同一个类。</p>
+<hr>
+<h3 id="situation-1"><a href="#situation-1" class="headerlink" title="situation"></a>situation</h3><p>组件模式最常见于游戏中定义实体的核心类，当我们有一个设计多个领域的类（物理，渲染，声音时），我们希望这些领域能保持解耦。</p>
+<p>又或者是希望定义很多共享不同能力的对象，但采用继承的方法很难精准无误的重用代码。</p>
+<p>这个时候，我们可能就需要组件模式。</p>
+<hr>
+<h3 id="task-1"><a href="#task-1" class="headerlink" title="task"></a>task</h3><p>我们需要将代码解耦，将一个大类里面的各个领域划分成独立的部分，然后让类持有他。这个类本身成为这些组件的容器。</p>
+<hr>
+<h3 id="action-1"><a href="#action-1" class="headerlink" title="action"></a>action</h3><p>让我们看看原先庞大的类吧</p>
+<pre><code class="c++">class Bjorn
+&#123;
+    public：
+        Bjorn():velocity_(0),x_(0),y_(0);
+    
+    void update(World &amp;world,Graphics&amp; graphics)
+    &#123;
+        //允许用户输入英雄的速度
+        switch(Controller::getJoystickDirection())
+        &#123;
+            case DIR_LEFT:
+             velocity_-=WALK_ACCECLERATION;
+                break;
+            
+            case DIR_RIGHT:
+             velocity_+=WALK_ACCECLERATION;
+                break;
+        &#125;
+         //通过速度修改位置
+     x_+=velocity_;
+     world.resovleCollision(volume_,x_,y_,volume_);
+        //绘出恰当的精灵
+        Sprite* sprite=&amp;spriteStand_;
+        if(velocity_&lt;0)sprite=&amp;spriteWalkLeft;
+        else if(velocity_&gt;0)sprite=&amp;priteWalkRight;
+        
+        graphics.draw(sprite,x_,y_);
+    &#125;
+    
+    private:
+    static const int WALK_ACCECLERATION=1;
+    
+    int velocity_;
+    int x_,y_;
+    
+    Volume volume_;
+    Sprite spriteStand_;
+    Sprite spriteWalkLeft;
+    Sprites priteWalkRight;
+&#125;
+</code></pre>
+<p>在这个类中，我们通过操控杆的输出来判定如何对主角进行加速，通过物理引擎确定新的位置，最后将主角绘制到屏幕上。</p>
+<p>我们慢慢的将主角分割成独立的域，先从输入开始。</p>
+<p>输入域所做的事情是读入用户的输入并调整自身速度。</p>
+<p>让我们将这个逻辑封装到一个独立的类：</p>
+<pre><code class="c++">class Input
+&#123;
+    public:
+    void update(Bjorn&amp; bjorn)
+    &#123;
+                switch(Controller::getJoystickDirection())
+        &#123;
+            case DIR_LEFT:
+            bjorn.velocity_-=WALK_ACCECLERATION;
+                break;
+            
+            case DIR_RIGHT:
+            bjorn.velocity_+=WALK_ACCECLERATION;
+                break;
+        &#125;
+    &#125;
+    
+    private:
+    static const int WALK_ACCECLERATION=1;
+&#125;
+</code></pre>
+<p>对物理部分也做出同样的工作：</p>
+<pre><code class="c++">class Physics
+&#123;
+    public:
+    void update(Bjorn&amp; bjorn,World&amp; world)
+    &#123;
+     bjorn.x_+=velocity_;
+     world.resovleCollision(volume_,x_,y_,volume_);
+    &#125;
+    
+    private:
+    Volume volume_;
+&#125;
+</code></pre>
+<p>此时volume_由物理组件持有了。</p>
+<p>最后是一样很重要的渲染代码：</p>
+<pre><code class="c++">class Graphics
+&#123;
+    public:
+    void update(Bjorn&amp; bjorn,Graphcis&amp; graphcis)
+    &#123;
+        Sprite* sprite=&amp;spriteStand_;
+        if(bjorn.velocity_&lt;0)sprite=&amp;spriteWalkLeft;
+        else if(bjorn.velocity_&gt;0)
+            sprite=&amp;priteWalkRight;
+        
+        graphics.draw(sprite,x_,y_);
+    &#125;
+    private:
+    
+    Sprite spriteStand_;
+    Sprite spriteWalkLeft;
+    Sprites priteWalkRight;
+&#125;
+</code></pre>
+<p>这样一来，我们几乎将所有东西都分隔开来了。只剩下没有多少代码的主角：</p>
+<pre><code class="c++">class Bjorn
+&#123;
+    public：
+    int velocity;
+    int x,y;
+    
+    void update(World &amp;world,Graphics&amp; graphics)
+    &#123;
+        input.update(*this);
+        Physics.update(*this,world);
+        Graphics.update(*this,graphics);
+    &#125;
+    
+    private:
+    Input input;
+    Physics physics;
+    Graphics graphics;
+
+&#125;
+</code></pre>
+<hr>
+<h3 id="result-1"><a href="#result-1" class="headerlink" title="result"></a>result</h3>
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

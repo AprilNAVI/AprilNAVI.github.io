@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UnityShader入门精要②（UnityShader基础）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UnityShader入门精要②（UnityShader基础） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/8/28
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文为学习UnityShader时所记录的笔记，供学习产出和日后复习使用。</p>
+<p>学习资料为冯乐乐（问就是我女神）的《UnityShader入门精要》</p>
+<span id="more"></span>
+
+<p>呜呜呜今天看书看这节的时候已经感觉人开始略微劝退了，不过还是充满激情的！</p>
+<hr>
+<h2 id="3-1-UnityShader概述"><a href="#3-1-UnityShader概述" class="headerlink" title="3.1 UnityShader概述"></a>3.1 UnityShader概述</h2><p>在unity中，Shader需要和材质配合使用。</p>
+<p>unity中提供了四种Shader模板：</p>
+<p>Standard Surface Shader：包含了标准光照模型的表面着色器模板</p>
+<p>Unlit Shader：不包含标准光照的基本顶点/片元着色器（教程中大部分使用）</p>
+<p>Image Effect Shader：实现各种屏幕后处理效果</p>
+<p>Compute Shader：产生特殊Shader文件来利用GPU并行性进行与渲染无关的计算（一般用不到）</p>
+<hr>
+<h2 id="3-2-UnityShaderLab"><a href="#3-2-UnityShaderLab" class="headerlink" title="3.2 UnityShaderLab"></a>3.2 UnityShaderLab</h2><p>UnityShaderLab是专门用来为UnityShader服务的语言，是高级层的渲染抽象层。</p>
+<p>一个UnityShader基础结构如下：</p>
+<pre><code>Shader &quot;ShaderName&quot;
+&#123;
+Properties
+&#123;//属性&#125;
+
+SubShader
+&#123;//子着色器A&#125;
+
+SubShader
+&#123;//子着色器B&#125;
+
+Fallback “VertexLit”
+&#125;
+</code></pre>
+<p>unity会根据目标平台将以上的UnityShaderLab代码编译成真正的代码和Shader文件。</p>
+<hr>
+<h2 id="3-3-UnityShader的结构"><a href="#3-3-UnityShader的结构" class="headerlink" title="3.3 UnityShader的结构"></a>3.3 UnityShader的结构</h2><h3 id="起个名字"><a href="#起个名字" class="headerlink" title="起个名字"></a>起个名字</h3><p>每个Unity Shader 第一行都需要通过Shader语义来指定该Unity Shader的名字。</p>
+<pre><code>Shader &quot;MyShader&quot;
+</code></pre>
+<p>或者是这样</p>
+<pre><code>Shader &quot;Custom/MyShader&quot;
+</code></pre>
+<p>在字符串中添加斜杠可以控制Shader在材质面板出现的位置</p>
+<hr>
+<h3 id="Properties"><a href="#Properties" class="headerlink" title="Properties"></a>Properties</h3><p>Propertie是材质和UnityShader的桥梁，他包含了一系列属性，这些语义会出现在材质面板中。</p>
+<p>Properties语义块定义一般如下：</p>
+<pre><code>Properties
+&#123;
+Name (&quot;display name&quot;,PropertyType)=DefaultValue
+&#125;
+</code></pre>
+<p>声明这些属性是为了在材质面板中能方便的调整。</p>
+<p>若需要在Shader中访问这些属性，则需要使用每个属性的<strong>名字（Name</strong>）一般由下划线开始。</p>
+<p><strong>显示的名称（display name）</strong>是出现在材质面板上面的名字。</p>
+<p>我们还需要为每个属性指定他的<strong>类型（PropertyType）</strong>并指定一个默认值</p>
+<p>下列代码展示了所有的属性：</p>
+<pre><code>Shader &quot;Custom/MyShad类型er&quot;
+&#123;
+    Properties
+    &#123;
+        //number and slider
+        _MainTex(&quot;Texture&quot;, 2D) = &quot;white&quot; &#123;&#125;
+        _Int(&quot;Int&quot;,Int) = 2
+        _Float(&quot;Float&quot;,Float) = 1.5
+        _Range(&quot;Range&quot;,Range(0.0,5.0)) = 3.0
+
+            //color and vector
+            _Color(&quot;Color&quot;,Color) = (1,1,1,1)
+            _Vector(&quot;Vector&quot;,Vector) = (2,3,6,1)
+
+            //texture
+            _2D(&quot;2D&quot;,2D) = &quot;&quot;&#123; &#125;
+            _3D(&quot;3D&quot;,3D) = &quot;Black&quot;&#123; &#125;
+            _Cube(&quot;Cube&quot;,Cube) = &quot;White&quot;&#123;&#125;
+
+    &#125;
+        FallBack &quot;Diffuse&quot; 
+</code></pre>
+<p>对于<strong>Int Float Range</strong>这些数字类型的属性，其默认值是一个单独的数字。</p>
+<p>对于<strong>Color和Vector</strong>这类属性，默认值是圆括号包围的四维向量。</p>
+<p>对于<strong>2D,Cube,3D</strong>这类属性，默认值是一个字符串跟着一个花括号。</p>
+<p>字符串要么是空的要么是内置的纹理名称（white,black，yellow）</p>
+<hr>
+<h3 id="SubShader"><a href="#SubShader" class="headerlink" title="SubShader"></a>SubShader</h3><p>每一个Unity Shader文件可以包含多个SubShader语义块，但最少得有一个。</p>
+<p>Unity会扫描所有语义块，选择第一个能在目标平台运行的语义块。若都不支持则会使用Fallback语义指定的Unity Shader。</p>
+<p>原因是这样可以供不同性能的显卡使用不同复杂程度的语义块。</p>
+<p>SubShader语义块包含的定义通常如下：</p>
+<pre><code>SubShader
+&#123;
+//可选的标签设置
+[Tags]
+
+//可选的状态设置
+[RenderSetup]
+
+Pass&#123;
+&#125;
+//其他pass
+&#125;
+</code></pre>
+<p>SubShader中提供了一系列Pass和<strong>可选的状态设置（tag）和标签设置（RenderSetup）。</strong></p>
+<p><strong>每个Pass定义了一套完整的渲染流程</strong>，但如果Pass过多就好造成渲染性能的下降。应尽量使用尽可能少数目的Pass。</p>
+<p>Tags和RenderSetup可在SubShader中定义，若在SubShader中定义则会用于所有Pass；也可以在Pass中单独定义。</p>
+<p>其中Tags有些特定设置，在SubShader和Pass是不一样的。而RenderSetup的语法则完全相同。</p>
+<hr>
+<p><strong>状态设置（RenderSetup）：</strong></p>
+<p>ShaderLab提供了一系列渲染状态的设置指令，用于设置显卡的各种状态。</p>
+<p>例如：</p>
+<p>Cull Back | Front |Off （剔除背面/正面/关闭）</p>
+<p>ZTest 巴拉巴拉（设置深度测试使用的函数）</p>
+<p>ZWrite On | Off（开启关闭深度写入）</p>
+<p>Blend 巴拉巴拉（开启并设置混合模式）</p>
+<p><strong>在SubShader中设置以上渲染状态时，将会应用到所有的Pass。</strong></p>
+<p>若不想这样也可以在Pass中单独进行以上设置。</p>
+<hr>
+<p><strong>标签设置（Tags）：</strong></p>
+<p>Tags是一个键值对，值和键都是字符串类型</p>
+<pre><code>Tags&#123;&quot;TagName1&quot;=&quot;Value1&quot; &quot;TagName2&quot;=&quot;Value2&quot;&#125;
+</code></pre>
+<p>标签有以下（具体的键对应的值上网查吧太懒了555）：</p>
+<p>Queue（控制渲染顺序，指定该物体属于哪一个渲染队列）</p>
+<p>RenderType（对着色器进行分类）</p>
+<p>DisableBatching（是否禁用批处理）</p>
+<p>ForceNoShadowCasting（控制该物体是否会投射阴影）</p>
+<p>IgnoreProjector（是否受Projector影响，通常用于半透明物体）</p>
+<p>CanUseSpriteAtlas（当SubShader用于精灵时将这个设为false）</p>
+<p>PreviewType（指明材质面板该如何预览该材质，Plane，SkyBox）</p>
+<p><strong>上面的标签只能在SubShader中声明，而不能在Pass内。</strong></p>
+<p>Pass中声明的标签不同于SubShader的标签类型。</p>
+<hr>
+<p><strong>Pass语义块：</strong></p>
+<p>Pass语义块定义如下</p>
+<pre><code>Pass&#123;
+[Name]
+[Tags]
+[RenderType]
+//Other Type
+</code></pre>
+<p>首先可以定义名字</p>
+<p>例如<code>Name &quot;MyPassName&quot;</code>这样</p>
+<p>通过这个名字，可以使用UsePass命令来直接使用其他Unity Shader的Pass。</p>
+<p>例如：</p>
+<pre><code>UsePass &quot;MyShader/MYPASSNAME&quot;
+</code></pre>
+<p>这样能提高代码的复用性，注意Unity内部会把所有Pass的名字转换为大写，因此使用UsePass命令时必须使用大写的名字。</p>
+<p>Pass可以单独设置状态，这个在上面提到过了，用的是和在SubShader里面一样的状态类型。</p>
+<p>但Pass内的标签就不同与SubShader的标签了，Pass内使用的是：</p>
+<p>LightMode(定义该Pass在渲染流水线的角色)</p>
+<p>RequireOptions（用于指定满足某些条件时才渲染该pass）</p>
+<hr>
+<h3 id="Fallback"><a href="#Fallback" class="headerlink" title="Fallback"></a>Fallback</h3><p>Fallback是我们的后路，紧跟在SubShader语义块之后。</p>
+<p>意味着所有的SubShader都不能在这张显卡上运行的情况下，使用Fallback指定的最低级的Shader。</p>
+<pre><code>Fallback &quot;Name&quot;
+//或者
+Fallback Off
+</code></pre>
+<p>Fallback还会影响阴影的投射，所以正确的设置Fallback是很重要的。</p>
+<hr>
+<h2 id="3-4-UnityShader的形式"><a href="#3-4-UnityShader的形式" class="headerlink" title="3.4 UnityShader的形式"></a>3.4 UnityShader的形式</h2><p>我们可以用表面着色器（Surface Shader），顶点/片元着色器（Vertex/Fragment Shader），固定函数着色器（Fixed Function Shader）的形式来编写UnityShader。</p>
+<p>其中固定函数着色器很少使用，所以略掉。</p>
+<h3 id="表面着色器（Surface-Shader）"><a href="#表面着色器（Surface-Shader）" class="headerlink" title="表面着色器（Surface Shader）"></a>表面着色器（Surface Shader）</h3><p>表面着色器是Unity自己创造的一种着色器代码类型，渲染的代价比较大。</p>
+<p>本质上和顶点/片元着色器相同，实际上unity也在背后转换成顶点/片元着色器。</p>
+<p>可以理解为<strong>表面着色器是顶点/片元着色器更高一层的抽象，并为我们处理了很多光照细节。</strong></p>
+<pre><code>SubShader&#123;
+Tags&#123;&quot;RenderType&quot;=&quot;Opaque&quot;&#125;
+CGPROGRAM
+#pragma surface surf Lambert
+struct Input&#123;
+ float 4 color : COLOR;
+&#125;;
+void surf (Input IN,inout SurfaceOutput o)&#123;
+o.Albedo=1;
+&#125;
+ENDCG
+&#125;
+</code></pre>
+<p>表面着色器被定义在SubShader语义块（非pass内），不需要关心使用了多少个Pass，Unity会在背后为我们处理好一切。</p>
+<p>CGPROGRAM和ENDCG之间的代码使用Cg/HLSL编写，相当于将Cg/HLSL嵌套在ShaderLab中，语法和标准Cg/HLSL几乎一致。</p>
+<hr>
+<h3 id="顶点-片元着色器（Vertex-Fragment-Shader）"><a href="#顶点-片元着色器（Vertex-Fragment-Shader）" class="headerlink" title="顶点/片元着色器（Vertex/Fragment Shader）"></a>顶点/片元着色器（Vertex/Fragment Shader）</h3><p>以下代码来源于Unity新建的Unlit Shader模板。</p>
+<p>现在可以不用看懂，只关注语义框架。</p>
+<pre><code> SubShader
+            &#123;
+                Pass
+                &#123;
+                    CGPROGRAM
+                    #pragma vertex vert
+                    #pragma fragment frag
+                    #pragma multi_compile_fog
+                    #include &quot;UnityCG.cginc&quot;
+
+                    struct appdata
+                    &#123;
+                        float4 vertex : POSITION;
+                        float2 uv : TEXCOORD0;
+                    &#125;;
+
+                    struct v2f
+                    &#123;
+                        float2 uv : TEXCOORD0;
+                        UNITY_FOG_COORDS(1)
+                        float4 vertex : SV_POSITION;
+                    &#125;;
+
+                    sampler2D _MainTex;
+                    float4 _MainTex_ST;
+
+                    v2f vert(appdata v)
+                    &#123;
+                        v2f o;
+                        o.vertex = UnityObjectToClipPos(v.vertex);
+                        o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                        UNITY_TRANSFER_FOG(o,o.vertex);
+                        return o;
+                    &#125;
+
+                    fixed4 frag(v2f i) : SV_Target
+                    &#123;
+                        // sample the texture
+                        fixed4 col = tex2D(_MainTex, i.uv);
+                    // apply fog
+                    UNITY_APPLY_FOG(i.fogCoord, col);
+                    return col;
+                &#125;
+                ENDCG
+            &#125;
+            &#125;
+</code></pre>
+<p><strong>顶点/片元着色器代码也需要定义在CGPROGRAM和ENDCG之间</strong></p>
+<p><strong>但顶点/片元着色器需要写在Pass内，而非SubShader内</strong></p>
+<p>因为与表面着色器不同，此处我们需要自己单独定义每个pass的Shader代码。</p>
+<p>虽然这样需要编写更多代码，但灵活性也更高，我们可以由此控制渲染细节。</p>
+<p>这里CGPROGRAM和ENDCG之间的代码也使用Cg/HLSL编写。</p>
+<hr>
+<h3 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h3><ul>
+<li>除非在非常旧的设备（iPhone3）上运行，否则一般使用可编程管线的着色器而不是固定管线着色器。</li>
+<li>若希望和各类光源打交道，不妨试试表面着色器（小心移动平台的性能表现）</li>
+<li>若所需光源数目少（例如只有一个平行光），则使用顶点/片元着色器是更好的选择。</li>
+<li>若需要很多自定义的渲染效果，则也请使用顶点/片元着色器。</li>
+</ul>
+<hr>
+<hr>
+<p>昨天中间跑去约会又去酒吧爽喝，又睡了个大觉，拖下来十几个小时才完成这些，不过这两天还是蛮开心的！2021.8.29 16:24</p>
+<hr>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
