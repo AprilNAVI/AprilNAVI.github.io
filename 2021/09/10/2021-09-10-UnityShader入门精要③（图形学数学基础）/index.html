@@ -1,0 +1,371 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UnityShader入门精要③（图形学数学基础）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UnityShader入门精要③（图形学数学基础） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/9/10
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文为学习UnityShader时所记录的笔记，供学习产出和日后复习使用。</p>
+<p>学习资料为冯乐乐（问就是我女神）的《UnityShader入门精要》</p>
+<span id="more"></span>
+
+<p>这一张讲的是各类变换矩阵，以及如何将模型空间的物体一步步变换到屏幕空间实现光栅化</p>
+<p>默认都有一定的线性代数基础，所以矩阵的乘法之类的基础知识直接略过</p>
+<hr>
+<h2 id="4-3-矢量"><a href="#4-3-矢量" class="headerlink" title="4.3 矢量"></a>4.3 矢量</h2><p>矢量本身不是很难的东西，这里直接以我的理解来记录矢量内容的重点。</p>
+<p>矢量之间可以进行乘法，有<strong>点积</strong>（dot product）和<strong>叉积</strong>（cross product）两种种类。</p>
+<hr>
+<h3 id="矢量的点积（点乘）"><a href="#矢量的点积（点乘）" class="headerlink" title="矢量的点积（点乘）"></a>矢量的点积（点乘）</h3><p>在unityshader中，点积为dot(a,b)。</p>
+<p><strong>点积的结果为一个值。点积满足交换律。</strong>点积公式懂的都懂。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210418114037370.png" alt="image-20210418114037370"></p>
+<p>重点是<strong>点积的几何意义</strong>（朋友面试被考到过被刷掉了hhh印象深刻）：</p>
+<p><strong>求一个向量在另一个向量的投影</strong></p>
+<p><strong>测量两个方向有多近</strong></p>
+<p><strong>分解一个向量</strong></p>
+<p><strong>确定两个向量是同向还是反向（方向相反点积小于0，方向垂直点积等于0，方向相同点积大于0）</strong></p>
+<hr>
+<h3 id="矢量的叉积（叉乘）"><a href="#矢量的叉积（叉乘）" class="headerlink" title="矢量的叉积（叉乘）"></a>矢量的叉积（叉乘）</h3><p><strong>叉积不满足交换律！叉积结果为垂直于原两个向量的所在平面的新向量。</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210418115836909.png" alt="image-20210418115836909"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210418120436013.png" alt="image-20210418120436013"></p>
+<p>其中有个公式比较特别，即axb的长度等于a和b的模的乘积乘以他们之间夹角的正弦值。</p>
+<p>叉积的几何意义：</p>
+<p><strong>计算垂直于一个平面的矢量（法向量）。</strong></p>
+<p><strong>用于定义左和右，定义里和外（abc三点连线取叉积，结果方向都相同则在三角形内）。</strong></p>
+<hr>
+<h2 id="4-4-矩阵"><a href="#4-4-矩阵" class="headerlink" title="4.4 矩阵"></a>4.4 矩阵</h2><p>逆矩阵转置矩阵的公式和性质记得好好复习。</p>
+<p>正交矩阵的定义要好好理解。</p>
+<hr>
+<h2 id="4-5-各种变换"><a href="#4-5-各种变换" class="headerlink" title="4.5 各种变换"></a>4.5 各种变换</h2><h3 id="变换简述"><a href="#变换简述" class="headerlink" title="变换简述"></a>变换简述</h3><p><strong>缩放矩阵（scale）和旋转（rotation）矩阵</strong>皆为<strong>线性变换（linear transform）</strong>，都能直接用3x3的矩阵来表示。</p>
+<p>平移变换不为线性变换，无法使用3x3的矩阵来直接表示。</p>
+<p>为了将旋转缩放和平移在同一个矩阵内表示，引入**齐次坐标(homogeneous)**的概念，将矩阵变为4x4。</p>
+<p>合并了旋转和平移的变换称为<strong>仿射变换（affine transform）。</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910095825353.png" alt="image-20210910095825353"></p>
+<hr>
+<h3 id="齐次坐标"><a href="#齐次坐标" class="headerlink" title="齐次坐标"></a>齐次坐标</h3><p>齐次坐标是将三维转换成四维的结果。</p>
+<p>对于一个点来说，新增的<strong>w分量为1。</strong></p>
+<p>对于一个矢量来说，新增的<strong>w分量为0。</strong></p>
+<p>这样设置会导致使用4x4矩阵对一个点进行变换时，平移缩放旋转都会施加于该点。</p>
+<p>而对一个向量进行变换时，平移的效果会被忽略（平移不会对方向矢量产生影响，即矢量没有位置属性）。</p>
+<hr>
+<h3 id="平移矩阵（translation）"><a href="#平移矩阵（translation）" class="headerlink" title="平移矩阵（translation）"></a><strong>平移矩阵</strong>（translation）</h3><p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910100556224.png" alt="image-20210910100556224"></p>
+<p>可以看出，<strong>平移矩阵并不是一个正交矩阵。</strong></p>
+<p>平移矩阵的逆矩阵是将三个平移系数加上负号（相当于是反向平移）。</p>
+<hr>
+<h3 id="缩放矩阵（scale）"><a href="#缩放矩阵（scale）" class="headerlink" title="缩放矩阵（scale）"></a><strong>缩放矩阵</strong>（scale）</h3><p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910100831575.png" alt="image-20210910100831575"></p>
+<p>如果三个缩放系数k相等，则将这样的缩放称为<strong>统一缩放（uniform scale）。</strong></p>
+<p>统一缩放不会改变角度和比例信息（例如非统一缩放操作法线会得到错误结果）。</p>
+<p>缩放帧的逆矩阵是使用原缩放系数的倒数进行缩放（相当于反向的缩放）。</p>
+<p>缩放<strong>一般不是正交矩阵</strong>。</p>
+<hr>
+<h3 id="旋转矩阵（rotation）"><a href="#旋转矩阵（rotation）" class="headerlink" title="旋转矩阵（rotation）"></a><strong>旋转矩阵（rotation）</strong></h3><p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910101254512.png" alt="image-20210910101254512"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910101315687.png" alt="image-20210910101315687"></p>
+<p>旋转矩阵的逆矩阵是旋转相反方向的矩阵。</p>
+<p><strong>旋转矩阵是正交矩阵，多个旋转矩阵的串联同样是正交矩阵。</strong></p>
+<hr>
+<h3 id="复合矩阵："><a href="#复合矩阵：" class="headerlink" title="复合矩阵："></a><strong>复合矩阵：</strong></h3><p>可以将平移旋转缩放组合起来成为一个复杂的变换过程。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910101830740.png" alt="image-20210910101830740"></p>
+<p>我们使用的是列矩阵，阅读顺序是从右到左。</p>
+<p>绝大多数情况下我们规定变换的顺序为<strong>先缩放，再旋转，最后平移。</strong></p>
+<hr>
+<h2 id="4-6-坐标空间"><a href="#4-6-坐标空间" class="headerlink" title="4.6 坐标空间"></a>4.6 坐标空间</h2><h3 id="坐标空间的变换"><a href="#坐标空间的变换" class="headerlink" title="坐标空间的变换"></a>坐标空间的变换</h3><p>现如今有两个坐标空间，父坐标空间P和子坐标空间C。</p>
+<p>将子坐标空间C下表示的点或矢量Ac转换到父坐标空间P下的表示为Ap。</p>
+<p>将父坐标空间P下表示的点或矢量Bp转换到子坐标空间C下的表示为Bc。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910102454639.png" alt="image-20210910102454639"></p>
+<p>我们只需要知道<strong>新坐标空间的原点和坐标轴在原坐标空间中的表示</strong>就可以求出变换矩阵。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910103317871.png" alt="image-20210910103317871"></p>
+<p>因为矢量没有位置，所以不需要表示平移：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910103247635.png" alt="image-20210910103247635"></p>
+<hr>
+<h3 id="模型空间（model-space）"><a href="#模型空间（model-space）" class="headerlink" title="模型空间（model space）"></a>模型空间（model space）</h3><p>模型空间与某个模型（对象）有关，也称对象空间。</p>
+<p>在模型空间经常使用前（forward）后（back）左（left）右（right）上（up）下（down）的概念。</p>
+<p><strong>模型空间为左手坐标系</strong>。</p>
+<hr>
+<h3 id="世界空间（world-space）"><a href="#世界空间（world-space）" class="headerlink" title="世界空间（world space）"></a>世界空间（world space）</h3><p>世界空间表示了我们所关心的最大的最外层次的空间，可以被用于表述绝对位置。</p>
+<p><strong>世界空间同样是左手坐标系</strong>。</p>
+<p>我们可以构造出<strong>模型变换</strong>（model transform）的矩阵，<strong>将顶点从模型空间变换到世界空间</strong>，这是顶点变换的第一步：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910111803948.png" alt="image-20210910111803948"></p>
+<p>即先缩放，后旋转，最后平移。</p>
+<hr>
+<h3 id="观察空间（view-space）"><a href="#观察空间（view-space）" class="headerlink" title="观察空间（view space）"></a>观察空间（view space）</h3><p>观察空间可以被认为是特殊的模型空间，即摄像机对象的模型空间。</p>
+<p>观察空间中使用的<strong>是右手坐标系</strong>，他的正前方指向-z轴的方向，用于表示深度（z分量越小深度越深）。</p>
+<p>我们需要将摄像机看到的转换到屏幕上，也就是将观察空间转换到屏幕空间，中间的阶段被称为<strong>投影（projection）</strong>。</p>
+<p>我们可以想象相当于是将摄像机平移到原点，坐标轴与世界空间的坐标轴重合，得到观察变换的矩阵。</p>
+<p><strong>将顶点从世界空间变换到观察空间</strong>，这是顶点变换的第二步，被称为<strong>观察变换（view transform）</strong>：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910112649588.png" alt="image-20210910112649588"></p>
+<p>但由于观察空间使用右手坐标系，因此我们还需要对z分量进行取反操作。</p>
+<p>就好比这样：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910112821611.png" alt="image-20210910112821611"></p>
+<p>这样就是最终的观察变换矩阵了。</p>
+<hr>
+<h3 id="剪裁空间（clip-space）"><a href="#剪裁空间（clip-space）" class="headerlink" title="剪裁空间（clip space）"></a>剪裁空间（clip space）</h3><p>剪裁空间又称齐次剪裁空间，目标是对这块渲染图元进行剔除和剪裁（位于剪裁空间内的部分会被保留，位于空间外的部分会被剔除）</p>
+<p>这块空间由视锥体决定，也就是unity的摄像机中前面的锥形范围。</p>
+<p>视锥体有两种类型，涉及到两种投影类型，即<strong>透视投影（perspective projection）和正交投影（orthographic projection）</strong>。</p>
+<p>透视投影模拟了人眼看世界的方式，有近大远小的效果</p>
+<p>正交投影则完全保留了物体的角度和距离。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910114703231.png" alt="image-20210910114703231"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910114636278.png" alt="image-20210910114636278"></p>
+<p>其中视锥体剪裁平面的<strong>近剪裁平面（near clip plane）和远剪裁平面（far clip plane）</strong>决定了摄像机可以看到的深度范围。</p>
+<p>这阶段的变换用于将观察空间的顶点转换到剪裁空间，这是顶点变换的第三步，被称为<strong>投影变换（projection transform）</strong>：</p>
+<p>投影变换并没有真正进行投影工作，而是在为投影做准备。经过投影变换的运算后，w分量将具有实际意义。</p>
+<h4 id="透视投影"><a href="#透视投影" class="headerlink" title="透视投影"></a>透视投影</h4><p>unity中的fov（field of view）属性决定了视锥体竖直方向的张开角度。</p>
+<p>而Clipping Plane中有Near和Far参数来让我们控制两个剪裁平面距离摄像机的远近。</p>
+<p>因此两个剪裁平面的高度：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910115148320.png" alt="image-20210910115148320"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910115132901.png" alt="image-20210910115132901"></p>
+<p>我们还需要横纵比信息，我们假设当前横纵比为Aspect。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910115249403.png" alt="image-20210910115249403"></p>
+<p>根据已知的以上参数，我们可以推导出透视投影的投影矩阵：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910115337976.png" alt="image-20210910115337976"></p>
+<p>我们的投影矩阵是建立在unity上的，因此此时针对的观察空间是右手系的，使用列矩阵在矩阵右侧进行相乘。</p>
+<p>变换后的z分量范围在[-w，w]之间。而在DirectX中变换后的z分量范围在[0，w]之间。</p>
+<p>将一个顶点和透视投影的矩阵相乘的结果为：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910115614888.png" alt="image-20210910115614888"></p>
+<p>我们相当于是对原先的xyz分量进行了不同程度的缩放，而原先的w分量不再是1，而是原先z分量的取反结果。</p>
+<p>若一个顶点在视锥体之内，变换后的坐标必须满足：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910115758919.png" alt="image-20210910115758919"></p>
+<p>不满足以上不等式的图元就会被剔除或剪裁。</p>
+<hr>
+<h4 id="正交投影"><a href="#正交投影" class="headerlink" title="正交投影"></a>正交投影</h4><p>正交投影的视锥体为长方形，计算更为简单。</p>
+<p>Camera组件的size为视锥体竖直方向上的一半。</p>
+<p>而Clipping Plane中有Near和Far参数来让我们控制两个剪裁平面距离摄像机的远近。</p>
+<p>因此两个剪裁平面的高度：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910120159041.png" alt="image-20210910120159041"></p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910120225236.png" alt="image-20210910120225236"></p>
+<p>横纵比信息：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910120318327.png" alt="image-20210910120318327"></p>
+<p>因此正交投影矩阵如下：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910120347588.png" alt="image-20210910120347588"></p>
+<p>一个顶点与正交投影矩阵相乘的结果为：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910120418717.png" alt="image-20210910120418717"></p>
+<p>与透视投影不同，使用正交投影进行变换后，w分量依然为1</p>
+<hr>
+<h3 id="屏幕空间（screen-space）"><a href="#屏幕空间（screen-space）" class="headerlink" title="屏幕空间（screen space）"></a>屏幕空间（screen space）</h3><p>这一步所进行的是真正的投影，我们需要将视锥体投影到屏幕空间。</p>
+<p>首先我们进行<strong>标准齐次除法（homogeneous division）</strong>，也称透视除法</p>
+<p>即用齐次坐标系的w分量去除以xyz分量，在OpenGL中这一步会得到<strong>归一化的设备坐标（normalized device coordinate，NDC）</strong></p>
+<p>经过透视投影变换后的剪裁空间会变换到一个立方体内，按照OpenGL的标准此时xyz分量范围为[-1,1]，而DirectX中z分量范围是[0,1]</p>
+<p>而在正交投影变换后的剪裁空间本身就是一个立方体了，因此齐次除法过后顶点的w分量为1，xyz不产生影响。</p>
+<p>unity采用的是OpenGL这样的齐次剪裁空间，在左下角像素坐标为(0,0)，右上角为(pixelWidth,pixelHeight)</p>
+<p>齐次除法和屏幕映射的过程使用以下公式来总结：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910121417036.png" alt="image-20210910121417036"></p>
+<p>此时得到的就是最终一个顶点在<strong>屏幕空间的位置（二维）</strong></p>
+<p>上面的式子对xy分量做了处理，而z分量则会被用于<strong>深度缓冲。</strong></p>
+<p>在unity中，裁剪空间到屏幕空间的转换由底层为我们实现，我们的顶点着色器只需要完成将顶点坐标转换到剪裁空间。</p>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>以上过程描述了一个顶点如何从模型空间变换到屏幕空间中的二维坐标</p>
+<p>总结一下就是这样：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910123431856.png" alt="image-20210910123431856"></p>
+<p>顶点着色器的基本任务是<strong>把顶点坐标从模型空间转换到剪裁空间</strong>，对应了前三个过程（<strong>MVP变换</strong>）</p>
+<p>片元着色器则能得到<strong>该片元在屏幕空间的像素位置。</strong></p>
+<p> 变换过程中（unity），只有<strong>观察空间使用了右手坐标系</strong>。</p>
+<hr>
+<h3 id="4-7-法线变换"><a href="#4-7-法线变换" class="headerlink" title="4.7 法线变换"></a>4.7 法线变换</h3><p>顶点一般会携带额外的信息，其中就包括顶点法线，当我们变换模型时它的法线也得进行变换。</p>
+<p>我们上文说过，如果使用变换矩阵直接变换法线，可能会引起错误的结果</p>
+<p>进行一些巴拉巴拉的推导后，我们发现，使用<strong>原变换矩阵的逆转置矩阵</strong>来变换法线可以得到正确结果</p>
+<p>如果变换矩阵为正交矩阵，即只包含旋转变换，也可以直接用变换矩阵来变换法线。</p>
+<p>因为正交矩阵的逆矩阵和转置矩阵相同，逆转置矩阵则是原矩阵。</p>
+<p>若变换矩阵只包含旋转和统一缩放，而不包含非统一缩放，则我们可以利用同一缩放系数k来得到变换矩阵</p>
+<p>即：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/09/10/2021-09-10-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A2%EF%BC%88%E5%9B%BE%E5%BD%A2%E5%AD%A6%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%EF%BC%89/image-20210910124627119.png" alt="image-20210910124627119"></p>
+<hr>
+<p>2021.9.10 12:46完成，写了大概三小时。</p>
+<p>做完知识的产出之后感觉整个体系都清晰起来了，以后要坚持写。</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
