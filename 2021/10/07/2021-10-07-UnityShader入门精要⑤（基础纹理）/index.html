@@ -1,0 +1,712 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UnityShader入门精要⑤（基础纹理）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UnityShader入门精要⑤（基础纹理） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/10/7
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文为学习UnityShader时所记录的笔记，供学习产出和日后复习使用。</p>
+<p>学习资料为冯乐乐（问就是我女神）的《UnityShader入门精要》</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="基础纹理"><a href="#基础纹理" class="headerlink" title="基础纹理"></a>基础纹理</h1><p>使用<strong>纹理映射（texture mapping）</strong>可以将一张图黏在图形表面，逐<strong>纹素（texel）</strong>的控制模型的颜色</p>
+<p>纹理映射坐标一般被储存在每个顶点上，它定义了该顶点在纹理中对应的2D坐标，通常使用一个<strong>二维向量（u,v）</strong>来表示</p>
+<p>uv坐标一般被归一化到[0,1]范围。</p>
+<p>在OpenGL中，纹理空间的原点位于左下角，而在DirectX中则位于左上角。</p>
+<p>unity使用的纹理空间符合OpenGL传统，即原点位于纹理左下角。</p>
+<hr>
+<h2 id="单张纹理"><a href="#单张纹理" class="headerlink" title="单张纹理"></a>单张纹理</h2><h3 id="着色器编写"><a href="#着色器编写" class="headerlink" title="着色器编写"></a>着色器编写</h3><p>本章中介绍如何在UnityShader中实现最基本的纹理采样，通常使用一张纹理来代替物体的漫反射颜色。</p>
+<p>先是为shader取名：</p>
+<pre><code>Shader &quot;Unity Shaders Book/Chapter 7/Single Textrue&quot;&#123;
+</code></pre>
+<p>紧接着声明我们所需的属性：</p>
+<pre><code>    Properties&#123;
+        _Color (&quot;Color Tint&quot;,Color)=(1,1,1,1)
+        _MainTex(&quot;Main Tex&quot;,2D)=&quot;White&quot;&#123;&#125;
+        _Specular(&quot;Specular&quot;,Color)=(1,1,1,1)
+        _Gloss(&quot;Gloss&quot;,Range(8.0,256))=20
+    &#125;
+</code></pre>
+<p>其中<strong>color（控制物体整体色调），specular（高光反射系数），gloss（光泽度）</strong>都是我们的老熟人（忘了就回去看前面）=</p>
+<p>这里讲解一下名为**_MainTex<strong>的纹理。我们知道2D是纹理属性的声明方式，使用</strong>一个字符串后跟一个花括号**作为初始值</p>
+<p>使用<strong>“white”</strong>作为内置纹理的名字，即全白纹理。</p>
+<p>随后在SubShader中定义一个Pass，指明该Pass的<strong>光照模式（前向渲染）</strong>：</p>
+<pre><code>    SubShader&#123;
+        Pass&#123;          
+              Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+</code></pre>
+<p>使用CGPROGRAM和ENDCG来包围代码块，用#pragma来指定顶点着色器和片元着色器。</p>
+<p>为了使用内置变量，我们还包含内置文件Lighting.cginc。</p>
+<pre><code>            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include &quot;Lighting.cginc&quot;
+            
+            
+        //  ......
+        //  ENDCG
+</code></pre>
+<p>在代码片中声明与上述属性类型相匹配的变量，以便和材质面板的属性建立联系：</p>
+<pre><code>            fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;//用于声明_MainTex的属性
+            fixed4 _Specular;
+            float _Gloss;
+</code></pre>
+<p>我们还多声明了一个float4类型的_MainTex_ST属性。在Unity中我们需要使用<strong>纹理名 _ST</strong>来声明某个纹理的属性。</p>
+<p>其中ST是缩放（scale）和平移（translation）的缩写，_MainTex_ST可以让我们得到该纹理的平移和缩放值。</p>
+<p>其中_ MainTex_ST.xy是缩放值，_MainTex_ST.zw是偏移值（平移）。</p>
+<p>这些值都可以在材质面板的纹理属性中调节。</p>
+<p>接下来定义顶点着色器的输入和输出：</p>
+<pre><code>            struct a2v
+            &#123;
+                float4 vertex:POSITION;
+                float3 normal:NORMAL;
+                float4 texcoord:TEXCOORD0;//第一组纹理坐标
+            &#125;;
+
+
+            struct v2f
+            &#123;
+                float4 pos:SV_POSITION;
+                float3 worldNormal:TEXCOORD0;
+                float3 worldPos:TEXCOORD1;
+                float2 uv:TEXCOORD2;//用于储存纹理坐标的变量uv，以便在片元着色器使用该坐标进行纹理采样。
+            &#125;;
+</code></pre>
+<p>我们在a2v声明了一个变量texcoord，这样模型的第一组纹理坐标就会储存到其中。</p>
+<p>然后在v2f中添加了用于存储纹理的变量uv，以便在片元着色器使用该坐标进行纹理采样。</p>
+<p>定义顶点着色器：</p>
+<pre><code>            v2f vert(a2v v)
+            &#123;
+                v2f o;
+                o.pos=UnityObjectToClipPos(v.vertex);
+                o.worldNormal=UnityObjectToWorldNormal(v.normal);
+                o.worldPos=mul(unity_ObjectToWorld,v.vertex).xyz;
+                o.uv=TRANSFORM_TEX(v.texcoord,_MainTex);
+
+                return o;
+            
+            &#125;
+</code></pre>
+<p>顶点着色器首先还是完成<strong>将模型空间中顶点坐标变换到剪裁空间</strong>，然后计算了世界空间下的法线和顶点供之后使用。</p>
+<p>这里我们直接使用一个<strong>内置宏TRANSFORM_TEX</strong>来计算uv</p>
+<p>它接受两个参数，一个是顶点纹理坐标，一个是纹理名。</p>
+<p>具体计算过程其实是这样的，但此处直接改用宏了，了解一下即可。</p>
+<pre><code>o.uv=v.texcoord.xy*_MainTex_ST.xy+_MainTex_ST.zw
+//使用缩放属性_MainTex_ST.xy对顶点纹理坐标进行缩放，然后使用偏移属性_MainTex_ST.zw进行偏移
+</code></pre>
+<p>最后定义片元着色器，计算漫反射时使用纹理中的纹素值：</p>
+<pre><code>            fixed4 frag(v2f i):SV_Target
+            &#123;
+                fixed3 WorldNormal=normalize(i.worldNormal);
+                fixed3 worldLightDir=normalize(UnityWorldSpaceLightDir(i.worldPos));
+                
+                //使用纹理来采样漫反射颜色
+                fixed3 albedo=tex2D(_MainTex,i.uv).rgb*_Color.rgb;
+                fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.xyz*albedo;
+                fixed3 diffuse=_LightColor0.rgb*albedo*max(0,dot(WorldNormal,worldLightDir));//albedo取代了之前的漫反射系数Diffuse
+
+                //使用布林冯模型计算高光反射
+                fixed3 viewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
+                fixed3 HalfDir=normalize(worldLightDir+viewDir);
+                fixed3 Specular = _LightColor0.rgb*_Specular.rgb*pow(max(0,dot(WorldNormal,HalfDir)),_Gloss);
+
+                return fixed4(ambient+diffuse+Specular,1.0);//将环境光，漫反射，高光反射相加。
+
+            &#125;
+           //ENDCG
+</code></pre>
+<p>上述代码中，我们先获取世界空间下的法线和光照并归一化</p>
+<p>然后使用tex2D函数（接受两个参数，一个为被采样的纹理，一个为float2类型的纹理坐标）进行采样。</p>
+<p>将采样结果（纹素值）与颜色属性进行相乘作为材质的反射率（albedo），让它与环境光照相乘得到环境光部分。</p>
+<p>在最后使用albedo来计算漫反射光照的结果，并和环境光，高光反射相加后返回。</p>
+<p>最后记得设置合适的Fallback哦。</p>
+<pre><code>    Fallback &quot;Specular&quot;
+</code></pre>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211007105621607.png" alt="image-20211007105621607"></p>
+<hr>
+<h3 id="纹理属性"><a href="#纹理属性" class="headerlink" title="纹理属性"></a>纹理属性</h3><p>纹理面板中第一个属性是纹理类型，本节中使用的是<strong>texture</strong>（在笔者的版本找不到texture，默认为<strong>default</strong>）</p>
+<p>在之后的法线纹理中会使用<strong>normal map</strong>类型，在更后面的章节还会看到Cubemap等高级纹理。</p>
+<p>只有设置正确的纹理类型，才能为unityShader传递正确的纹理。</p>
+<p>接下来是<strong>Alpha通道</strong>，在之后会讲到。</p>
+<p>接下来的属性warp mode非常重要，有Repeat和Clamp两种模式。</p>
+<p>在Repeat中若纹理大于1，纹理会不断重复。而Clamp中将会进行截取。</p>
+<p>我们上面的效果图是Repeat的结果，而Clamp的结果是这样的。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211007110546758.png" alt="image-20211007110546758"></p>
+<p>下一个属性是<strong>Filter mode</strong>，决定了当纹理由于变换而产生拉伸时将使用哪一种滤波模式。</p>
+<p>支持三种模式，Point，Bilinear，Trilinear，得到滤波效果依次提升，耗费的性能也依次增大。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/%5Cimage-20211007111448323.png" alt="image-20211007111448323"></p>
+<p>众所周知近大远小，看向远方时纹理也是缩小的。纹理缩小更加复杂，我们需要处理抗锯齿的问题。</p>
+<p>最常使用的方法是<strong>多级纹理渐变技术（mipmapping）</strong>。</p>
+<p>原理是提前进行滤波处理得到很多更小的图形，组成一个图形金字塔，每层都是对上层图像降采样的结果。</p>
+<p>物体远离相机时可以直接使用较小的纹理，代价是需要多占用33%的空间，是以空间换时间的做法。</p>
+<p>通常我们选择<strong>Bilinear滤波模式</strong>。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211007113400465.png" alt="image-20211007113400465"></p>
+<p>最后是<strong>最大尺寸和纹理模式</strong>。unity允许我们为不同平台选择不同的分辨率。</p>
+<p>若导入的纹理大于<strong>max texture size</strong>的值，则会被设为这个值。</p>
+<p>导入的纹理可以是非正方形的，但长宽大小应该是2的幂（采用非2幂大小会导致占用更多空间性能下降）</p>
+<p><strong>format</strong>决定了使用哪种格式来储存纹理，<strong>精度越高效果越好，同样的所占空间就要越高</strong>。</p>
+<p>对于一些不需要很高精度的纹理（例如漫反射颜色的纹理），应该<strong>尽量使用压缩格式。</strong></p>
+<hr>
+<h2 id="凹凸映射"><a href="#凹凸映射" class="headerlink" title="凹凸映射"></a>凹凸映射</h2><p>凹凸映射是使用一张纹理来修改模型表面的法线。为模型提供更多的细节，让模型看上去凹凸不平。</p>
+<p>有两种方法进行凹凸映射：一种是使用一张<strong>高度纹理（height map）</strong>模拟表面位移，也称<strong>高度映射。</strong></p>
+<p>另一种方法是使用一张<strong>法线纹理</strong>，直接存储表面法线，又称为<strong>法线映射</strong>。</p>
+<hr>
+<h3 id="高度纹理"><a href="#高度纹理" class="headerlink" title="高度纹理"></a>高度纹理</h3><p>高度图中储存的是强度值，表示模型表面局部的海拔高度。</p>
+<p>颜色越浅表面该位置的表面越向外凸起，越深越向里凹。</p>
+<p>高度映射好处是很直观，缺点是计算复杂，实时计算时不能直接得到表面法线，需要由像素的灰度值计算而得。</p>
+<hr>
+<h3 id="法线纹理"><a href="#法线纹理" class="headerlink" title="法线纹理"></a>法线纹理</h3><p>法线纹理中储存的是表面的法线方向，用于法线的分量范围在**[-1,1]<strong>，像素的范围在</strong>[0,1]**因此我们一般会做如下映射：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211007120937229.png" alt="image-20211007120937229"></p>
+<p>这就要求我们在shader中对法线纹理进行纹理采样后，对结果进行一次<strong>反映射</strong>，也就是上述函数的逆函数：</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211007121031809.png" alt="image-20211007121031809"></p>
+<p>用于方向是相对于模型空间来说的，法线纹理中储存的法线应该储存在哪个空间呢？</p>
+<p>对于模型自带的顶点法线，它们被定义在模型空间中，因此直接的想法就是将修改后的模型空间的法线储存在一张纹理中。</p>
+<p>实际制作中，往往采用另一种坐标空间，即顶点的切线空间来储存法线，这种纹理被称为<strong>切线空间的法线纹理（tangent-space-normal map）</strong>.</p>
+<p>对于每一个顶点，都有一个自己的切线空间，这个切线空间的原点是顶点本身</p>
+<p>z轴是顶点的<strong>法线</strong>方向（n），x轴是顶点的<strong>切线</strong>方向（t），y轴可由法线和切线叉积而得（又称为<strong>副切线或副法线</strong>）。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211007124713521.png" alt="image-20211007124713521"></p>
+<p>如图所示，模型空间的法线纹理是五颜六色的，因为所有法线所在的坐标空间都是模型空间</p>
+<p>因此每个点的法线是各异的，经过映射后储存到纹理中就对应各种<strong>RGB值</strong>。</p>
+<p>而切线空间中，每个顶点法线所在的坐标是各异的，法线都为（0,0,1）</p>
+<p>经过映射后就对应了（0.5,0.5,1）浅蓝色，即为法线纹理中大片的蓝色</p>
+<hr>
+<p>实际上，法线储存在哪个空间都可以，后续的光照计算才是我们的重点。</p>
+<p>选择哪个坐标系意味着要将不同的信息转换到响应的坐标系中。</p>
+<p>例如若选择了切线空间，就要把法线纹理中得到的法线方向从切线空间转换到世界空间。</p>
+<p>使用模型空间储存法线优点如下：</p>
+<ul>
+<li><strong>实现简单，更加直观。</strong></li>
+<li><strong>在纹理坐标缝合处和尖锐的边角部分，可见的突变间隙变少，可以提供平滑的边界。</strong></li>
+</ul>
+<p>但使用切线空间优点更多：</p>
+<ul>
+<li><strong>自由度更高</strong>。模型空间下的法线纹理记录的是<strong>绝对法线信息</strong>，仅可用于创建它时的那个模型。切线空间下记录的是相对法线信息，可用于其他模型</li>
+<li><strong>可进行UV动画</strong>。可以移动一个纹理的UV值来实现凹凸移动的效果，例如水波和火山熔岩。</li>
+<li><strong>可重用法线纹理</strong>。例如一张法线纹理可以应用到一个砖块的六个面。</li>
+<li><strong>可压缩</strong>。可以只储存XY方向，推导得到Z方向（总是正的）。模型空间中因为每个方向都是可能的，因此必须不可压缩的储存三个方向的值。</li>
+</ul>
+<hr>
+<h3 id="切线空间下计算"><a href="#切线空间下计算" class="headerlink" title="切线空间下计算"></a>切线空间下计算</h3><p>基本思路是在片元着色器中通过纹理采样得到切线空间下的法线，然后与切线空间下的视角方向，光照方向进行计算，得到光照结果。</p>
+<p>这里我们就不那么啰嗦了，直接来写一些与之前不同的东西吧。</p>
+<p>属性方面，在properties语义块中添加了法线纹理的属性，以及用来控制凹凸程度的属性：</p>
+<pre><code>    Properties&#123;
+        _Color (&quot;Color Tint&quot;,Color)=(1,1,1,1)
+        _MainTex(&quot;Main Tex&quot;,2D)=&quot;White&quot;&#123;&#125;
+        _BumpMap(&quot;Normal Map&quot;,2D)=&quot;bump&quot;&#123;&#125;//法线纹理
+        _BumpScale(&quot;Bump Scale&quot;,Float)=1.0//凹凸程度
+        _Specular(&quot;Specular&quot;,Color)=(1,1,1,1)
+        _Gloss(&quot;Gloss&quot;,Range(8.0,256))=20
+        &#125;
+</code></pre>
+<p>法线纹理_BumpMap这里同样也是2D类型的，我们使用bump作为内置的法线纹理默认值。</p>
+<p>_BumpScale则用于控制凹凸程度，当它为0时，法线纹理就不会对光照产生任何影响。</p>
+<p>设前向渲染略，指定着色器略，直接来看在代码块中如何与我们properties中声明的属性建立联系。</p>
+<pre><code>            fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;//用于声明_MainTex的属性
+            sampler2D _BumpMap;
+            float4 _BumpMap_ST;//用于声明_BumpMap的属性
+            float _BumpScale;
+            fixed4 _Specular;
+            float _Gloss;
+</code></pre>
+<p>上述的纹理_ST则是用来得到<strong>纹理的平铺和偏移系数。</strong></p>
+<p>切线空间是顶点法线和切线构建出的一个坐标空间，因此我们需要得到顶点的切线信息：</p>
+<pre><code>            struct a2v
+            &#123;
+                float4 vertex:POSITION;
+                float3 normal:NORMAL;
+                float4 tangent:TANGENT;//告诉unity将顶点的切线方向存入tangent，第四个w分量用来储存切线空间中副切线的方向性
+                float4 texcoord:TEXCOORD0;//第一组纹理坐标
+            &#125;;
+</code></pre>
+<p>这里注意tangent是个float4类型的数</p>
+<p>我们需要在顶点着色器中计算出切线空间下的光照和视角方向，因此我们需要在输出结构里面储存他们。</p>
+<pre><code>            struct v2f
+            &#123;
+                float4 pos:SV_POSITION;
+                float4 uv:TEXCOORD0;//用于储存纹理坐标的变量uv，以便在片元着色器使用该坐标进行纹理采样。
+                float3 lightDir:TEXCOORD1;
+                float3 viewDir:TEXCOORD2;
+            &#125;;
+</code></pre>
+<p>定义顶点着色器：</p>
+<pre><code>            v2f vert(a2v v)
+            &#123;
+                v2f o;
+                o.pos=UnityObjectToClipPos(v.vertex);
+                o.uv.xy=v.texcoord.xy*_MainTex_ST.xy+_MainTex_ST.zw;//对顶点纹理坐标进行变换
+                o.uv.zw=v.texcoord.xy*_BumpMap_ST.xy+_BumpMap_ST.zw;//
+
+                //计算副切线
+               // float3 binormal=cross(normalize(v.normal),normalize(v.tangent.xyz))*v.tangent.w;//使用法线和切线做叉积得到副切线
+               // float3x3 rotation=float3x3(v.tangent.xyz,binormal,v.normal);//切线方向，副切线方向，法线方向按行排列得到变换矩阵
+
+                TANGENT_SPACE_ROTATION;//完全等同于于上述语句，得出模型空间到切线空间的变换矩阵
+                
+                //TANGENT_SPACE_ROTATION;
+                o.lightDir=mul(rotation,ObjSpaceLightDir(v.vertex)).xyz;//
+                o.viewDir=mul(rotation,ObjSpaceViewDir(v.vertex)).xyz;
+
+                return o;
+                
+            &#125;
+</code></pre>
+<p>因为我们使用两张纹理，因此需要存储两个纹理坐标。因此v2f的uv为float4类型</p>
+<p>其中xy存储_MainTex的纹理坐标，zw存储BumpMap的纹理坐标。</p>
+<p>然后计算得到副切线，再将模型空间下的切线方向，副切线方向，法线方向按行排列得到变换矩阵rotation。</p>
+<p>unity提供了内置宏TANGENT_SPACE_ROTATION与上述代码语句完全一致。</p>
+<p>使用变换矩阵rotation将光照和视角方向转移到切线空间，然后完成顶点着色器的工作。</p>
+<p>我们在顶点着色器完成了大部分的工作，因此片元着色器只需要采样得到切线空间下的法线，再在切线空间下进行光照计算即可：</p>
+<pre><code>            //片元着色器只需要采样得到切线空间下的法线坐标
+            fixed4 frag(v2f i):SV_Target&#123;
+                fixed3 tangentLightDir=normalize(i.lightDir);
+                fixed3 tangentViewDir=normalize(i.viewDir);
+
+                fixed4 packedNormal=tex2D(_BumpMap,i.uv.zw);//tex2D函数进行法线的纹理采样
+                fixed3 tangentNormal;
+
+                tangentNormal=UnpackNormal(packedNormal);
+                tangentNormal.xy*=_BumpScale;
+                tangentNormal.z=sqrt(1.0-saturate(dot(tangentNormal.xy,tangentNormal.xy)));
+
+                fixed3 albedo=tex2D(_MainTex,i.uv).rgb*_Color.rgb;//tex2D函数进行纹理采样
+
+                fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.xyz*albedo;
+
+                fixed3 diffuse=_LightColor0.rgb*albedo*max(0,dot(tangentNormal,tangentLightDir));
+
+                fixed3 halfDir=normalize(tangentLightDir+tangentViewDir);
+                fixed3 specular=_LightColor0.rgb*_Specular.rgb*pow(max(0,dot(tangentNormal,halfDir)),_Gloss);
+
+                return fixed4(ambient+diffuse+specular,1.0);
+
+            &#125;
+</code></pre>
+<p>我们将所有所需的变量都转化到切线空间，也就顾名思义是切线空间下的计算啦。</p>
+<p>先用tex2D函数对法线纹理_BumpMap进行采样。随后因为法线纹理储存的是像素值，因此我们需要将其反映射回来。（在没有正确设置normal map的情况下）</p>
+<p>UnpackNormal函数做的就是反映射过程，随后将我们的xy变量乘以凹凸分量，z分量由xy分量计算得到。</p>
+<p>最后设置正确的Fallback “Specular”，得到效果。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211008110331278.png" alt="image-20211008110331278"></p>
+<hr>
+<h3 id="世界空间下计算"><a href="#世界空间下计算" class="headerlink" title="世界空间下计算"></a>世界空间下计算</h3><p>基本思路是在顶点着色器中计算从切线空间到世界空间的变换矩阵，然后传递给片元着色器。</p>
+<p>变换矩阵由顶点的切线，副法线和法线在世界空间下的表示来得到。</p>
+<p>因此修改输出结构体v2f，让它能传递我们要的变换矩阵：</p>
+<pre><code>            struct v2f
+            &#123;
+                float4 pos:SV_POSITION;
+                float4 uv:TEXCOORD0;//用于储存纹理坐标的变量uv，以便在片元着色器使用该坐标进行纹理采样。
+                float4 TtoW0:TEXCOORD1;
+                float4 TtoW1:TEXCOORD2;//从切线空间到世界空间变换矩阵的每一行
+                float4 TtoW2:TEXCOORD3; 
+            &#125;;
+</code></pre>
+<p>因为对矢量是变换是3x3的矩阵，因此我们使用float4类型的变量的话，w分量还能用来储存顶点的世界坐标。</p>
+<p>顶点着色器如下：</p>
+<pre><code>            v2f vert(a2v v)
+            &#123;
+                v2f o;
+                o.pos=UnityObjectToClipPos(v.vertex);
+
+                o.uv.xy=v.texcoord.xy*_MainTex_ST.xy+_MainTex_ST.zw;
+                o.uv.zw=v.texcoord.xy*_BumpMap_ST.xy+_BumpMap_ST.zw;
+
+                float3 worldPos=mul(unity_ObjectToWorld,v.vertex).xyz;
+                fixed3 worldNoral=UnityObjectToWorldNormal(v.normal);
+                fixed3 worldTangent=UnityObjectToWorldDir(v.tangent);//顶点切线
+                fixed3 worldBinormal=cross(worldNoral,worldTangent)*v.tangent.w;//副切线等于法线和切线做叉积乘以表示方向的w分量；
+                
+                //计算从切线空间到世界空间的变换矩阵
+                o.TtoW0=float4(worldTangent.x,worldBinormal.x,worldNoral.x,worldPos.x);
+                o.TtoW1=float4(worldTangent.y,worldBinormal.y,worldNoral.y,worldPos.y);
+                o.TtoW2=float4(worldTangent.z,worldBinormal.z,worldNoral.z,worldPos.z);
+
+                return o;
+                
+            &#125;
+</code></pre>
+<p>我们将顶点切线，副切线和法线按列摆放，得到我们所需的矩阵三行。</p>
+<p>片元着色器如下：</p>
+<pre><code>            fixed4 frag(v2f i):SV_Target&#123;
+                float3 worldPos=float3(i.TtoW0.w,i.TtoW1.w,i.TtoW2.w);
+                
+                //算出光照和视线
+                fixed3 lightDir=normalize(UnityWorldSpaceLightDir(worldPos));
+                fixed3 viewDir=normalize(UnityWorldSpaceViewDir(worldPos));
+                
+                //获取切线空间下的法线
+                fixed3 bump=UnpackNormal(tex2D(_BumpMap,i.uv.zw));
+                bump.xy*=_BumpScale;
+                bump.z=sqrt(1.0-saturate(dot(bump.xy,bump.xy)));
+                //将法线变换到世界坐标
+                bump=normalize(half3(dot(i.TtoW0.xyz,bump),dot(i.TtoW1.xyz,bump),dot(i.TtoW2.xyz,bump)));
+
+
+                fixed3 albedo=tex2D(_MainTex,i.uv).rgb*_Color.rgb;//tex2D函数进行纹理采样
+
+                fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.xyz*albedo;
+
+                fixed3 diffuse=_LightColor0.rgb*albedo*max(0,dot(bump,lightDir));
+
+                fixed3 halfDir=normalize(lightDir+viewDir);
+                fixed3 specular=_LightColor0.rgb*_Specular.rgb*pow(max(0,dot(bump,halfDir)),_Gloss);
+
+                return fixed4(ambient+diffuse+specular,1.0);
+   
+
+            &#125;
+</code></pre>
+<p>我们首先利用w分量将世界坐标取出，由于光照和视线可以直接得到世界空间下的所以直接做归一化就行。</p>
+<p>切线空间下的法线也是用tex2D函数进行纹理映射，xy分量乘凹凸，z分量靠推导（罗里吧嗦）</p>
+<p>接着就是用我们的变换矩阵将切线空间下的法线变换到世界空间。（个人觉得这句语句比较难理解，以后有空多看吧）</p>
+<p>然后用纹理和法线纹理去做漫反射和高光反射输出得到结果。</p>
+<p>从视觉表现上看，切线空间下和世界空间下计算光照几乎没有区别。</p>
+<hr>
+<h2 id="渐变纹理"><a href="#渐变纹理" class="headerlink" title="渐变纹理"></a>渐变纹理</h2><p>我们常常使用渐变纹理来控制漫反射光照的结果，这样对比之前使用表面法线和光照方向的点积和反射率相乘的那种计算会更加灵活。</p>
+<p>可以保证物体轮廓比传统漫反射光照更加明显，还能提供多种色调变化。</p>
+<p>着色器编写直接跳到属性部分：</p>
+<pre><code>    Properties
+    &#123;
+        _Color (&quot;Color Tint&quot;, Color) = (1,1,1,1)
+        _RampTex (&quot;Ramp Tex&quot;, 2D)=&quot;white&quot;&#123;&#125;
+        _Specular(&quot;Specular&quot;, Color)=(1,1,1,1)
+        _Gloss(&quot;Gloss&quot;,Range(8.0,256))=20
+    &#125;
+</code></pre>
+<p>我们存了一个2D类型的纹理，随后也得定义它的纹理属性变量ST</p>
+<pre><code>        fixed4 _Color;
+        sampler2D _RampTex;
+        float4 _RampTex_ST;
+        fixed4 _Specular;
+        float _Gloss;
+</code></pre>
+<p>顶点着色器的输入和输出就是最常规的带纹理的那种</p>
+<pre><code>        struct a2v
+        &#123;
+            float4 vertex:POSITION;
+            float3 normal:NORMAL;
+            float4 texcoord:TEXCOORD0;
+            
+        &#125;;
+
+        struct v2f
+        &#123;
+            float4 pos: SV_POSITION;
+            float3 worldNormal :TEXCOORD0;
+            float3 worldPos:TEXCOORD1;
+            float2 uv:TEXCOORD2;
+        &#125;;
+</code></pre>
+<p>顶点着色器也是最简单的就略过了，这里可以直接用内置宏来得到uv了</p>
+<pre><code>o.uv=TRANSFORM_TEX(v.texcoord,_RampTex);
+</code></pre>
+<p>注意康康片元着色器</p>
+<pre><code>        fixed4 frag(v2f i):SV_Target
+        &#123;
+            ...
+            //使用纹理来采样漫反射颜色
+            fixed halfLambert=0.5*dot(worldNormal,worldLightDir)+0.5;
+            fixed3 diffuseColor=tex2D(_RampTex,fixed2(halfLambert,halfLambert)).rgb*_Color.rgb;
+
+            fixed3 diffuse=_LightColor0.rgb*diffuseColor;
+
+            fixed3 viewDir=normalize(UnityWorldSpaceViewDir(i.worldPos));
+            fixed3 halfDir=normalize(worldLightDir+viewDir);
+            fixed3 specular=_LightColor0.rgb*_Specular.rgb*pow(max(0,dot(worldNormal,halfDir)),_Gloss);
+
+            return fixed4(ambient+diffuse+specular,1.0);
+        &#125;
+</code></pre>
+<p>这里我们使用了之前提到的半兰伯特模型，这样得到的halfLambert在[0,1]之间，</p>
+<p>我们用halfLambert构建一个纹理坐标，用它来进行纹理采样。</p>
+<p>由于_RampTex其实是一个一维纹理（纵轴方向颜色不变），因此纹理坐标的u和v我们都用halfLambert</p>
+<p>最后将渐变纹理采样得到的颜色和材质颜色相乘，得到最终的漫反射颜色。</p>
+<p><img src="/images/loading.jpg" data-original="/2021/10/07/2021-10-07-UnityShader%E5%85%A5%E9%97%A8%E7%B2%BE%E8%A6%81%E2%91%A4%EF%BC%88%E5%9F%BA%E7%A1%80%E7%BA%B9%E7%90%86%EF%BC%89/image-20211008115610063.png" alt="image-20211008115610063"></p>
+<hr>
+<h2 id="纹理遮罩"><a href="#纹理遮罩" class="headerlink" title="纹理遮罩"></a>纹理遮罩</h2><p>纹理遮罩一般让我们来保护某块区域，使他们免于修改，可以得到更为细腻的效果，而不是像我们直接的高光反射直接打在全局上。</p>
+<p>流程一般是通过采样得到遮罩纹理的纹素值，然后使用某个通道的值与某种表面属性进行相乘，当该通道为0时就可以保护不受该属性影响。</p>
+<p>首先Properties需要更多变量来控制高光反射：</p>
+<pre><code>    Properties
+    &#123;
+        _Color (&quot;Color Tint&quot;,Color)=(1,1,1,1)
+        _MainTex (&quot;Texture&quot;, 2D) = &quot;white&quot; &#123;&#125;
+        _BumpMap(&quot;Normal Map&quot;,2D)=&quot;bump&quot;&#123;&#125;
+        _BumpScale(&quot;Bump Scale&quot;,Float)=1.0
+        _SpecularMask(&quot;Specular Mask&quot;,2D)=&quot;white&quot;&#123;&#125;
+        _SpecularScale(&quot;Specular Scale&quot;,Float)=1.0
+        _Specular(&quot;Specular&quot;,Color)=(1,1,1,1)
+        _Gloss(&quot;Gloss&quot;,Range(8.0,256))=20
+    &#125;
+</code></pre>
+<p>_SpecularMask就是我们使用的高光反射遮罩纹理， _SpecularScale则是用于控制遮罩影响度的系数</p>
+<p>接下来来声明变量来建立联系吧</p>
+<pre><code>            fixed4 _Color;
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            sampler2D _BumpMap;
+            float _BumpScale;
+            sampler2D _SpecularMask;
+            float _SpecularScale;
+            fixed4 _Specular;
+            float _Gloss;
+</code></pre>
+<p>_MainTex_ST是我们为主纹理，法线纹理，遮罩纹理定义的共同使用的纹理属性变量。</p>
+<p>在顶点着色器中对光照方向和视角方向从模型空间转换到切线空间：</p>
+<pre><code>v2f vert (a2v v)
+&#123;
+    v2f o;
+    o.pos = UnityObjectToClipPos(v.vertex);
+    o.uv.xy=v.texcoord.xy*_MainTex_ST.xy+_MainTex_ST.zw;
+
+    TANGENT_SPACE_ROTATION;
+    o.lightDir=mul(rotation,ObjSpaceLightDir(v.vertex)).xyz;
+    o.viewDir=mul(rotation,ObjSpaceViewDir(v.vertex)).xyz;
+    return o;
+&#125;
+</code></pre>
+<p>在片元着色器中使用纹理遮罩来控制模型表面的高光反射强度：</p>
+<pre><code>            fixed4 frag (v2f i) : SV_Target
+            &#123;
+                fixed3 tangentLightDir=normalize(i.lightDir);
+                fixed3 tangentViewDir=normalize(i.viewDir);
+
+                fixed3 tangentNormal=UnpackNormal(tex2D(_BumpMap,i.uv));
+                tangentNormal.xy*=_BumpScale;
+                tangentNormal.z=sqrt(1.0-saturate(dot(tangentNormal.xy,tangentNormal.xy)));
+
+                fixed3 albedo=tex2D(_MainTex,i.uv).rgb*_Color.rgb;//tex2D函数进行纹理采样
+
+                fixed3 ambient=UNITY_LIGHTMODEL_AMBIENT.xyz*albedo;
+
+                fixed3 diffuse=_LightColor0.rgb*albedo*max(0,dot(tangentNormal,tangentLightDir));
+
+                fixed3 halfDir=normalize(tangentLightDir+tangentNormal);
+
+                fixed specularMask=tex2D(_SpecularMask,i.uv).r*_SpecularScale;
+
+                fixed3 specular=_LightColor0.rgb*_Specular.rgb*pow(max(0,dot(tangentNormal,halfDir)),_Gloss)*specularMask;
+
+                return fixed4(ambient+diffuse+specular,1.0);
+            &#125;
+</code></pre>
+<p>计算高光反射时，我们先对遮罩纹理_SpecularMask进行采样，我们选择使用r值来计算掩码值，</p>
+<p>得到的掩码值和 _SpecularScale相乘，用来控制高光反射结果。</p>
+<hr>
+<p>国庆结束的10.7开始写这篇博客，10.8完成。</p>
+<p>七号的状态很差，国庆爽翻了戒断反应严重，再加上焦虑什么的搞得人状态特别差。</p>
+<p>晚上和喵喵聊了聊引擎的事情，散散步听着航向你的海岛感觉人好起来了（感谢喵喵！感谢鸟憨！）</p>
+<p>最近可能会开始思考如何往引擎开发方向迈开腿，首要问题就是时间真的很不充足，这个得好好安排</p>
+<p>重点是博客的编写我自己也开始慢慢感觉到有问题！</p>
+<p>喵喵提醒我说没必要书上有的网上有的你全都抄一遍，你只需要让读者知道去哪里获取这些基础知识就可以了。</p>
+<p>确实虽然我觉得自己博客有点像在抄书，对我重新理解也有帮助（主要是看着字数多很有成就感），但是真的</p>
+<p>太浪费时间了！~</p>
+<p>动则几千字真的不是人敲的！</p>
+<p>看来以后我应该多谈自己在实现这个技术时遇到的困难，</p>
+<p>我是怎么解决的我的思路是什么样的，而不是做成傻瓜式教程。</p>
+<p>包括我自己是还没写纹理遮罩就开始感觉rnm我是真的写不下去了。</p>
+<p>真的最后一次用这种方式将博客完结，以后尽量精简。</p>
+<p>2021-10-08-13:08</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

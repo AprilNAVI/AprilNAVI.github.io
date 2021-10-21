@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UnityShader入门精要⑤（透明效果）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UnityShader入门精要⑤（透明效果） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/10/7
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文为学习UnityShader时所记录的笔记，供学习产出和日后复习使用。</p>
+<p>学习资料为冯乐乐（问就是我女神）的《UnityShader入门精要》</p>
+<span id="more"></span>
+
+<p>上次写博客是七号来着，已经过去有一段时间了，这段时间有点忙所以shader的学习一直被挤压</p>
+<p>今天刚好离憨色演唱会过去了两个星期，日子过的还是蛮快的</p>
+<p>这星期经历了科三一次过（现在在练科二），还有买了两本书（虚幻4和程序员职业素养）但也没什么时间看</p>
+<p>这星期状态还可以，精神不错，就是学习知识的吸收率不太高，摸鱼现象还是有的（有待提升）</p>
+<p>好消息是自己的c++现在还不错，有大佬建议我春招可以直接试试看冲大厂，我也是这么想的</p>
+<p>考虑到之前写的博客又臭又长，更像是傻瓜指南而不是技术总结，接下来我会改变写博客的方式。</p>
+<p>自己这星期学的蛮少的，时间是一个因素，难度也是一个因素</p>
+<p>那么一库走！</p>
+<hr>
+<h2 id="透明度测试，透明度缓冲"><a href="#透明度测试，透明度缓冲" class="headerlink" title="透明度测试，透明度缓冲"></a>透明度测试，透明度缓冲</h2><p>透明效果由控制渲染问题的<strong>透明通道（Alpha Channel）</strong>来实现，即为RGB，A中的A。</p>
+<p>有两种实现透明效果的方法：<strong>透明度测试（Alpha Test），透明度缓冲（Alpha Blending）</strong></p>
+<p><strong>透明度测试：</strong>一个片元的透明度不满足条件（一般是低于阈值），就直接舍弃。</p>
+<p>效果很极端，要么完全透明看不见，要么完全不透明就像什么都没做。<strong>无需关闭深度写入。</strong></p>
+<p><strong>透明度缓冲：****关闭了深度写入</strong>，但没有关闭深度测试，即深度缓冲是只读的。</p>
+<hr>
+<h2 id="渲染顺序"><a href="#渲染顺序" class="headerlink" title="渲染顺序"></a>渲染顺序</h2><p>为了得到正确的结果，引擎一般对物体进行排序，再渲染。</p>
+<p>先渲染所有不透明物体，并开启深度测试和深度写入</p>
+<p>其次将半透明物体按照从后往前（距离摄像机）的顺序渲染，开启深度测试但关闭深度写入。</p>
+<p>重叠情况依然无法得到完美的解决，但可以通过分割网格或让透明通道更柔和来改善情况。</p>
+<hr>
+<h2 id="渲染队列标签"><a href="#渲染队列标签" class="headerlink" title="渲染队列标签"></a>渲染队列标签</h2><p>unity为解决渲染顺序问题提供了几个渲染队列（详见入门精要p165表格）</p>
+<p>我们在unity中通过设置SubShader的Queue标签来决定模型归于哪个队列。</p>
+<p>透明度测试：</p>
+<pre><code>    SubShader&#123;
+        Tags&#123;&quot;Queue&quot;=&quot;AlphaTest&quot;&#125;
+</code></pre>
+<p>透明度缓冲：</p>
+<pre><code>    SubShader&#123;
+        Tags&#123;&quot;Queue&quot;=&quot;Transparent&quot; &#125;
+        pass&#123;//关闭深度写入 ZWrite Off
+</code></pre>
+<hr>
+<h2 id="透明度测试"><a href="#透明度测试" class="headerlink" title="透明度测试"></a>透明度测试</h2><p>以基础的纹理采样代码作为样本进行改进</p>
+<p>初始值多设一个Cutoff作透明度的判断条件</p>
+<pre><code>        _Cutoff(&quot;Alpha Cutoff&quot;,Range(0,1))=0.5
+</code></pre>
+<p>设渲染队列为AlphaTest，”IgnoreProjector”=”True”意思是Shader不会受投影器影响</p>
+<p>RenderType则是将这个Shader划入提前定义好的组（类似于layer和tags？）</p>
+<pre><code>    SubShader&#123;
+        Tags&#123;
+            &quot;Queue&quot;=&quot;AlphaTest&quot;
+            &quot;IgnoreProjector&quot;=&quot;True&quot;
+            &quot;RenderType&quot;=&quot;TransparentCutput&quot;
+            &#125;
+        pass&#123;
+            Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+</code></pre>
+<p>在做纹理采样得到纹理值时，用a分量做一个裁剪</p>
+<pre><code>                fixed4 texColor=tex2D(_MainTex,i.uv);
+                //Alpha Test
+                clip(texColor.a-_Cutoff);
+</code></pre>
+<p>完成编写后，调大材质中的cutoff时，立方体上的网格会逐渐消失。</p>
+<hr>
+<h2 id="透明度混合"><a href="#透明度混合" class="headerlink" title="透明度混合"></a>透明度混合</h2><p>透明度测试更复杂，使用<strong>当前片元的透明度</strong>作为混合因子与已经储存在<strong>颜色缓冲中的颜色值</strong>进行混合。</p>
+<p>进行混合需要使用混合指令Blend，其中我们使用了Blend SrcFactor DstFactor这种语义。</p>
+<p>（源颜色乘以SrcFactor ，目标颜色乘以DstFactor）</p>
+<p>（详细的混合命令请见入门精要p169）</p>
+<p>以基础的纹理采样代码作为样本进行改进</p>
+<p>材质还是用之前的主颜色Color，主材质MainTex，还有一个_AlphaScale用来控制透明度。</p>
+<p>修改标签，关闭深度写入，设置混合因子（和上边的大同小异）：</p>
+<pre><code>    SubShader&#123;
+        Tags&#123;
+            &quot;Queue&quot;=&quot;Transparent&quot;
+            &quot;IgnoreProjector&quot;=&quot;True&quot;
+            &quot;RenderType&quot;=&quot;Transparent&quot;
+            &#125;
+        pass&#123;
+            Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+            
+            //关闭深度写入，设置混合因子
+            ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha//这里的目标颜色混合因子被设为了OneMinusSrcAlpha，以得到半透明效果
+</code></pre>
+<p>接下来都一样，只需要修改片元着色器的返回值就行（a通道）</p>
+<pre><code>                return fixed4(ambient+diffuse,texColor.a*_AlphaScale);
+                
+                Fallback “Transparent/VertexLit”
+</code></pre>
+<p>完成编写后，可以调节材质面板的Alpha Scale以控制整体透明度。</p>
+<p>关闭深度写入会带来各种问题，依然需要改进。</p>
+<hr>
+<h2 id="开启深度缓冲的半透明效果"><a href="#开启深度缓冲的半透明效果" class="headerlink" title="开启深度缓冲的半透明效果"></a>开启深度缓冲的半透明效果</h2><p>我们使用两个pass来渲染模型，第一个pass开启深度写入，不输出颜色，是为了将模型的深度值写入深度缓冲。</p>
+<p>第二个pass进行正常的透明度混合，因为上一个pass得到了逐像素的正确的深度信息，这个pass就可以进行逐像素的透明渲染。</p>
+<p>多使用一个pass会对性能造成一定影响。</p>
+<p>和上部分的标签设置相同：</p>
+<pre><code>    SubShader&#123;
+        Tags&#123;
+            &quot;Queue&quot;=&quot;Transparent&quot;
+            &quot;IgnoreProjector&quot;=&quot;True&quot;
+            &quot;RenderType&quot;=&quot;Transparent&quot;
+            &#125;
+        Pass&#123;
+            ZWrite On
+            ColorMask 0
+            &#125;
+        
+        pass&#123;
+            Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+            
+            //关闭深度写入，设置混合因子
+            ZWrite Off
+            Blend SrcAlpha OneMinusSrcAlpha
+            
+            CGPROGRAM
+            ·······
+            
+            Fallback “Diffuse”
+</code></pre>
+<p>第一个Pass是为了将深度信息写入深度缓冲，ColorMask 0是意味着该Pass不写入任何颜色通道</p>
+<p>然后第二个pass就是正常的逐像素的透明渲染。</p>
+<hr>
+<h2 id="双面渲染的透明效果"><a href="#双面渲染的透明效果" class="headerlink" title="双面渲染的透明效果"></a>双面渲染的透明效果</h2><h3 id="透明度测试-1"><a href="#透明度测试-1" class="headerlink" title="透明度测试"></a>透明度测试</h3><p>代码几乎与透明度测试一模一样，就加了一行代码：</p>
+<pre><code>    SubShader&#123;
+        Tags&#123;
+            &quot;Queue&quot;=&quot;AlphaTest&quot;
+            &quot;IgnoreProjector&quot;=&quot;True&quot;
+            &quot;RenderType&quot;=&quot;TransparentCutput&quot;
+            &#125;
+        pass&#123;
+            Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+            Cull Off//关闭剔除功能
+</code></pre>
+<h3 id="透明度缓冲"><a href="#透明度缓冲" class="headerlink" title="透明度缓冲"></a>透明度缓冲</h3><p>我们将渲染分为两个pass，一个只渲染背面，一个只渲染正面。</p>
+<p>也就是在两个pass中使用Cull剔除不同朝向的渲染图元：</p>
+<pre><code>    SubShader
+    &#123;
+        Tags&#123;
+            &quot;Queue&quot;=&quot;AlphaTest&quot;
+            &quot;IgnoreProjector&quot;=&quot;True&quot;
+            &quot;RenderType&quot;=&quot;TransparentCutput&quot;
+            &#125;
+        pass&#123;
+            Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+            Cull Front
+            ...
+            &#125;
+            
+        pass&#123;
+            Tags&#123;&quot;LightMode&quot;=&quot;ForwardBase&quot;&#125;
+            Cull Back
+            ...
+            &#125;  
+    &#125;
+ Fallback &quot;Transparent/VertexLit&quot;  
+ &#125;
+</code></pre>
+<hr>
+<p>呜呜呜今天晚上写这么少又摸鱼了，明天估计不能看直播水群边做了</p>
+<p>（不要对直播有什么奇奇怪怪的责任感）</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
