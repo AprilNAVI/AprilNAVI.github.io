@@ -1,0 +1,297 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 编程规范准则</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>编程规范准则 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/10/28
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>一个庞大系统应该由许多短小的结构组成，我们在让代码能工作的前提下还应该考虑代码的条理性</p>
+<p>因此我们需要一些编程规范来帮助我们编写和重构代码。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="1-命名应该是有意义的（我认为最重要的）"><a href="#1-命名应该是有意义的（我认为最重要的）" class="headerlink" title="1.命名应该是有意义的（我认为最重要的）"></a>1.命名应该是有意义的（我认为最重要的）</h2><p><strong>我认为有关明命名的准则是最重要的，先不谈代码架构问题，倘若命名是没有意义的甚至是重复的</strong></p>
+<p><strong>在工作和交流中就会起到混淆视听降低可读性的严重后果。</strong></p>
+<p>应该花时间为我们的函数，变量，类，参数取个好名字。</p>
+<p>名字应该名副其实的表达这个数据的用途。类名，变量名使用名词短语，而函数名则尽量使用动词短语。</p>
+<p>命名时还应当注意：区分应该有意义（避免使用a1，a2，a3）；避免误导（不使用关键词例如list，否则会以为这个数据是list类型的）</p>
+<p>每个词对应一个信息（用来表示两数相加的函数和将某数据放入容器的方法不能都叫add）</p>
+<hr>
+<h2 id="2-注释并不是尽然好的"><a href="#2-注释并不是尽然好的" class="headerlink" title="2.注释并不是尽然好的"></a>2.注释并不是尽然好的</h2><p><strong>这表示简洁的易读的代码的重要性，代码并不是能跑得动就行的，花时间重构代码很有价值</strong></p>
+<p>注释的用法是弥补我们在尝试表达代码意图时所遭遇的失败</p>
+<p>应尽量用可读性更好的代码来表达而非使用注释</p>
+<p>值得写的好注释有：<strong>代码规范中所要求的法律信息；将某些晦涩的参数或返回值的意图解释清楚（如果可以的话最好还是用函数名来表达）</strong></p>
+<hr>
+<h2 id="3-函数应该尽量简洁短小"><a href="#3-函数应该尽量简洁短小" class="headerlink" title="3.函数应该尽量简洁短小"></a>3.函数应该尽量简洁短小</h2><p>在初步编写时没人能一次性写出好的函数，但我们可以慢慢改进重构精简它们。</p>
+<p><strong>每个函数都应该短小，且一目了然，每个函数都只做一件事，并且每个函数都将你带到下个函数。</strong></p>
+<p><strong>确保函数只做一件事，得确保函数内的语句都是同一抽象层级的。</strong></p>
+<p><strong>函数的参数应该尽可能的少，多使用无参，或者单参数函数，少用双参数函数，避免用三个及以上的参数，这样会大大降低可读性。</strong></p>
+<p><strong>可以通过将参数封装为类来减少函数的参数数量。</strong></p>
+<p><strong>尽可能避免在不同函数中重用相同的代码段</strong></p>
+<hr>
+<h2 id="4-将数据进行良好的封装"><a href="#4-将数据进行良好的封装" class="headerlink" title="4.将数据进行良好的封装"></a>4.将数据进行良好的封装</h2><p><strong>封装是面向对象设计的三大特性之一</strong></p>
+<p>从编程开始时，老师就教导我们尽量将数据设为私有private，将必要的函数和数据再设为公开public。</p>
+<p>一方面能保护一些数据，只暴露所需的接口，接口之内皆为黑盒。</p>
+<p>一方面能减少模块间的相互干扰，相互依赖，能极大减少代码的耦合度。</p>
+<p>对于面向对象编程而言，代码难以添加新函数，因为可能需要修改所有的类，与此相对却更方便添加新的数据类型。</p>
+<p>我认为在如今的编程环境中，这种情况可能更居多，所以面向对象是很出众的。</p>
+<hr>
+<h2 id="5-类应该短小精炼"><a href="#5-类应该短小精炼" class="headerlink" title="5.类应该短小精炼"></a>5.类应该短小精炼</h2><p>我认为若有能力将上述的问题处理好，说明已经有初步的重构代码的能力了</p>
+<p>编写一个短小精悍的类虽然同样很重要但此时就是个小case啦。</p>
+<p><strong>首先我们类的命名应该是精准的，确定性了指明这个类该做什么事情</strong></p>
+<p><strong>我们根据类的职责来确定类的成员和类的长度。</strong></p>
+<p><strong>其次类应该具有尽量强的内聚性，应该只具有少量的实体，类中方法尽量围绕这个实体做数据操作。</strong></p>
+<p>内聚性高就表明这个类能自成一体，类中实体和函数能相互依赖，结合成一个逻辑实体。</p>
+<hr>
+<h2 id="6-多使用异常处理机制来进行错误处理"><a href="#6-多使用异常处理机制来进行错误处理" class="headerlink" title="6.多使用异常处理机制来进行错误处理"></a>6.多使用异常处理机制来进行错误处理</h2><p>曾经限于语言不支持异常，先辈们采用返回错误码的方式来汇报错误。</p>
+<p>异常处理机制就可以让我们捕获并处理这些错误，然后我们可以让程序沿着一条不会出错的路径继续执行。</p>
+<p>它的优越之处在于抛出异常不会影响代码的逻辑性，也不必催促调用者立即检查错误。</p>
+<p><strong>一般我们先编写强行抛出异常的语句，以便来往处理器中添加行为。</strong></p>
+<p><strong>其次我们根据我们的期待往try语句块中再填入我们所需测试的语句。</strong></p>
+<p><strong>编写异常语句时，可以将错误处理语句隔离看待，独立于主要逻辑之外</strong></p>
+<p>这样我们能单独处理它并极大提升代码的可维护性。</p>
+<p>其中要注意的是，我们应该尽量减少返回值为null，而改为返回特例对象和抛出异常。</p>
+<hr>
+<h2 id="7-设计架构应一步步迭代"><a href="#7-设计架构应一步步迭代" class="headerlink" title="7.设计架构应一步步迭代"></a>7.设计架构应一步步迭代</h2><p>我们不该在代码能工作后就止步于此。</p>
+<p>优秀的架构意味着我们做出一个改动时，整个程序会期待它而不是畏惧它的副作用。</p>
+<p>由于良好的组织性，后续的人处理代码时不必花大量时间修改和理解代码。</p>
+<p>良好的测试来为我们消除破坏代码的恐惧，接着我们将进行代码重构来迭进我们的代码。</p>
+<p>重构过程中我们遵循：<strong>运行所有测试，提升内聚性，降低耦合度，减少重复，切分关注面，</strong></p>
+<p><strong>模块化系统性关注面，缩小函数尺寸和减少类和函数数量，保证表达力。</strong>（按重要性排序）</p>
+<p>表达力，函数和类的相关规范在上文中提到过，下文则会介绍测试规范和重构思路。</p>
+<hr>
+<h2 id="8-为代码编写测试"><a href="#8-为代码编写测试" class="headerlink" title="8.为代码编写测试"></a>8.为代码编写测试</h2><p>检查自己是否有一套可靠的测试机制，同样是进行代码重构的前提。</p>
+<p>编写测试是为了确保我们的代码能如愿以偿的工作，同时测试的确可以捕捉到大多数bug。</p>
+<p><strong>TDD三原则：</strong></p>
+<p><strong>在编写不能通过的单元测试前，不可编写生产代码；</strong></p>
+<p><strong>只可编写刚好无法通过的单元测试，不能编译也算不通过；</strong></p>
+<p><strong>只可编写刚好足以通过当前失败测试的生产代码；</strong></p>
+<p>我们用较大的比例用测试覆盖代码，就能保证代码的可拓展，可维护，可复用。</p>
+<p>在编写测试代码时同样要确保测试代码的整洁（即可读性）</p>
+<p><strong>确保我们的每段测试代码只测试一个功能，而不是一段超长的测试代码将所有功能纳入其中</strong>。</p>
+<p>测试代码同样也是代码，我们一样遵守上文提到的那些准则就行</p>
+<hr>
+<h2 id="9-代码重构的思路"><a href="#9-代码重构的思路" class="headerlink" title="9. 代码重构的思路"></a>9. 代码重构的思路</h2><p>就如上文所说到的，代码不可能第一次编写时就是简洁且完整的，我们可以先遵从一些编程时的准则（命名，注释）</p>
+<p>在完成目标后我们进行代码的重构。<strong>因此完成重构的前提当然是我们有一段能完成职责的代码。</strong></p>
+<p>重构并不是将程序完全重新写一遍，而是在之前同样的算法和机制上将我们的代码变得具有逻辑性。</p>
+<p>因此我们首先需要一个用例来验证程序的功能，随后我们进行我们所需的改动。</p>
+<p>每当一处小改动发生时，我们就执行这个用例确保程序的行为是否发生了变化。</p>
+<p>代码重构的几个方向：</p>
+<p><strong>将大函数按照模块和行为分为几个小函数</strong>；</p>
+<p><strong>将函数变为内联函数；</strong></p>
+<p><strong>将临时变量（有着复杂表达式赋值并且多次使用的）改为使用查询函数的返回值来取代；</strong></p>
+<p><strong>若临时变量赋值的意义不同则创建新的临时变量并使用不同名称；</strong></p>
+<p><strong>使用临时值而避免对函数参数进行直接修改（会丧失参数的原始值）</strong></p>
+<hr>
+<h2 id="10-格式"><a href="#10-格式" class="headerlink" title="10.格式"></a>10.格式</h2><p>将格式放在最后，并非格式不重要，而是在各种规范和自动化工具的普及下</p>
+<p>拥有一个整洁的代码格式并不是困难的事，但这关乎到团队的沟通，依然很重要。</p>
+<p><strong>我们应该制定一个简单的规则，并在整个项目中贯彻它。</strong></p>
+<p><strong>我们应该限制每个源文件的大小（行数）在同一个数量级的规格上，在源文件的顶部给出最高层次的抽象（概念和算法）</strong></p>
+<p><strong>随后在下文中将细节依次展开，直至源文件最底层的函数和细节；</strong></p>
+<p><strong>关系密切且放在同一源文件的数据间隔应该尽可能小，避免读者在源文件中跳来跳去的阅读；</strong></p>
+<p><strong>变量声明应该尽可能接近使用位置，循环中的控制变量尽可能在循环语句中声明；</strong></p>
+<p><strong>一个函数若调用另一个函数则它俩应该尽可能相近；</strong></p>
+<p><strong>过程中记得用空行来区分各个函数和模块，使得代码块更具有条理性和可读性。</strong></p>
+<p>其他有关每行长度，缩进，对齐，字符间的空格的相关内容则不赘述，</p>
+<p>因为借助于先进的IDE和自动化工具，这些规范早已刻在DNA里了。</p>
+<hr>
+<p>相关文献：《Clean Code》《Game Programming Pattern》《Refactoring》</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
