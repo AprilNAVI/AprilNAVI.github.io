@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 温故知新UE4（网络同步）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>温故知新UE4（网络同步） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/12/21
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>在开发完ue的demo后，回头总结了一些心得，趁着闲暇就记录下来。</p>
+<span id="more"></span>
+
+<p>这一篇看上去一点也不ue4，等熟了ue4的网络同步再来补相关部分。</p>
+<h2 id="TCP三四次握手"><a href="#TCP三四次握手" class="headerlink" title="TCP三四次握手"></a>TCP三四次握手</h2><h3 id="创建连接（三次握手）"><a href="#创建连接（三次握手）" class="headerlink" title="创建连接（三次握手）"></a>创建连接（三次握手）</h3><p>第一次：客户端尝试连接服务器，向服务器发送syn包（seq＝x）。客户端进入SYN_SEND状态。</p>
+<p>第二次：服务器接收客户端的syn包，同时向客户端发送一个SYN包（seq=y，ack＝x+1），同时发送一个ACK，即发送的是ACK+SYN，服务器进入SYN_RECV状态</p>
+<p>第三次：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK（seq=x+1，ack＝y+1），客户端和服务器进入Establish，TCP连接建立完成。</p>
+<hr>
+<h3 id="释放连接（四次握手）"><a href="#释放连接（四次握手）" class="headerlink" title="释放连接（四次握手）"></a>释放连接（四次握手）</h3><p>第一次：客户端进程发出连接释放报文FIN，并停止发送数据。客户端进入FIN_WAIT1状态。</p>
+<p>第二次：服务器收到连接释放报文，发出确认报文ACK（ack=u+1，seq=v），服务器进入CLOSE_WAIT状态。此时客户端不接受数据，但若服务器发送数据，客户端依然要接受。客户端收到服务器的确认请求，进入FIN_WAIT2状态。</p>
+<p>第三次：服务器将最后的数据发送完，向客户端发送释放连接报文FIN（ack＝u+1，seq=w），服务器进入LAST_ACK状态。</p>
+<p>第四次：客户端收到服务器的连接释放报文，必须发出确认报文ACK（ack=w+1，seq=u+1），客户端进入TIME_WAIT状态，等待2xMSL（最长报文寿命时间），进入CLOSED，服务器收到ACK立即进入CLOSED。</p>
+<h3 id="一些之外的思考"><a href="#一些之外的思考" class="headerlink" title="一些之外的思考"></a>一些之外的思考</h3><p><strong>为什么建立连接是三次握手，释放连接是四次握手？</strong></p>
+<p>因为建立连接时服务器收到客户端的SYN时，可以同时发送一个ACK加SYN。释放连接时由于不知道是否还要继续传输文件，SOCKET没有立即关闭，所以只能发送一个ACK。</p>
+<p><strong>为什么TIME_WAIT状态需要经过2MSL才能进入CLOSE？</strong></p>
+<p>我们得假设网络是不可靠的。TIME_WAIT用来重发可能丢失的ACK。当服务器没有收到ACK时，会一直重复发送FIN，所以服务端不能关闭，得确保在2MSL内没有收到FIN才能进入CLOSED。其中2MSL是一个发送和一个回复所需的最大时间。</p>
+<p><strong>为什么两次握手不能完成TCP连接创建？</strong></p>
+<p>若只有两次连接，在服务器传回给客户端的应答丢失的情况下，客户端不知道服务器是否准备好，会认为连接未建立而忽略服务器发来的任何分组，只等待ACK。而服务器会重复发送同样的分组，从而造成死锁。</p>
+<hr>
+<h2 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h2><ul>
+<li>TCP面向连接，UDP无连接</li>
+<li>TCP面向字节流，UDP面向报文</li>
+<li>TCP提供可靠性（按序发送，有序到达，超时重传），UDP只尽力而为，不保证任何事。</li>
+<li>TCP首部20字节，所需资源多，而UDP只占用8字节</li>
+<li>TCP有流量控制和拥塞控制，而UDP没有（拥塞不会影响发送端的发送速率）</li>
+<li>TCP只支持点对点，而UDP可以一对一，一对多，多对多。</li>
+</ul>
+<h2 id="网络同步"><a href="#网络同步" class="headerlink" title="网络同步"></a>网络同步</h2><p><strong>RPC</strong></p>
+<p>即远程过程调用，本地调用远程提供的函数。因为不是一个内存空间，需要网络来表达调用的语义和数据，而不能直接调用。</p>
+<p>带来的问题：<strong>Call ID映射</strong>（让服务器知道我调用是哪个函数），<strong>序列化与反序列化</strong>（参数需要通过一种标准化的格式来传输，将对象转换为一系列字节流），<strong>网络传输</strong></p>
+<p><strong>属性同步</strong></p>
+<p>对象A的属性更改了，其他端的对应属性也要更改。一般是服务器更改同步到其他客户端。</p>
+<hr>
+<h3 id="帧同步"><a href="#帧同步" class="headerlink" title="帧同步"></a>帧同步</h3><p>帧同步只同步操作，大部分逻辑在客户端上运行，服务器主要用于验证和广播，逻辑易实现，数据量少，可重播，一致性好。一个玩家卡了所有人都卡。</p>
+<h3 id="状态同步"><a href="#状态同步" class="headerlink" title="状态同步"></a>状态同步</h3><p>同步游戏的各种状态。客户端上传操作到服务器，服务器收到后运算结果，把各个状态广播给各个客户端，客户端根据状态展现不同的内容。</p>
+<p>状态同步是一种不严谨的同步，对延迟的要求并不高。</p>
+<h3 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h3><p>帧同步客户端一致性全程一致，状态同步中途可能有变化。</p>
+<p>延迟方面帧同步要求搞，状态同步要求低。</p>
+<p>流量方面，帧同步的流量与操作数量成正比，而状态同步与物体数量成正比。</p>
+<p>服务器的任务上来看，帧同步服务器做的是同步操作，而状态同步的服务器则需要接受输入，进行全局仿真，状态的复制。</p>
+<p>客户端的任务上来看，帧同步客户端做的是全局仿真，而状态同步客户端则是做局部游戏世界的展示。</p>
+<p>断线重连，状态同步更容易，帧同步要从头开始运行（王者荣耀）。</p>
+<p>开发效率上来看，帧同步的开发效率很高，接近单机开发。状态同步需要前后台联合开发。</p>
+<p>安全性来看，帧同步安全性低。而状态同步在服务器端安全性高，但客户端有作弊可能。</p>
+<h3 id="修复延迟"><a href="#修复延迟" class="headerlink" title="修复延迟"></a>修复延迟</h3><p>插值，预测，缓存，延迟补偿</p>
+<hr>
+<h2 id="UE4网络同步架构"><a href="#UE4网络同步架构" class="headerlink" title="UE4网络同步架构"></a>UE4网络同步架构</h2><p>以CS模型为基础，做了面向对象风格的封装，网络代码和游戏逻辑完全分离，网络同步支持可视化编程，使用UDP协议通信。</p>
+<p><strong>为什么使用纯UDP？</strong>‘</p>
+<p>TCP的可靠性无法定制，且游戏中许多数据不要求可靠。</p>
+<p>TCP与UDP都是基于IP协议，底层会互相干扰，混用也会增加设计复杂度。</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
