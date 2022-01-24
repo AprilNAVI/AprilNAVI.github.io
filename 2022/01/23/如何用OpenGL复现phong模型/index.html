@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 如何用OpenGL复现Phong模型</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>如何用OpenGL复现Phong模型 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/1/23
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>写这篇博客的时候我还在我老家的床上，给自己放了两三天的假，决定写点东西。</p>
+<p>在经历了visual studio的链接失败和着色器编译失败之后</p>
+<p>深感自己力量渺小，无法棒打vs设计师（胡言乱语）</p>
+<p>再加上之前学的有些快而不扎实，复制源码跑动了看一遍就粗略带过（有时甚至跑不动）</p>
+<p>所以写这篇救命博客来挽救一下自己岌岌可危的大脑。</p>
+<span id="more"></span>
+
+<p><img src="/images/loading.jpg" data-original="/2022/01/23/%E5%A6%82%E4%BD%95%E7%94%A8OpenGL%E5%A4%8D%E7%8E%B0phong%E6%A8%A1%E5%9E%8B/QQ%E5%9B%BE%E7%89%8720220123213125.png" alt="QQ图片20220123213125.png"></p>
+<hr>
+<p>首先先祝贺自己拿到了魔方的暑期实习，已经踏上正轨了但还需努力，毕竟能不能转正，还得看今后发展的如何。但我其实更想从事引擎方面的工作。</p>
+<hr>
+<p>OpenGL的教程是鼎鼎大名的learnOpenGL，中文站做了很棒的翻译工作，强烈安利。</p>
+<p>代码中涉及到封装的函数，类，因为并不重要所以就不予展示。</p>
+<p>更多的是自己温习一个完整OGL渲染程序的不同模块。</p>
+<p>首先让我打开vs找找我的源码，哦对这样可能废话有点多</p>
+<p>但我喜欢这样诙谐的语气记录自己想法，毕竟最后看到这个博客的可能只有我一个人</p>
+<p>总而言之，让我们先看看如何创建一个窗口吧。</p>
+<hr>
+<h2 id="创建窗口部分"><a href="#创建窗口部分" class="headerlink" title="创建窗口部分"></a>创建窗口部分</h2><p>先丢源码，使用的是我们的<strong>寄了废物库</strong>和<strong>glad库</strong>，glad库能让我们更方便的在运行时确定函数地址</p>
+<p>这些代码可以让我们创建一个窗口</p>
+<pre><code class="c++">#include &lt;glad/glad.h&gt;
+#include &lt;GLFW/glfw3.h&gt;
+#include &lt;iostream&gt;
+
+int main()
+&#123;
+    glfwInit();//初始化
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);//主版本号
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);//副版本号
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);//核心渲染模式
+
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
+    // glfw window creation
+    // --------------------
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, &quot;Render Window&quot;, NULL, NULL);//new一个窗口对象
+    if (window == NULL)
+    &#123;
+        std::cout &lt;&lt; &quot;Failed to create GLFW window&quot; &lt;&lt; std::endl;
+        glfwTerminate();
+        return -1;
+    &#125;
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);//绑定窗口回调函数
+    glfwSetCursorPosCallback(window, mouse_callback);//绑定鼠标移动视野的函数
+    glfwSetScrollCallback(window, scroll_callback);//绑定滚轮回调函数
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);//捕获鼠标
+
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        //给GLAD传入了用来加载系统相关的OpenGL函数指针地址的函数
+    &#123;
+        std::cout &lt;&lt; &quot;Failed to initialize GLAD&quot; &lt;&lt; std::endl;
+        return -1;
+    &#125;
+    
+    ....
+    
+    //渲染循环
+    while(!glfwWindowShouldClose(window))
+ &#123;
+    ....
+         
+    processInput(window);//处理输入逻辑
+    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);//设置清除缓冲的颜色
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);用这个颜色来清除缓冲，顺便也清除深处缓冲
+        
+    ....   
+        
+    glfwSwapBuffers(window);//交换帧缓冲
+    glfwPollEvents();//检查并处理各个事件
+ &#125;
+    
+    glfwTerminate();
+    return 0;
+&#125;
+</code></pre>
+<p>通过这些代码，应该可以直接创建出一个渲染窗口。</p>
+<hr>
+<p>突然间有点不知道怎么组织复述各个模块了哈哈</p>
+<hr>
+<h2 id="顶点数据"><a href="#顶点数据" class="headerlink" title="顶点数据"></a>顶点数据</h2><p>这里涉及到VAO，VBO，EBO（这里没用到）的概念</p>
+<p>详细了解这三个的概念可以看<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32974399/article/details/103956589">详解Opengl中VBO和VAO_代码乐的博客-CSDN博客_opengl vao</a></p>
+<p>一言蔽之，vbo<strong>存数据</strong>，vao<strong>存配置信息</strong>，一般先绑vao，然后再把其他东西往上绑</p>
+<p>vao也会把存入的vbo记上，用的时候用vao就行，东西都设置完了最后解绑vao。</p>
+<pre><code class="c++">    float vertices[] = &#123;
+        // positions          // normals           // texture coords
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f
+    &#125;;//顶点数据，可以不看，但得写出来知道是做什么的
+
+    unsigned int VBO, cubeVAO;//生成这俩ID，其中的这个vao是用来管理我们渲染的箱子的
+    glGenVertexArrays(1, &amp;cubeVAO);//用这个ID生成顶点数组，反正vao就用的这玩意
+    glGenBuffers(1, &amp;VBO);//用这个ID生成缓冲，是缓冲哦，vbo用这种缓冲，待会其他缓冲也得用这个
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);//把这份缓冲绑定到显存的那部分真正的缓冲上
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//往显存上开始写入顶点数据
+
+    glBindVertexArray(cubeVAO);//先把vao绑上，之后配置的各种数据vao都会记录下来
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+//指定着色器怎么解析顶点数据，在下文细说
+
+    unsigned int lightCubeVAO;//这是另一个vao哦，这个vao用来管理我们的光源
+    glGenVertexArrays(1, &amp;lightCubeVAO);//一样的用ID生成
+    glBindVertexArray(lightCubeVAO);//一样的绑定vao
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);//一样的绑定缓存，之前把顶点数据写入过一次这次就不写了
+    // note that we update the lamp&#39;s position attribute&#39;s stride to reflect the updated buffer data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+//指定着色器怎么解析顶点数据
+....
+    while (!glfwWindowShouldClose(window))
+    &#123;
+        ...
+        lightingShader.use();
+        //使用被渲染的箱子的着色器程序
+        ...
+        //渲染箱子
+        glBindVertexArray(cubeVAO);//使用这套vao来渲染，vao里面包括了设置好的vbo和配置信息
+        glDrawArrays(GL_TRIANGLES, 0, 36);//画36个顶点，以画三角形的方式
+        ...
+        
+        //使用光源的着色器程序
+        lightCubeShader.use();
+        ...
+        //渲染光源
+        glBindVertexArray(lightCubeVAO);//同上，不过这个是光源
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+        ...
+    &#125;
+
+
+
+....
+    //渲染完成后删除这些数据释放资源
+    glDeleteVertexArrays(1, &amp;cubeVAO);
+    glDeleteVertexArrays(1, &amp;lightCubeVAO);
+    glDeleteBuffers(1, &amp;VBO);
+</code></pre>
+<p>glGenBuffers和glGenVertexArrays的作用有点像我们new一份空间，然后就用我们指定的指针来管理这份空间一样。</p>
+<p>然后我们再把这份生成的缓存绑定到显存的缓存上，往这份缓存写数据就是往显存写数据。</p>
+<p>VertexArrays就直接绑着就完事了，不用管他，他会自动记录我们做过的事情。</p>
+<hr>
+<p>你应该记得我们的顶点数据一行有八个数据，他们有的是顶点，有的是法线，有的是纹理坐标。</p>
+<p>接着我们是怎么指定着色器来解析数据的呢，还记得这些代码吧</p>
+<pre><code>    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+</code></pre>
+<p>接着让我们看看我们的顶点着色器是怎么导入数据的吧。</p>
+<pre><code>#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aTexCoords;
+</code></pre>
+<p>我们指定了三个不同的位置来导入我们的顶点数据</p>
+<p><code>glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);</code></p>
+<p>所做的就是指定顶点着色器的0号位置，3个值，浮点数，一份顶点数据有8个值，我们从偏移量0的开始算</p>
+<p><code>    glEnableVertexAttribArray(0);</code>启用0号顶点数据</p>
+<p>然后我们两个vao分别是所渲染箱子和光源的数据，他们都用的同一套顶点数据（都是正方体）</p>
+<p>但第二个vao只要顶点数据就够了。我们对于两个vao使用不同的shader程序来渲染。</p>
+<hr>
+<h2 id="导入纹理"><a href="#导入纹理" class="headerlink" title="导入纹理"></a>导入纹理</h2><p>导入纹理这块我们用了一个函数来封装，包括怎么从文件读取，设置什么样的环绕方式和过滤方式。</p>
+<p>stb_image.h是一个非常流行的单头文件图像加载库，它能够加载大部分流行的文件格式，并且能够很简单得整合到工程之中。</p>
+<pre><code class="c++">#define STB_IMAGE_IMPLEMENTATION//没加这个宏直接把我害死，编译就一个劲链接错误
+#include &quot;stb_image.h&quot; //这个头文件
+
+
+glEnable(GL_DEPTH_TEST);//既然提到纹理就记得开启深度测试，要不然会很哈人
+
+unsigned int diffuseMap = loadTexture(&quot;container2.png&quot;);
+
+unsigned int loadTexture(char const* path)
+&#123;
+    unsigned int textureID; //定义一个纹理的ID
+    glGenTextures(1, &amp;textureID);//生成一个纹理数据，就像上边顶点数据一样
+
+    int width, height, nrComponents;//长，宽，颜色通道个数
+    unsigned char* data = stbi_load(path, &amp;width, &amp;height, &amp;nrComponents, 0);
+    if (data)
+    &#123;
+        GLenum format;//根据颜色通道个数选择纹理格式
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);//在显存上绑定纹理
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        //第一个参数指定了纹理目标(Target)。设置为GL_TEXTURE_2D意味着会生成与当前绑定的纹理对象在同一个目标上的纹理（任何绑定到GL_TEXTURE_1D和GL_TEXTURE_3D的纹理不会受到影响）。
+        //第二个参数为纹理指定多级渐远纹理的级别，如果你希望单独手动设置每个多级渐远纹理的级别的话。这里我们填0，也就是基本级别。
+        //第三个参数告诉OpenGL我们希望把纹理储存为何种格式。
+        //第四个和第五个参数设置最终的纹理的宽度和高度。我们之前加载图像的时候储存了它们，所以我们使用对应的变量。
+        //下个参数应该总是被设为0（历史遗留的问题）。
+        //第七第八个参数定义了源图的格式和数据类型。我们使用RGB值加载这个图像，并把它们储存为char(byte)数组，我们将会传入对应值。最后一个参数是真正的图像数据。
+        glGenerateMipmap(GL_TEXTURE_2D);//自动生成mipmap
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        //对于横轴和纵轴采取GL_REPEAT的环绕方式
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        //设置过滤方式，这里我们都设为线性滤波
+        //一个常见的错误是，将放大过滤的选项设置为mipmap选项之一。这样没有任何效果，因为mipmap主要是使用在纹理被缩小的情况下的
+
+        stbi_image_free(data);//设置完这块纹理后我们就释放这部分数据
+    &#125;
+    else
+    &#123;
+        std::cout &lt;&lt; &quot;Texture failed to load at path: &quot; &lt;&lt; path &lt;&lt; std::endl;
+        stbi_image_free(data);
+    &#125;
+
+    return textureID;//最后我们返回一个纹理ID供我们使用
+&#125;
+
+
+    while (!glfwWindowShouldClose(window))
+    &#123;
+        ...
+            
+        lightingShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMap);
+        //记得在调用glDrawElements之前绑定纹理了，它会自动把纹理赋值给片段着色器的采样器：
+            
+        ...
+    &#125;
+
+</code></pre>
+<p>前边部分注释写在代码里没什么好说的，让我们看看片元着色器的导入</p>
+<pre><code>#version 330 core
+out vec4 FragColor;
+
+struct Material &#123;
+    sampler2D diffuse;
+    vec3 specular;    
+    float shininess;
+&#125;; 
+
+...
+uniform Material material;
+...
+int main
+&#123;
+   ...
+&#125;
+</code></pre>
+<p>你可能会奇怪为什么<code>sampler2D</code>变量是个uniform，我们却不用glUniform给它赋值。</p>
+<p>使用glUniform，我们可以给纹理采样器分配一个位置值,一个纹理的位置值通常称为一个纹理单元(Texture Unit)。</p>
+<p>一个纹理的默认纹理单元是0，它是默认的激活纹理单元。</p>
+<p>只要我们首先激活对应的纹理单元，不用glUniform我们也能用<code>glBindTexture(GL_TEXTURE_2D, texture);</code>将纹理传入着色器</p>
+<p>如果有两个纹理的话，就是这样：</p>
+<p>(这时我们就得手动设置着色器的哪个texture对应源程序代码段的哪个texture)</p>
+<pre><code>glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, texture1);
+glActiveTexture(GL_TEXTURE1);
+glBindTexture(GL_TEXTURE_2D, texture2);
+
+...
+
+ourShader.use(); // 不要忘记在设置uniform变量之前激活着色器程序！
+glUniform1i(glGetUniformLocation(ourShader.ID, &quot;texture1&quot;), 0); // 手动设置
+ourShader.setInt(&quot;texture2&quot;, 1); // 或者使用着色器类设置
+
+while(...) 
+&#123;
+    [...]
+&#125;
+</code></pre>
+<pre><code>#version 330 core
+...
+
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+</code></pre>
+<p>因为OpenGL要求y轴<code>0.0</code>坐标是在图片的底部的，但是图片的y轴<code>0.0</code>坐标通常在顶部。</p>
+<p>所以我们还能使用<code>stbi_set_flip_vertically_on_load(true);</code>翻转图片。</p>
+<h2 id="MVP变换"><a href="#MVP变换" class="headerlink" title="MVP变换"></a>MVP变换</h2><p>还记得顶点着色器的职责吧，我们把三维的顶点数据转化成他们在屏幕上的坐标。</p>
+<p>所以MVP变换一般由顶点着色器做运算。</p>
+<p>我们的思路是用glm生成矩阵，然后用uniform传入着色器</p>
+<pre><code>#include &lt;glm/glm.hpp&gt;
+#include &lt;glm/gtc/matrix_transform.hpp&gt;
+#include &lt;glm/gtc/type_ptr.hpp&gt;
+
+...
+
+int main
+&#123;
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH /     (float)SCR_HEIGHT, 0.1f, 100.0f);//透视投影矩阵
+        glm::mat4 view = camera.GetViewMatrix();//视点变换
+        lightingShader.setMat4(&quot;projection&quot;, projection);
+        lightingShader.setMat4(&quot;view&quot;, view);
+
+        // world transformation
+        glm::mat4 model = glm::mat4(1.0f);//模型变换矩阵
+        lightingShader.setMat4(&quot;model&quot;, model);
+
+&#125;
+</code></pre>
+<p>我们这里只展示了被渲染箱子的着色部分，不过这样就够了。</p>
+<p>实际上我们渲染的另一个物体是个亮方块，他虽然是扮演了光源但实际上并没有起到太阳的作用</p>
+<p>光线的数据依然是我们手动导入的，其他很多值都是我们规定的，</p>
+<p>但把他以白色渲染出来可以更加直观的观察到光照是如何影响物体的</p>
+<p>让我们复习一下mvp变换做的事情吧（肯定会有人说哎呀烦死了）</p>
+<p><strong>模型变换（model）</strong>把顶点的坐标从局部坐标系转换到世界坐标。</p>
+<p><strong>视点变换（view）</strong>世界坐标 &gt;&gt;&gt; 观察空间</p>
+<p><strong>投影变换（projection）</strong>观察空间&gt;&gt;&gt;剪裁空间</p>
+<p>观察空间经常被人们称之OpenGL的摄像机(Camera)，所以我们这里用camera类生成view矩阵，但不深究</p>
+<p>来模拟摄像机的效果，利用wasd和鼠标可以随意遨游在我们构建的世界。</p>
+<p>做完投影变换就直接到剪裁空间了，OpenGL然后对<strong>裁剪坐标</strong>执行<strong>透视除法</strong>从而将它们变换到<strong>标准化设备坐标</strong></p>
+<p>在顶点着色器则里边是这样的</p>
+<pre><code class="c++">#version 330 core
+layout (location = 0) in vec3 aPos;
+...
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+...
+
+    void main()
+&#123;
+    FragPos = vec3(model * vec4(aPos, 1.0));
+    ...
+    gl_Position = projection * view * vec4(FragPos, 1.0);
+&#125;
+</code></pre>
+<p>如果不讨论怎么法线和纹理的计算，顶点着色器所做的内容就是将传入的顶点数据进行mvp变换</p>
+<p>ps：我们这里还需要输出世界坐标系的顶点坐标进行后续运算，所以将计算分开了。</p>
+<hr>
+<h2 id="phong模型计算（着色器详解）"><a href="#phong模型计算（着色器详解）" class="headerlink" title="phong模型计算（着色器详解）"></a>phong模型计算（着色器详解）</h2><p>重点介绍一下渲染循环中phong模型中的几个分量。</p>
+<p>lightingShader是我们箱子的着色器程序，或许他叫box shader会更合适些</p>
+<pre><code>    while (!glfwWindowShouldClose(window))
+    &#123;
+    ...
+        lightingShader.use();
+        lightingShader.setVec3(&quot;light.position&quot;, lightPos);
+        lightingShader.setVec3(&quot;viewPos&quot;, camera.Position);
+        
+        // light properties
+        lightingShader.setVec3(&quot;light.ambient&quot;, 0.2f, 0.2f, 0.2f);
+        lightingShader.setVec3(&quot;light.diffuse&quot;, 0.5f, 0.5f, 0.5f);
+        lightingShader.setVec3(&quot;light.specular&quot;, 1.0f, 1.0f, 1.0f);
+        
+        // material properties
+        lightingShader.setVec3(&quot;material.specular&quot;, 0.5f, 0.5f, 0.5f);
+        lightingShader.setFloat(&quot;material.shininess&quot;, 64.0f);
+    
+    &#125;
+</code></pre>
+<p>如果对冯模型有了解的话（下次我自己看的时候估计会觉得是废话23333）</p>
+<p>会知道在shader里面的计算是把<strong>环境光（ambient）漫反射（diffuse）高光（specular）</strong>的贡献相加</p>
+<p>三个部分的计算便是由由我们传入的uniform值来参与的。</p>
+<p>还记得片元着色器的职责是决定一个片元的颜色吧，这次我们展示一个完整的片元着色器：</p>
+<pre><code>#version 330 core
+out vec4 FragColor;
+
+struct Material &#123;
+    sampler2D diffuse;
+    vec3 specular;    
+    float shininess;
+&#125;; 
+
+struct Light &#123;
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+&#125;;
+
+in vec3 FragPos;  
+in vec3 Normal;  
+in vec2 TexCoords;
+  
+uniform vec3 viewPos;
+uniform Material material;
+uniform Light light;
+
+void main()
+&#123;
+    // ambient
+    vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;
+      
+    // diffuse 
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(light.position - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
+    
+    // specular
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    vec3 specular = light.specular * (spec * material.specular);  
+        
+    vec3 result = ambient + diffuse + specular;
+    FragColor = vec4(result, 1.0);
+&#125; 
+</code></pre>
+<p>环境光部分，我们这里就暂且认为环境光是我们的物体颜色，毕竟我们现在也做不出什么全局光照。</p>
+<p>所以这里我们直接拿纹理和微弱的光照分量相乘就行</p>
+<hr>
+<p>漫反射光照能对物体产生显著的视觉影响，或者说物体呈现出什么样子就是漫反射决定的。</p>
+<p>计算漫反射需要<strong>法线</strong>和<strong>入射光线</strong>，入射光线是我们由上阶段的顶点着色器输出的顶点坐标（世界坐标系）和光照计算而来的</p>
+<p>这里的法线则是很有意思的地方，本身我们渲染的并不是一个箱子的模型，而是一个个手填的顶点</p>
+<p>不存在什么表面更不存在什么法线，所以法线我们也是手填的（233333）</p>
+<p>最后乘上<strong>漫反射系数</strong>，这决定了这部分的贡献是如何的。</p>
+<p>所以尽管计算部分是参照了<strong>兰伯特光照模型</strong>，但我们在背光处也能看到物体的纹理，这便是由不真实的法线造成的。</p>
+<hr>
+<p>高光部分会复杂些，需要<strong>观察向量，反射方向，光泽度。</strong></p>
+<p>观察方向由我们填入的camera.position和顶点计算得出。</p>
+<p>反射方向的计算是一个耗时的计算，若改成计算半程向量（half vector）便能加速此部分的计算，也能得到不错的效果（布林冯）</p>
+<hr>
+<p>光泽度则影响高光亮点的大小。在公式里面扮演指数的部分，光泽度越高亮点就越小。</p>
+<p>最后我们会乘上<strong>高光反射系数</strong>，这里填的（1.0,1.0,1.0），因为我们理所当然觉得高光很明显。</p>
+<p>如此一来便完成了phong模型的着色部分的计算，我们便能渲出我们可爱的小箱箱了。</p>
+<hr>
+<p>完成这篇水博客之后感觉精神好了很多，不像之前那样一看到vs就烦躁了，学习的欲望也重新被激起了</p>
+<p>今天没什么干劲了，明天再努力吧.jpg</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
