@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 第二周学习日志</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>第二周学习日志 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/2/28
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>开学啦开学啦</p>
+<span id="more"></span>
+
+<h2 id="Monday"><a href="#Monday" class="headerlink" title="Monday"></a>Monday</h2><p>早上算是效率还不错的，虽然其实做了并没有特别多的事情</p>
+<p>我想想好像成功导入了imgui的库跑起来了，找了个光酱的obj渲了出来</p>
+<p>虽然具体怎么运行还需要再研究研究，但明天不打算花时间了，周末有时间再看看吧</p>
+<p>这样想想其实并没有做什么事，但好在人的精神很好，心情也不错，</p>
+<p>初学渲染的时候总是这样充满精神的，这样让我觉得正反馈很强。</p>
+<hr>
+<p>下午去图书馆看了引擎架构，一边聊天一边摸鱼看书，心情还是不错的</p>
+<p>目前为止有些计算机硬件的东西看不明白但感觉应该对我目前不太重要</p>
+<p>有些关于vs调试的知识感觉对我确实不错，之后可能会出篇博客记录一下</p>
+<p>下午看到3.7要补考软测了，爷tx实习都拿了还要补考真是醉了555</p>
+<hr>
+<p>晚上开始有点迷茫了吧，得失心还是太重了。</p>
+<p>每当学习一段时间如果没能感到进步或者有学到知识</p>
+<p>不免就会觉得浪费了时间而感到焦虑。</p>
+<p>而迄今为止依然没有找到学习虚幻4的好办法</p>
+<p>国内没有一个系统的教科书的教程供高效学习，同时自己的实操能力也很差</p>
+<p>可能更偏向传统的一步一步带着走的教程而非开源资源教学</p>
+<p>再加上自己也想好好的研究下UE引擎的源码还有其他方面的东西</p>
+<p>不免觉得自己的脑子犹如石沉大海，感觉这方面就算手搓了个demo也还是个新手</p>
+<p>要学的东西太多了||同学比我厉害看的书比我多||转正要做MiniGame但我gameplay半桶水</p>
+<p>但好在每当我开始写作，心情就会好起来。待会再去肝会xb2吧，反正其他人不也都在老头环23333。</p>
+<hr>
+<h2 id="Tuesday"><a href="#Tuesday" class="headerlink" title="Tuesday"></a>Tuesday</h2><p>虽然昨天两点才睡，但早上精神依旧很好</p>
+<p>第一节课改geometry给hikari酱做了一个法线可视化，就像毛毛人一样</p>
+<p>也印证了assimp的法线导入是没问题的，有机会把之前项目改改重新做吧</p>
+<p>随后是做instancing章节做到一半，后边会渲出一个实时旋转的行星带场景</p>
+<p>还是挺让人期待的，明天上午没课就做这个吧（熬夜打xb睡很晚也有可能）</p>
+<p>第二节课猛看os，感觉os基本上掌握就只是时间问题</p>
+<hr>
+<p>中午打原神打到忘记午睡了，下午第一节课看了会os就趴桌上睡了</p>
+<p>醒来看了线程进程，摸了会鱼玩手机和ieg的前辈姐姐聊了聊时间就过了</p>
+<p>后边去图书馆遇到了班里的很多老熟人，这两天听身边同学耳闻也基本上开始面试找工作了</p>
+<p>发现班里努力的人还是不少的（虽然总是那几个），不过大三下了这是理所当然的</p>
+<p>总是觉得能拿到魔方offer然后兴趣驱动学习的自己真幸运</p>
+<p>还是要一步一步脚踏实地的来，走好每一步路珍惜这个机会</p>
+<p>下午看引擎架构基本上看在了三维数学上，就看了一个多小时六七十页的样子</p>
+<p>五点想着回宿舍记录一下博客吧，接着就凹了两个小时的分。</p>
+<p>不得不说写作真的是正反馈很强的事情，单单看着那堆字就成就感爆棚</p>
+<p>每当学习遇到瓶颈心态失衡的时候，如果不想开摆直接打游戏的话，</p>
+<p>记录一下近期学习的近况也记录一下心情，确实是个很不错的主意</p>
+<p>希望今晚的学习历程一切顺利吧。</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

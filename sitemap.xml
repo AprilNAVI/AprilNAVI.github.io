@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://aprilnavi.github.io/2022/02/28/%E7%AC%AC%E4%BA%8C%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97/</loc>
+    
+    <lastmod>2022-03-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://aprilnavi.github.io/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/</loc>
+    
+    <lastmod>2022-03-01</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://aprilnavi.github.io/2022/01/23/%E5%A6%82%E4%BD%95%E7%94%A8OpenGL%E5%A4%8D%E7%8E%B0phong%E6%A8%A1%E5%9E%8B/</loc>
     
     <lastmod>2022-01-24</lastmod>
@@ -310,7 +328,7 @@
 
   <url>
     <loc>https://aprilnavi.github.io/</loc>
-    <lastmod>2022-01-25</lastmod>
+    <lastmod>2022-03-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>

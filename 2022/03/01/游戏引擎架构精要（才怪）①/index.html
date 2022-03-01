@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏引擎架构精要（才怪）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏引擎架构精要（才怪） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/1
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>《Game Engine Architecture》是一直以来我很有兴趣也很想阅读的书，书的译者是我很敬重的milo叶劲峰前辈（魔方引擎中心的大大）。</p>
+<p>但是由于自己基础不牢，再加上这本厚厚的大书所带来的畏难情绪，同时自己过于功利总是把时间抽去做容易提升的事情，</p>
+<p>以及n个自己给自己找的理由，让这个阅读计划一直搁置。</p>
+<p>但这学期拿到了暑期实习的offer，刚巧也在魔方，对于就业的压力就减小了很多</p>
+<p>再加上自己有意往引擎方向发展，阅读这本书就提上了日程。</p>
+<span id="more"></span>
+
+<p>既然它这么厚，那囫囵吞枣看完就忘肯定都是不行的，所以还是写点东西记一下吧</p>
+<p>之前有粗读一下这本书，书的内容是复杂，综合，全面的，每个章节都涵盖了大量的内容</p>
+<p>以目前的能力没法很好的概括提及，没有像之前记录《游戏编程模式》那样有固定的写作框架</p>
+<p>所以这篇博客的形式可能还是更倾向读书笔记而非对他人有意义的知识总结</p>
+<p>所以现在这些废话基本上是写给自己看的hhh</p>
+<hr>
+<h2 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h2><p>导论，游戏介绍，不同游戏类型所使用的引擎差异，游戏引擎概述，没什么好说的，工具及资产管道，略</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/VDMX@PP27ZW40Z1U9O%257XC.png" alt="img"></p>
+<p>第一章里面感觉这张图既经典又重要，丢一篇米忽悠大佬的文</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/356028087">从零手写游戏引擎2：引擎架构概述 - 知乎 (zhihu.com)</a></p>
+<p>大佬评价这本书游戏开发领域尤其是客户端开发必看书籍，也是一本偏入门和科普性质的书籍。</p>
+<p>看来这个入门还是让我蛮吃力的hhh。</p>
+<hr>
+<h2 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h2><h3 id="2-1-版本控制"><a href="#2-1-版本控制" class="headerlink" title="2.1 版本控制"></a>2.1 版本控制</h3><p>git，会用就行，命令行要用再查，略</p>
+<h3 id="2-2-visual-studio常见功能"><a href="#2-2-visual-studio常见功能" class="headerlink" title="2.2 visual studio常见功能"></a>2.2 visual studio常见功能</h3><h4 id="生成配置"><a href="#生成配置" class="headerlink" title="生成配置"></a>生成配置</h4><p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301203453167.png" alt="image-20220301203453167"></p>
+<p>可以在生成配置里面设定不同的预处理器，编译器，链接器属性</p>
+<p><strong>预处理器设置</strong>处理#include文件的展开，以及处理#define宏的定义和替换</p>
+<p><strong>编译器设置</strong>控制产生的对象文件是否包含调试信息，是最常见的编译选项之一，也可以控制是否展开内联函数。</p>
+<p><strong>链接器设置</strong>指定将哪些外部库链接到可执行文件，以及搜索路径</p>
+<p>一般项目自带”调试（debug）“和”发布（release）“配置。</p>
+<h4 id="常规属性页设置"><a href="#常规属性页设置" class="headerlink" title="常规属性页设置"></a>常规属性页设置</h4><p>随便打开一个项目的属性就能进入常规属性设置页面，里面有输出目录，中间目录各种目录的说明。</p>
+<h4 id="调试代码"><a href="#调试代码" class="headerlink" title="调试代码"></a>调试代码</h4><p>我一直觉得调试代码是很重要的功能，希望可以借着记录要点和操作慢慢理解增进</p>
+<ul>
+<li><p>一个解决方案可能包含多个项目，记得正确设置启动项目。</p>
+</li>
+<li><p>断点（breakpoint）是代码调试的基本所需，能让代码停下观察此刻的运行状态。</p>
+</li>
+<li><p>F5 开始调试，F10 逐过程运行（不进入函数调用），F11 逐语句运行（进入函数调用）</p>
+</li>
+</ul>
+<p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301210551736.png" alt="image-20220301210551736"></p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301210657028.png" alt="image-20220301210657028"></p>
+<p>运行中可以如图所示调出许多窗口用于观察变量或者变量地址，函数堆栈情况。</p>
+<p>其中监视窗口是个很有意思的功能，有机会可以多多尝试。</p>
+<p>数据断点也是个很有用的功能，可以在指定地址或者被写入时引发一个中断</p>
+<p>（vs2022没有找到条件断点，但找到了函数断点）</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301211906610.png" alt="image-20220301211906610"></p>
+<h3 id="2-3-剖析工具"><a href="#2-3-剖析工具" class="headerlink" title="2.3 剖析工具"></a>2.3 剖析工具</h3><p>剖析器（profiler）可以度量代码的执行时间，并能告知每个函数所花的时间。</p>
+<ul>
+<li>统计式剖析器：几乎不影响目标代码的执行速度，原理是周期为CPU的程序计数器寄存器进行采样。</li>
+<li>测控式剖析器：提供最详细最精确的计时数据，代码几乎跑不动。</li>
+</ul>
+<hr>
+<h2 id="第三章"><a href="#第三章" class="headerlink" title="第三章"></a>第三章</h2><p>3.1说的是cpp的语法以及cpp11的一些特性</p>
+<p>3.2则聊了聊一些比较深的东西，例如多态和虚函数表，拷贝和移动语义，内存布局</p>
+<p>这些内容早在背八股文的时候都记牢了也理解了，没有什么有意思的内容</p>
+<h3 id="3-3"><a href="#3-3" class="headerlink" title="3.3"></a>3.3</h3><p>3.4说的是流水线，缓存以及优化，这些涉及到硬件架构的内容目前对我来说太硬核了，往后稍稍。</p>
+<hr>
+<p>今天就到这里吧，第四章基本上都是三维数学相关的内容，里面矢量，矩阵，坐标系那些的内容也是基本上滚瓜烂熟了</p>
+<p>第四章中比较感兴趣的是四元数，奈何今天看到的时候没看明白233333</p>
+<p>2022.3.1 ——21：32</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
