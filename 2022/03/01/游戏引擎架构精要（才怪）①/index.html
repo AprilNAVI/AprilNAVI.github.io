@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AprilNAVI&#39;s Blog | You are the best || 游戏引擎架构精要（才怪）</title>
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏引擎架构精要（才怪）①</title>
     <meta name="author" content="AprilNAVI">
     <meta name="description" content=" ">
     <meta name="keywords" content=" ">
@@ -90,7 +90,7 @@
 <link rel="stylesheet" href="/css/post-body.css">
 <div class="article">
     <div>
-        <h1>游戏引擎架构精要（才怪） </h1>
+        <h1>游戏引擎架构精要（才怪）① </h1>
     </div>
     <div class="info">
         <span class="date">
@@ -119,22 +119,22 @@
 <p>所以这篇博客的形式可能还是更倾向读书笔记而非对他人有意义的知识总结</p>
 <p>所以现在这些废话基本上是写给自己看的hhh</p>
 <hr>
-<h2 id="第一章"><a href="#第一章" class="headerlink" title="第一章"></a>第一章</h2><p>导论，游戏介绍，不同游戏类型所使用的引擎差异，游戏引擎概述，没什么好说的，工具及资产管道，略</p>
+<h1 id="第一章-基础"><a href="#第一章-基础" class="headerlink" title="第一章  基础"></a>第一章  基础</h1><p>导论，游戏介绍，不同游戏类型所使用的引擎差异，游戏引擎概述，没什么好说的，工具及资产管道，略</p>
 <p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/VDMX@PP27ZW40Z1U9O%257XC.png" alt="img"></p>
 <p>第一章里面感觉这张图既经典又重要，丢一篇米忽悠大佬的文</p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/356028087">从零手写游戏引擎2：引擎架构概述 - 知乎 (zhihu.com)</a></p>
 <p>大佬评价这本书游戏开发领域尤其是客户端开发必看书籍，也是一本偏入门和科普性质的书籍。</p>
 <p>看来这个入门还是让我蛮吃力的hhh。</p>
 <hr>
-<h2 id="第二章"><a href="#第二章" class="headerlink" title="第二章"></a>第二章</h2><h3 id="2-1-版本控制"><a href="#2-1-版本控制" class="headerlink" title="2.1 版本控制"></a>2.1 版本控制</h3><p>git，会用就行，命令行要用再查，略</p>
-<h3 id="2-2-visual-studio常见功能"><a href="#2-2-visual-studio常见功能" class="headerlink" title="2.2 visual studio常见功能"></a>2.2 visual studio常见功能</h3><h4 id="生成配置"><a href="#生成配置" class="headerlink" title="生成配置"></a>生成配置</h4><p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301203453167.png" alt="image-20220301203453167"></p>
+<h1 id="第二章-专业工具"><a href="#第二章-专业工具" class="headerlink" title="第二章  专业工具"></a>第二章  专业工具</h1><h2 id="2-1-版本控制"><a href="#2-1-版本控制" class="headerlink" title="2.1 版本控制"></a>2.1 版本控制</h2><p>git，会用就行，命令行要用再查，略</p>
+<h2 id="2-2-visual-studio常见功能"><a href="#2-2-visual-studio常见功能" class="headerlink" title="2.2 visual studio常见功能"></a>2.2 visual studio常见功能</h2><h3 id="生成配置"><a href="#生成配置" class="headerlink" title="生成配置"></a>生成配置</h3><p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301203453167.png" alt="image-20220301203453167"></p>
 <p>可以在生成配置里面设定不同的预处理器，编译器，链接器属性</p>
 <p><strong>预处理器设置</strong>处理#include文件的展开，以及处理#define宏的定义和替换</p>
 <p><strong>编译器设置</strong>控制产生的对象文件是否包含调试信息，是最常见的编译选项之一，也可以控制是否展开内联函数。</p>
 <p><strong>链接器设置</strong>指定将哪些外部库链接到可执行文件，以及搜索路径</p>
 <p>一般项目自带”调试（debug）“和”发布（release）“配置。</p>
-<h4 id="常规属性页设置"><a href="#常规属性页设置" class="headerlink" title="常规属性页设置"></a>常规属性页设置</h4><p>随便打开一个项目的属性就能进入常规属性设置页面，里面有输出目录，中间目录各种目录的说明。</p>
-<h4 id="调试代码"><a href="#调试代码" class="headerlink" title="调试代码"></a>调试代码</h4><p>我一直觉得调试代码是很重要的功能，希望可以借着记录要点和操作慢慢理解增进</p>
+<h3 id="常规属性页设置"><a href="#常规属性页设置" class="headerlink" title="常规属性页设置"></a>常规属性页设置</h3><p>随便打开一个项目的属性就能进入常规属性设置页面，里面有输出目录，中间目录各种目录的说明。</p>
+<h3 id="调试代码"><a href="#调试代码" class="headerlink" title="调试代码"></a>调试代码</h3><p>我一直觉得调试代码是很重要的功能，希望可以借着记录要点和操作慢慢理解增进</p>
 <ul>
 <li><p>一个解决方案可能包含多个项目，记得正确设置启动项目。</p>
 </li>
@@ -150,16 +150,27 @@
 <p>数据断点也是个很有用的功能，可以在指定地址或者被写入时引发一个中断</p>
 <p>（vs2022没有找到条件断点，但找到了函数断点）</p>
 <p><img src="/images/loading.jpg" data-original="/2022/03/01/%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A0/image-20220301211906610.png" alt="image-20220301211906610"></p>
-<h3 id="2-3-剖析工具"><a href="#2-3-剖析工具" class="headerlink" title="2.3 剖析工具"></a>2.3 剖析工具</h3><p>剖析器（profiler）可以度量代码的执行时间，并能告知每个函数所花的时间。</p>
+<h2 id="2-3-剖析工具"><a href="#2-3-剖析工具" class="headerlink" title="2.3 剖析工具"></a>2.3 剖析工具</h2><p>剖析器（profiler）可以度量代码的执行时间，并能告知每个函数所花的时间。</p>
 <ul>
 <li>统计式剖析器：几乎不影响目标代码的执行速度，原理是周期为CPU的程序计数器寄存器进行采样。</li>
 <li>测控式剖析器：提供最详细最精确的计时数据，代码几乎跑不动。</li>
 </ul>
 <hr>
-<h2 id="第三章"><a href="#第三章" class="headerlink" title="第三章"></a>第三章</h2><p>3.1说的是cpp的语法以及cpp11的一些特性</p>
+<h1 id="第三章-游戏软件工程基础"><a href="#第三章-游戏软件工程基础" class="headerlink" title="第三章  游戏软件工程基础"></a>第三章  游戏软件工程基础</h1><p>3.1说的是cpp的语法以及cpp11的一些特性</p>
 <p>3.2则聊了聊一些比较深的东西，例如多态和虚函数表，拷贝和移动语义，内存布局</p>
 <p>这些内容早在背八股文的时候都记牢了也理解了，没有什么有意思的内容</p>
-<h3 id="3-3"><a href="#3-3" class="headerlink" title="3.3"></a>3.3</h3><p>3.4说的是流水线，缓存以及优化，这些涉及到硬件架构的内容目前对我来说太硬核了，往后稍稍。</p>
+<h2 id="3-3-捕捉和错误处理"><a href="#3-3-捕捉和错误处理" class="headerlink" title="3.3 捕捉和错误处理"></a>3.3 捕捉和错误处理</h2><p>错误分为用户错误和程序员错误，用户错误指用户做了不正确的事情引发的错误</p>
+<p>例如无效键入，尝试打开不存在的文件，我们这里只讨论程序员错误。</p>
+<p>程序员错误的处理应该以立即中止程序并提供调试信息为原则。</p>
+<ul>
+<li><p>错误返回码：当函数执行错误时返回一个不可能的值，最好可以返回一个枚举值。缺点是堆栈里的函数观察到错误时，其他函数都要添加代码。</p>
+</li>
+<li><p>异常：可以检测错误函数，并把相关错误储存于某对象，缺点是异常处理会有一些额外的开销，一个函数使用了异常整个程序都得使用异常。</p>
+</li>
+<li><p>断言：当表达式为假时，暂停程序打印错误信息。断言可以用宏实现，UE引擎则自带断言功能。</p>
+</li>
+</ul>
+<p>3.4说的是流水线，缓存以及优化，这些涉及到硬件架构的内容目前对我来说太硬核了，往后稍稍。</p>
 <hr>
 <p>今天就到这里吧，第四章基本上都是三维数学相关的内容，里面矢量，矩阵，坐标系那些的内容也是基本上滚瓜烂熟了</p>
 <p>第四章中比较感兴趣的是四元数，奈何今天看到的时候没看明白233333</p>
