@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 主流抗锯齿方案对比</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>主流抗锯齿方案对比 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/4
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>感觉这个坑对于经常玩游戏的玩家应该还算有一点吸引力</p>
+<p>因为笔者最近在研究opengl的时候做到了离屏msaa的部分</p>
+<p>觉得如果能自己好好学习一下抗锯齿的几种类型并简要的介绍一下</p>
+<p>想必对自己学习历程一定会有很大的帮助</p>
+<span id="more"></span>
+
+<p>我们不会在这里阐述锯齿产生的原因，详见games101 P6的那节，同时我们假设读者都了解熟悉光栅化的过程</p>
+<p>我们也不会拿源码出来讲解抗锯齿的实际使用</p>
+<p>（PS：确实除了msaa其他都没做过，可能会把opengl做离屏msaa那一章拿出来讲解一下）</p>
+<p>本篇内容当然还是以网上的内容摘要总结为主（其实就是写给自己复习用的）</p>
+<p>我们会尽量从原理和优缺点分析这些抗锯齿方案。</p>
+<h1 id="MSAA，SSAA"><a href="#MSAA，SSAA" class="headerlink" title="MSAA，SSAA"></a>MSAA，SSAA</h1><p><strong>MSAA（MultiSampling Anti-Aliasing）（多重采样反走样）</strong></p>
+<p><strong>SSAA（Super-Sampling Anti-Aliasing）（超级采样反走样）</strong></p>
+<p>从名字我们就能很容易看出两种抗锯齿采取的办法是在增加了采样的次数</p>
+<p>msaa和ssaa我认为是相似的，虽然他们只在对子像素点处理方式上有着细微区别</p>
+<p>但所耗费的开销差别的巨大的，这也因此让ssaa直接就退出了历史舞台，因此我们会细嗦MSAA</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>他们的具体做法都是在一个像素内增加子像素点，ssaa会对每个子像素点都进行一次单独的着色计算</p>
+<p>在最后将子像素点的颜色合并到对应的像素点。SSAA是最直接也是效果最好的抗锯齿方法。</p>
+<p>像素本身就是计算机图像的最小不可分最小的单位，所以会将整个纹理拉大到更高倍数的缓存上进行采样</p>
+<p>以常见的SSAAx4为例，在面对一张需要以1920x1080（1080P）像素渲染的画面时</p>
+<p>SSAA会首先渲染一张尺寸为3840x2160（4K）像素的缓存，再在这种长宽都乘以2的画面上进行采样</p>
+<p>采样的精度和效果当然是最理想的，但是也可以想象，这种对于硬件资源的消耗非常大，成本也非常高。</p>
+<hr>
+<p>MSAA出于性能考虑，同一个像素上的多个子像素点，不会每个都进行一次像素着色计算</p>
+<p>而是共享像素中心点的像素计算结果。</p>
+<p>对于每个像素点，如果上面对应的子像素点至少有一个通过了覆盖测试，就会进行<strong>一次</strong>采样</p>
+<p>计算的插值采样位置是像素的中心位置。一次采样的结果，会用于多个次像素采样点中。</p>
+<p>计算完成后，每个通过覆盖测试的次像素点还需要进行 <strong>depth-stencil test/深度-模板测试</strong></p>
+<p>这个测试和普通的单个像素的深度-模板测试是一样的，只是现在发生在次像素点而已。</p>
+<p>当深度-模板测试通过后，在像素中心位置采样的结果值就会写入到对应的次像素点。</p>
+<hr>
+<p>使用MSAA是比较简单的，重要工作都是 GPU 来自动完成的，我们只需要使用即可。</p>
+<p>在 OpengGL 中，使用 MSAA 只需要将 FrameBuffer 的格式设置成相应的 NxMSAA 格式</p>
+<p>将 FrameBuffer 作为渲染输出，就是 MSAA的效果。</p>
+<p>将 MSAA 格式贴图 Blit 到普通的格式，OpenGL 会自动完成 resolve 的工作。</p>
+<p>我们使用 MSAA 时也要注意，要尽量避免过多地进行 resolve 操作</p>
+<p>比如经常将 MSAA 格式贴图作为贴图输入，又作为 RenderTarget 来输出。这样会不断进行 resovle 操作，造成额外的性能消耗。</p>
+<p>（草这说的好像就是我）</p>
+<p>如果是使用现代的图形 API，则一般需要显式地调用 resolve，整个过程也更加可控。</p>
+<p>（懂了opengl不算现代图形api）</p>
+<hr>
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><p>优点：使用简单方便，效果好。</p>
+<p>缺点：因为是在光栅化阶段做的抗锯齿，抗锯齿这部分是由硬件完成的，会额外消耗大量内存和带宽</p>
+<p>对于延迟渲染来说，GBuffer 本身就已经很大了，如果再使用 MSAA，额外的带宽消耗极大。</p>
+<p>因此延迟渲染一般不会使用 MSAA来作为实现抗锯齿手段。</p>
+<p>而目前大部分 PC 端游戏都是基于延迟渲染管线的，包括Unity 的 HDRP ，所以 PC 游戏一般不会使用 MSAA。</p>
+<p>（因为自己没做过延迟渲染，所以关于延迟渲染的部分是抄的网上的233333）</p>
+<hr>
+<h1 id="FXAA"><a href="#FXAA" class="headerlink" title="FXAA"></a>FXAA</h1><p><strong>FXAA（Fast Approximate Anti-Aliasing）（快速近似抗锯齿）</strong></p>
+<p>它是传统MSAA（多重采样抗锯齿）效果的一种高性能近似值。运行于目标游戏渲染管线的后期处理阶段</p>
+<p>它只是单纯的后期处理着色器，不依赖于任何GPU计算API。</p>
+<p>正因为如此，FXAA技术对显卡没有特殊要求，完全兼容NVIDIA、AMD的不同显卡(MLAA仅支持A卡)和DX9、DX10、DX11。</p>
+<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>除了增加每个像素点的采样数，我们实现抗锯齿的另一种方式就是后处理。</p>
+<p>考虑到大部分情况下，我们想要抗锯齿的部分，其实都只是在物体边缘或者高光变化的部分</p>
+<p>我们通过后处理的方式，找出图像块之间的边缘，然后根据边缘信息对边缘两侧的图像进行混合处理，达到抗锯齿的效果。</p>
+<p>这类基于后处理的抗锯齿方式也叫做<strong>形变抗锯齿/Morphological antialiasing</strong></p>
+<p>但是任何事物都是辩证的，正如同其名，FXAA毕竟是一种“比较廉价”的抗锯齿技术</p>
+<p>在大多数的游戏应用中，效果终究不及传统的MSAA，适用于性能不高的电脑配置。</p>
+<p>具体的FXAA算法可以看这篇优质博客：</p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/431384101">主流抗锯齿方案详解（三）FXAA - 知乎 (zhihu.com)</a></p>
+<p>（其实很多观点也是扒的人家和百度百科的，这位作者的文真的给了我很大的启发，有机会的话建议都好好读一遍）</p>
+<h2 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h2><p>优点：FXAA 的优点就是集成比较方便，只需要一个 Pass 来实现抗锯齿，</p>
+<p>同时提供了quality和console两个版本，是目前手机上的最常用的抗锯齿方式。</p>
+<p>缺点：FXAA在带来超快速运算的同时，也带来了精度和质量上的损失。</p>
+<p>而且由于FXAA是基于后处理判断边界来实现的，因此没有次像素特性，在光照高频(颜色变化很快)的地方会不稳定。</p>
+<p>单独看静态的场景没有问题，但是移动摄影机时，就会导致一些闪烁。</p>
+<hr>
+<h1 id="TAA"><a href="#TAA" class="headerlink" title="TAA"></a>TAA</h1><hr>
+<h1 id="SMAA"><a href="#SMAA" class="headerlink" title="SMAA"></a>SMAA</h1><hr>
+<h1 id="DLSS"><a href="#DLSS" class="headerlink" title="DLSS"></a>DLSS</h1><hr>
+<p>很多很多内容都来自，谢谢这位作者，仅做自己学习记录之用，若有雷同，无意冒犯</p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/column/c_1210266723531976704">实时渲染学习笔记 - 知乎 (zhihu.com)</a></p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
