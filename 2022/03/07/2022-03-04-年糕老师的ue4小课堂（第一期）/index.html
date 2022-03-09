@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 年糕老师的ue4小课堂（第一期）</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>年糕老师的ue4小课堂（第一期） </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/7
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>在ue方面笔者完全是个萌新，糕糕前辈在我进入某大佬群时主动加了我的好友（现在想来感动的能哭出声）</p>
+<p>在我学习ue时不吝赐教，为我提供了许多资料，语气也十分的和蔼温柔</p>
+<p>每次遇到什么问题发消息几乎都是秒回，解答了我的许多疑惑（我哭死）</p>
+<p>这篇博客会做成一个对话的专栏形式，会记录一些前期学习遇到的疑问</p>
+<p>不会有固定的大纲，记录的风格是诙谐轻松的（顺利的话会一直写下去？）</p>
+<p>最重要的是这些遇到并得到解答的问题我不希望今天获取然后明天就失忆了</p>
+<p>这些知识对初学者应该是很有帮助的（确信），所以我很乐意记录这样一个快乐的过程</p>
+<span id="more"></span>
+
+<hr>
+<p>让我们有请今天的嘉宾，糕糕老师！</p>
+<p><strong>糕糕：</strong>大家好，我是一个工作不到两年的菜鸡（看来糕糕老师确实很谦虚呢）</p>
+<hr>
+<h2 id="第一幕-2-23"><a href="#第一幕-2-23" class="headerlink" title="第一幕 2.23"></a>第一幕 2.23</h2><p>某天晚上我新建了个了第三人称模板，想找个项目做做重温一下act的感觉，在搞动画蓝图的时候有了以下一幕：</p>
+<p><strong>四月：</strong>那个人向哪里走就向哪里转向的，是在哪里设置的？</p>
+<p><strong>糕糕 ：</strong>MovementComponent 还是 Character的默认属性那里忘记了</p>
+<p><strong>四月：</strong>我还是开中文吧，感觉用英文很多东西反应不过来</p>
+<p><strong>糕糕：</strong>建议是开中文语言，节点的名字和变量的名字英文</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/07/2022-03-04-%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%89/(S9NBOMCU)3C7$7ZNKGC%7D5O-16463936762971.png" alt="img"></p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/07/2022-03-04-%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%89/QQ%E5%9B%BE%E7%89%8720220304193559.png" alt="img"></p>
+<p><strong>糕糕：</strong>嗯对是这样</p>
+<p><strong>四月：</strong>奇怪了，我在blendspace里面看都是正常的，有很多个方向的移动，连上去之后，怎么跑怎么动都是一个样子</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/07/2022-03-04-%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%89/image-20220304194659446.png" alt="image-20220304194659446"></p>
+<p><strong>糕糕：</strong>白色那里选场景里的Character，这可是蓝图调试基础</p>
+<p><strong>四月：</strong>呜呜呜基础</p>
+<p><strong>糕糕：</strong>没事，我也是自学才看到这个功能的</p>
+<p><strong>四月：</strong>算了我把速度打印到屏幕吧，这样方便一点</p>
+<p><strong>四月：</strong>我草，破案了，他的速度只有正值，我是傻逼啊</p>
+<p><strong>糕糕：</strong>哈哈哈哈哈哈哈，这个就是做项目的好处了，能学到解决问题的思路，所以即使之后做的不是这个类型的游戏之类的也能做</p>
+<p><strong>四月：</strong>他这个自带模板有大病啊，怪不得要设置成自动旋转，速度怎么可能会没有负值啊，然后blendspace只做了前进的</p>
+<p><strong>糕糕：</strong>速度一般都是0～动画的实际速度，看设计的。</p>
+<hr>
+<p>次日：</p>
+<p><strong>四月：</strong>完了，我是怎么说出昨天晚上那些话的，正常来说速度怎么可能有负值呢</p>
+<p><strong>糕糕：</strong>所以我没多想</p>
+<p>![image-20220304200942589]image-20220304200942589.png)</p>
+<p><strong>四月：</strong>这样，感觉好缺编程经验，断言，调试，句柄，宏这些我都没学过，怎么恶补</p>
+<p><strong>糕糕：</strong>你是想刚毕业就有10年经验吗</p>
+<p><strong>四月：</strong>啊可是这个难道不是毕业生标配吗，我怎么感觉别人都会（事实上这个傻逼在过度焦虑）</p>
+<p><strong>四月：</strong>哈哈哈哈哈哈哈哈哈，你这一说我就放心了</p>
+<p><strong>糕糕：</strong>嗯 我的意思就是，这些其实都是在做项目过程中学的，所以没有恶补的方法</p>
+<p><strong>四月 ：</strong>噢噢这样，之前精力基本上都在看理论，怪不得都不知道这些，实操少了</p>
+<hr>
+<p>由此可见，gameplay的实操本身就是最好的学习资料</p>
+<hr>
+<h2 id="第二幕-2-25"><a href="#第二幕-2-25" class="headerlink" title="第二幕 2.25"></a>第二幕 2.25</h2><p>这篇特别长但我觉得特别有营养，是经典</p>
+<p>有天下午在图书馆看大象无形（确实是真的看不懂），看到一半回忆起当时面试被问到的问题</p>
+<p><strong>四月：</strong>gamemode和gamestate的区别是什么，关卡蓝图又是什么</p>
+<p><strong>糕糕：</strong>终于到这里了</p>
+<p><strong>四月：</strong>没有，还没到这里，是我在读书的时候想起了面试官问我的问题。</p>
+<p><strong>糕糕：</strong>这些东西都是属于Gameplay框架里的一部分，Gameplay框架的定义，它是一个“房间制多人联机回合计分对战游戏框架”，所以你做单机游戏的时候，实际上是用不到的。</p>
+<p><strong>四月：</strong>所以做单机游戏的时候 ，是不是我把规则写gamemode和gamestate都可以</p>
+<p><strong>糕糕：</strong>是这样，但是你一旦做多人游戏，这俩的网络同步状态，以目前游戏用得比较多的UE联机方式，DS服务器架构下，<br>一个游戏房间里拥有一个中央服务端只处理服务器逻辑不处理渲染，而所有玩家都是客户端。在这种架构下，服务端跑了一个UWorld，客户端也跑了一个UWorld，但是只有服务端的UWorld是真实的，其他所有的都是复制品。</p>
+<p><strong>四月：</strong>所以说客户端是对服务端的拙劣模仿，有看到这样的形容</p>
+<p><strong>糕糕：</strong>对的，然后 Gamemode Gamestate都是继承actor的，Gamemode仅在服务端上生成，不复制到客户端，Gamestate在所有端均生成，以服务端为准，其他为复制品</p>
+<p><strong>四月：</strong>噢噢原来是这样，那关卡蓝图呢</p>
+<p><strong>糕糕：</strong>关卡蓝图纯本地，一般不使用关卡蓝图，关卡蓝图不是Actor哦</p>
+<p><strong>四月：</strong>原来是这样</p>
+<p><strong>糕糕：</strong>Gamemode是UE的Gameplay框架的一部分，所以 Gamemode 的设置里的这些东西也是</p>
+<p><strong>糕糕：</strong>先不看Pawn，先看PlayerController，只在拥有的客户端上生成，服务端拥有所有客户端的 PlayerController，所以，玩家在自己的PlayerController，修改了值啊，执行了什么事件啊之类的，只有服务器知道，其他客户端是不知道的，所以又来了个PlayerState</p>
+<p><strong>四月：</strong>啊这</p>
+<p><strong>糕糕：</strong><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.27/zh-CN/InteractiveExperiences/Framework/">https://docs.unrealengine.com/4.27/zh-CN/InteractiveExperiences/Framework/</a></p>
+<p>你的问题文档都有，只是“计分多人游戏框架”这件事是我自己总结的，网上没有的，你先理解了这个定义，用这个定义去理解他的框架应该会更容易些，不然容易误解某些功能233。</p>
+<p><strong>四月：</strong>虚幻引擎真的好难学啊</p>
+<p><strong>糕糕：</strong>成也Gameplay框架败也Gameplay框架，成在，你作为没有经验的，不是架构师，理解它用它，就能出游戏了；</p>
+<p>成在，你作为没有经验的，不是架构师，理解它用它，就能出游戏了。</p>
+<p><strong>四月：</strong>我该怎么做呜呜呜呜</p>
+<p><strong>糕糕：</strong>开整！现在就用它整个多人联机fps</p>
+<p><strong>糕糕：</strong>Gamemode用来写当前游戏模式的服务器要执行的事件，比如LOL，假如在10分钟出大龙，这件事就是写Gamemode里的。</p>
+<p>而游戏已经进行了10分钟，大龙已经被击杀了多少次，是在Gamestate里面。</p>
+<p><strong>四月：</strong>gamemode是写事件，state是记录信息条件，这样吗</p>
+<p><strong>糕糕：</strong>这样，大龙例子不是很好，那就红buff吧。红BUFF有个特点，你没视野的时候被打死，你不知道红BUFF没了。没错，他的生成和存在状态就是存Gamemode里的。</p>
+<p><strong>四月：</strong>所有野怪都这样</p>
+<p><strong>糕糕：</strong>因为Gamemode不在客户端同步，你可以设置只在客户端有视野的时候，Gamemode才把对应状态通过RPC发过去</p>
+<p><strong>四月：</strong>那gamestate还是记信息嘛，每个客户端一份，然后服务端的是真的，其他都是复制品</p>
+<p><strong>糕糕：</strong>嗯，gamestate记全场客户端人尽皆知的事，游戏持续时间……大逃杀的话，剩余人数。但如果是LOL的话，</p>
+<p>玩家杀人数可以记到gamestate，但是补刀数 装备在 playerstate，可以理解吗</p>
+<p><strong>四月：</strong>不太理解诶，补刀数不是和杀人数战绩按理说不是一样的吗</p>
+<p><strong>糕糕：</strong>不一样的哦，你观察下打野英雄，不露脸不显示补刀数的，防止你知道打野英雄的发育情况了</p>
+<p><strong>四月：</strong>噢噢，所以补刀并不是全场客户端人尽皆知的事情，所以就并不是记录在Gametate而是在Playerstate里面。这样我就明白了</p>
+<hr>
+<p>这个专栏感觉还是很生动的，打算以一星期一次的频率更新一次（前提是有提问）</p>
+<p>这一期太长了剩下就放到下一期来吧！2022.3.7</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

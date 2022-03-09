@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AprilNAVI&#39;s Blog | You are the best || 年糕老师的ue4小课堂（第一期）</title>
+    <title>AprilNAVI&#39;s Blog | You are the best || 年糕老师的ue4小课堂（第二期）</title>
     <meta name="author" content="AprilNAVI">
     <meta name="description" content=" ">
     <meta name="keywords" content=" ">
@@ -90,14 +90,14 @@
 <link rel="stylesheet" href="/css/post-body.css">
 <div class="article">
     <div>
-        <h1>年糕老师的ue4小课堂（第一期） </h1>
+        <h1>年糕老师的ue4小课堂（第二期） </h1>
     </div>
     <div class="info">
         <span class="date">
             <span class="icon">
                 <a-icon type="calendar" theme="filled" />
             </span>
-            2022/3/4
+            2022/3/7
         </span>
 
         
@@ -116,63 +116,67 @@
 <span id="more"></span>
 
 <hr>
-<p>让我们有请今天的嘉宾，糕糕老师！</p>
-<p><strong>糕糕：</strong>大家好，我是一个工作不到两年的菜鸡（看来糕糕老师确实很谦虚呢）</p>
+<p>这次笔者会记录在学校学习的第二周和糕糕前辈发生的有趣的对话</p>
 <hr>
-<h2 id="第一幕"><a href="#第一幕" class="headerlink" title="第一幕"></a>第一幕</h2><p>某天晚上我新建了个了第三人称模板，想找个项目做做重温一下act的感觉，在搞动画蓝图的时候有了以下一幕：</p>
-<p><strong>四月：</strong>那个人向哪里走就向哪里转向的，是在哪里设置的？</p>
-<p><strong>糕糕 ：</strong>MovementComponent 还是 Character的默认属性那里忘记了</p>
-<p><strong>四月：</strong>我还是开中文吧，感觉用英文很多东西反应不过来</p>
-<p><strong>糕糕：</strong>建议是开中文语言，节点的名字和变量的名字英文</p>
-<p><img src="/images/loading.jpg" data-original="/2022/03/04/2022-03-04-%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%89/(S9NBOMCU)3C7$7ZNKGC%7D5O-16463936762971.png" alt="img"></p>
-<p><img src="/images/loading.jpg" data-original="/2022/03/04/2022-03-04-%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%89/QQ%E5%9B%BE%E7%89%8720220304193559.png" alt="img"></p>
-<p><strong>糕糕：</strong>嗯对是这样</p>
-<p><strong>四月：</strong>奇怪了，我在blendspace里面看都是正常的，有很多个方向的移动，连上去之后，怎么跑怎么动都是一个样子</p>
-<p><img src="/images/loading.jpg" data-original="/2022/03/04/2022-03-04-%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%89/image-20220304194659446.png" alt="image-20220304194659446"></p>
-<p><strong>糕糕：</strong>白色那里选场景里的Character，这可是蓝图调试基础</p>
-<p><strong>四月：</strong>呜呜呜基础</p>
-<p><strong>糕糕：</strong>没事，我也是自学才看到这个功能的</p>
-<p><strong>四月：</strong>算了我把速度打印到屏幕吧，这样方便一点</p>
-<p><strong>四月：</strong>我草，破案了，他的速度只有正值，我是傻逼啊</p>
-<p><strong>糕糕：</strong>哈哈哈哈哈哈哈，这个就是做项目的好处了，能学到解决问题的思路，所以即使之后做的不是这个类型的游戏之类的也能做</p>
-<p><strong>四月：</strong>他这个自带模板有大病啊，怪不得要设置成自动旋转，速度怎么可能会没有负值啊，然后blendspace只做了前进的</p>
-<p><strong>糕糕：</strong>速度一般都是0～动画的实际速度，看设计的。</p>
+<h2 id="第一幕-3-1"><a href="#第一幕-3-1" class="headerlink" title="第一幕 3.1"></a>第一幕 3.1</h2><p>四月：糕糕你之前发我的那个有关assert的文章还在吗，哦对了说起来断言算是c++的机制还是算是ue的机制呢</p>
+<p>糕糕：是ue的机制，你也可以自己写，不过就不叫断言了。你知道断言为什么叫断言吗。</p>
+<p>四月：会引发一个中断！（确信）</p>
+<p>糕糕：没错，断言的意思差不多就类似中断的文字版。</p>
 <hr>
-<p>次日：</p>
-<p><strong>四月：</strong>完了，我是怎么说出昨天晚上那些话的，正常来说速度怎么可能有负值呢</p>
-<p><strong>糕糕：</strong>所以我没多想</p>
-<p>![image-20220304200942589]image-20220304200942589.png)</p>
-<p><strong>四月：</strong>这样，感觉好缺编程经验，断言，调试，句柄，宏这些我都没学过，怎么恶补</p>
-<p><strong>糕糕：</strong>你是想刚毕业就有10年经验吗</p>
-<p><strong>四月：</strong>啊可是这个难道不是毕业生标配吗，我怎么感觉别人都会（事实上这个傻逼在过度焦虑）</p>
-<p><strong>四月：</strong>哈哈哈哈哈哈哈哈哈，你这一说我就放心了</p>
-<p><strong>糕糕：</strong>嗯 我的意思就是，这些其实都是在做项目过程中学的，所以没有恶补的方法</p>
-<p><strong>四月 ：</strong>噢噢这样，之前精力基本上都在看理论，怪不得都不知道这些，实操少了</p>
+<h2 id="第二幕-3-2"><a href="#第二幕-3-2" class="headerlink" title="第二幕 3.2"></a>第二幕 3.2</h2><p>四月：糕糕，元数据metadata是什么</p>
+<p>糕糕：元数据是用来描述数据的数据，<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2007/03/metadata.html">https://www.ruanyifeng.com/blog/2007/03/metadata.html</a></p>
+<p>四月：这样，那ue的元数据是什么，文件大小时间那些的吗</p>
+<p>糕糕：UE的UProperty有Meta标签，不过可以自己加，只能editor识别。或者说这个所谓的描述其实没有固定添加的地方</p>
+<p>只是看你的程序对他处不处理。</p>
+<p>四月：噢噢正是这样所以UE editor能把这些当成资产来使用，这就是元数据</p>
 <hr>
-<p>由此可见，gameplay的实操本身就是最好的学习资料</p>
+<h2 id="第三幕-3-2"><a href="#第三幕-3-2" class="headerlink" title="第三幕 3.2"></a>第三幕 3.2</h2><p><strong>四月：</strong>自带的FPS模板写了一堆前向声明诶</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/07/%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%BA%8C%E6%9C%9F%EF%BC%89/_4VZ%25%5D%25DHR%5B7%60RTAIZ79GOR.png" alt="img"></p>
+<p><strong>糕糕：</strong>C++ 必须写这个，必须能不用#include就不用</p>
+<p><strong>四月：</strong>噢噢原来是这样，我之前都是都是#include</p>
+<p><strong>糕糕：</strong>#include的话 其中某个头文件改了，链式增加编译数量，而且会有重叠引用的问题</p>
+<p><strong>四月：</strong>之前demo就遇到过，就武器类引用了我的角色，角色类也引用我的武器，然后乱糟糟的，可能哪边不小心改错了就过不去编译。</p>
+<p><strong>糕糕：</strong>还有这个前置声明，我推荐在头文件里写在要用的地方，而不是写在最上面，方便复制片段代码</p>
+<p>还有个事，struct不能前置声明</p>
+<p><strong>四月：</strong>所以class和struct的区别又多了一个，那我怎么天天看到它们只有一个public一个private的区别</p>
+<p>糕糕：其实是UE里不能这样</p>
+<p><strong>四月：</strong>可恶啊</p>
+<p><strong>糕糕：</strong>因为UE的struct只能放到栈里构造，而class只能在堆里构造，UE的uclass 创建变量的时候只能用 指针，ustruct只识别非指针</p>
+<p>所以ustruct，在头文件里构造这个类的时候就要明确要多少内存，所以就得在这里include进来了。</p>
+<p>而class在构造这个类的时候是用的指针，固定大小的，所以可以前置声明。</p>
+<p><strong>四月：</strong>呜呜呜糕糕真是好老师</p>
+<p><strong>糕糕：</strong>所以可恶的C++，现在我学ts就完全好多了</p>
 <hr>
-<h2 id="第二幕"><a href="#第二幕" class="headerlink" title="第二幕"></a>第二幕</h2><p>有天下午在图书馆看大象无形（确实是真的看不懂），看到一半回忆起当时面试被问到的问题</p>
-<p><strong>四月：</strong>gamemode和gamestate的区别是什么，关卡蓝图又是什么</p>
-<p><strong>糕糕：</strong>终于到这里了</p>
-<p><strong>四月：</strong>没有，还没到这里，是我在读书的时候想起了面试官问我的问题。</p>
-<p><strong>糕糕：</strong>这些东西都是属于Gameplay框架里的一部分，Gameplay框架的定义，它是一个“房间制多人联机回合计分对战游戏框架”，所以你做单机游戏的时候，实际上是用不到的。</p>
-<p><strong>四月：</strong>所以做单机游戏的时候 ，是不是我把规则写gamemode和gamestate都可以</p>
-<p><strong>糕糕：</strong>是这样，但是你一旦做多人游戏，这俩的网络同步状态，以目前游戏用得比较多的UE联机方式，DS服务器架构下，<br>一个游戏房间里拥有一个中央服务端只处理服务器逻辑不处理渲染，而所有玩家都是客户端。在这种架构下，服务端跑了一个UWorld，客户端也跑了一个UWorld，但是只有服务端的UWorld是真实的，其他所有的都是复制品。</p>
-<p><strong>四月：</strong>所以说客户端是对服务端的拙劣模仿，有看到这样的形容</p>
-<p><strong>糕糕：</strong>对的，然后 Gamemode Gamestate都是继承actor的，Gamemode仅在服务端上生成，不复制到客户端，Gamestate在所有端均生成，以服务端为准，其他为复制品</p>
-<p><strong>四月：</strong>噢噢原来是这样，那关卡蓝图呢</p>
-<p><strong>糕糕：</strong>关卡蓝图纯本地，一般不使用关卡蓝图，关卡蓝图不是Actor哦</p>
-<p><strong>四月：</strong>原来是这样</p>
-<p><strong>糕糕：</strong>Gamemode是UE的Gameplay框架的一部分，所以 Gamemode 的设置里的这些东西也是</p>
-<p><strong>糕糕：</strong>先不看Pawn，先看PlayerController，只在拥有的客户端上生成，服务端拥有所有客户端的 PlayerController，所以，玩家在自己的PlayerController，修改了值啊，执行了什么事件啊之类的，只有服务器知道，其他客户端是不知道的，所以又来了个PlayerState</p>
-<p><strong>四月：</strong>啊这</p>
-<p><strong>糕糕：</strong><a target="_blank" rel="noopener" href="https://docs.unrealengine.com/4.27/zh-CN/InteractiveExperiences/Framework/">https://docs.unrealengine.com/4.27/zh-CN/InteractiveExperiences/Framework/</a></p>
-<p>你的问题文档都有，只是“计分多人游戏框架”这件事是我自己总结的，网上没有的，你先理解了这个定义，用这个定义去理解他的框架应该会更容易些，不然容易误解某些功能233。</p>
-<p><strong>四月：</strong>虚幻引擎真的好难学啊</p>
-<p>糕糕：成也Gameplay框架败也Gameplay框架，成在，你作为没有经验的，不是架构师，理解它用它，就能出游戏了；</p>
-<p>成在，你作为没有经验的，不是架构师，理解它用它，就能出游戏了。</p>
-<p>四月：我该怎么做呜呜呜呜</p>
-<p><strong>糕糕：</strong>开整！现在就用它整个多人联机fps</p>
+<h2 id="第四幕-3-2"><a href="#第四幕-3-2" class="headerlink" title="第四幕 3.2"></a>第四幕 3.2</h2><p>四月：UgameplayStatic::里面有什么常用的api吗</p>
+<p>糕糕：看源码，基本上都是常用Api吧。但实际项目中，最好自己写个类似的库</p>
+<p>四月：我自己实现一遍吗</p>
+<p>糕糕：嗯嗯，因为他get出来的是UE原来的类型，要cast一下</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/07/%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%BA%8C%E6%9C%9F%EF%BC%89/T39@HAUYOY4%7BNE%7D(QPL)RKU.png" alt="img"></p>
+<p>比如最常用的这个，正经项目你肯定会自己写个Gamemode吧，你每次都要cast一下</p>
+<p>直接对自己的gamemode写个static get自己的实例算了 反正是单例。</p>
+<p>四月：避免cast是为什么呢，性能开销太大了吗</p>
+<p>糕糕：嗯，损耗很大。</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/07/%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%BA%8C%E6%9C%9F%EF%BC%89/%E5%8D%95%E4%BE%8B.png" alt="img"></p>
+<p>写个单例大概像这样的</p>
+<p>四月：单例不是考虑到线程安全会有什么懒汉式还有其他的吗</p>
+<p>糕糕：Gamemode的生命周期不用自己管理，所以我们只用存他的指针返回他的指针就是了</p>
+<p>四月：所以引擎会帮我们解决对吗</p>
+<p>糕糕：嗯嗯对的，这样只有第一次有cast损耗，后面放tick里也没啥问题了</p>
+<hr>
+<h2 id="小插曲"><a href="#小插曲" class="headerlink" title="小插曲"></a>小插曲</h2><p>四月：我想玩那个车车游戏</p>
+<p>糕糕：base.apk</p>
+<p>四月：这车真的很难开，为什么你漂移还能炸对手</p>
+<p>糕糕：游戏开发者一般是技术最好的吧，其实一般来说是策划，但这移动算法都是我写的</p>
+<p>四月：里面的按钮居然都点不了！只有广告是可以点的，老板估计很开心</p>
+<p>糕糕：说起来 你想去大厂的话，一定要想办法转正或者毕业就直接去大厂，不然工作几年之后很难的</p>
+<p>我这边的tx基本上只招资深的<img src="/images/loading.jpg" data-original="/2022/03/07/%E5%B9%B4%E7%B3%95%E8%80%81%E5%B8%88%E7%9A%84ue4%E5%B0%8F%E8%AF%BE%E5%A0%82%EF%BC%88%E7%AC%AC%E4%BA%8C%E6%9C%9F%EF%BC%89/2FFS%7B6G@M3$ZUWUK%25SWE0H.gif" alt="img">普通的和高级的基本上都是从实习生就在Tx的</p>
+<p>四月：我当然知道啦，所以转正我特别重视，毕竟现在版号不发了，是游戏圈的紧要关头，可能没转正成功我就回家了。</p>
+<p>我打算死磕tx了，毕业拿转正offer之前都不算高枕无忧。</p>
+<hr>
+<p>笔者写这些的时候，又听到了一些所谓“小道消息”，说春招的hc被卡了很多，即使自己不需要春招已经上岸</p>
+<p>但还是感觉到了不小的压力，也为整个中国游戏行业的未来狠狠的捏了一把汗。</p>
+<p>再说下去要emo了，这样可不行，人还是得开开心心的，毕竟我又是月亮又是太阳！</p>
+<hr>
 
     </div>
 

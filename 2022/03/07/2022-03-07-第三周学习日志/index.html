@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 第三周学习日志</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>第三周学习日志 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/7
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>第三周的学习日志哒</p>
+<span id="more"></span>
+
+<h1 id="Monday"><a href="#Monday" class="headerlink" title="Monday"></a>Monday</h1><p>上午的状态很不错，整个人都神采奕奕的</p>
+<p>把光照改进成了bling phong，加了gamma校正和点光源的衰减</p>
+<p>做起来的效果不错，而且一整个上午的效率也很高，明天可以开始做Shadow mapping</p>
+<p>上午上课发生了一点小插曲，我在上PS课的时候用着自己电脑在写shader</p>
+<p>老师过来问我在干什么我说在写着色器，老师说我是毕业想去做游戏吗</p>
+<p>我说已经进tx了（实则转正没一撇），然后老师就以整层楼都听得见的声音直接大喊了一声</p>
+<p>（说起来这个offer真的给了我很多，信心，实力，虚荣，人脉，好的坏的都有）</p>
+<p>然后老师坏笑的说：如果我挂掉你会怎么样呢，我：球球放过</p>
+<p>然后老师就推了一个后辈的v给我，叫我好好带带，带不动就挂我（晕）</p>
+<p>然后稍微看了下大二上在跟着unity教程做demo，看着是还不错，但是不知道基础怎么样</p>
+<p>稍微了解了下挺多行情也术语也不了解（还好不算太离谱的卷王）</p>
+<p>其实挺好的，游戏有在做，后端也有在搞，不需要版号掐死就死路一条</p>
+<hr>
+<p>下午补考完以后基本上是做大牢</p>
+<p>补考本身是并不能算顺利但也并不是完全寄，只能说期望能过吧</p>
+<p>四点就来图书馆想着写一两个小时博客，结果摸鱼边码字字码了不少但是还没写完</p>
+<p>最后因为版号的事情人也焦虑的不行，只能说游戏行业真的太难了</p>
+<p>之后的日子会很难熬吧，但我早已经斩断后路了，毕竟重现前辈所期望的世界是我的U咩呢</p>
+<hr>
+<p>希望七点二十之前可以把UE打开吧，博客写到这样就算了</p>
+<hr>
+<h1 id="Tuesday"><a href="#Tuesday" class="headerlink" title="Tuesday"></a>Tuesday</h1><p>昨天晚上因为一些琐事没有睡好，大概是三点多才睡着</p>
+<p>早上一下睡到了五十分才醒，一醒来就往教室跑，除开很困之外人的精神面貌还不错（好像也不好）</p>
+<p>但起码好在我是个精神独立的人，不会因为失去什么就停止前进</p>
+<p>身体感觉到了明显的劳累感，不过我知道这是因为我把作息调成了不熬夜的作息导致的（好事）</p>
+<p>早上做shadowmapping只做了一半，感觉好难，最后还是跟着源码粘上去才出了效果</p>
+<p>希望明天花多点时间能够把shadowmapping搞明白。</p>
+<hr>
+<p>中午下课把电脑开开心心放图书馆</p>
+<p>然后下午下课过来发现电脑给人挪走了，一天的好心情直接急急急</p>
+<p>希望晚上抽雷神的时候运气可以好点吧</p>
+<hr>
+<p>九条五命，西风长枪两把，和璞鸢一把，毕业心海一只</p>
+<p>水群时间一大把，博客都没有肝完呜呜呜呜</p>
+<p>晚上看了一小时光追课全程发呆，什么都听不懂属实小emo</p>
+<p>好在心情还是不错的，但不得不说萌萌真的很厉害我真的很敬佩她</p>
+<p>我还零基础的时候她就在拿MiniGame打比赛，gameplay做的很好</p>
+<p>我们现在联系的少了，我记得拿到了魔方的oc告诉她的时候她反应不大</p>
+<p>（看来是不稀罕了呜呜呜）她确实没有让我失望，</p>
+<p>晚上直接列式问光追里面的积分和采样算的结果如何（tql）而且她真的是很谦虚的人</p>
+<p>如果我的成长速度是5那她估计是15，但我也会好好加油的</p>
+<hr>
+<h1 id="Wednesday"><a href="#Wednesday" class="headerlink" title="Wednesday"></a>Wednesday</h1><hr>
+<p>早上睡到了八九点，一早上都没怎么肝，就想着东奔西跑给图书馆占位置了</p>
+<p>os课下半节直接逃了，回宿舍打原神去了笑死</p>
+<p>一中午没睡下午精神也不是很好</p>
+<hr>
+<p>说是学习日志到现在根本也还没进状态吧</p>
+<p>不过倒是和鸡哥聊了很多转正的事情，对转正更有信心了</p>
+<p>在居居的群了钓了一下午鱼心情蛮好的还</p>
+<p>虽然最后也是什么都没做哈哈哈哈</p>
+<hr>
+<p>今天的任务定个小目标吧</p>
+<ol>
+<li><p>补完昨天的博客</p>
+</li>
+<li><p>搞完昨天没搞完的shadowmapping（这也算是早上没搞完的）</p>
+</li>
+<li><p>gameplay做完一个模块吧</p>
+</li>
+</ol>
+<p>今日事今日毕冲冲冲！ </p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

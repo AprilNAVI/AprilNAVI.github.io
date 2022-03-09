@@ -1,0 +1,361 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏引擎架构精要（才怪）③</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏引擎架构精要（才怪）③ </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/8
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>《Game Engine Architecture》是一直以来我很有兴趣也很想阅读的书，书的译者是我很敬重的milo叶劲峰前辈（魔方引擎中心的大大）。</p>
+<p>但是由于自己基础不牢，再加上这本厚厚的大书所带来的畏难情绪，同时自己过于功利总是把时间抽去做容易提升的事情，</p>
+<p>以及n个自己给自己找的理由，让这个阅读计划一直搁置。</p>
+<p>但这学期拿到了暑期实习的offer，刚巧也在魔方，对于就业的压力就减小了很多</p>
+<p>再加上自己有意往引擎方向发展，阅读这本书就提上了日程。</p>
+<span id="more"></span>
+
+<p>今天把第五章的东西看完，看的内容不多但是感觉有收获，</p>
+<p>书上讲的东西很干货，特别是谈及链表那个地方确实给了人很大的启发</p>
+<hr>
+<h1 id="第五章"><a href="#第五章" class="headerlink" title="第五章"></a>第五章</h1><h2 id="5-3-容器"><a href="#5-3-容器" class="headerlink" title="5.3 容器"></a>5.3 容器</h2><p>这个章节讲了一些基本上常用的数据结构，比较详细的分析了他们适用的场景</p>
+<p>并且为我们自己亲自编写他们也提供了很不错的方案，是我觉得很有用很精华的内容</p>
+<hr>
+<h3 id="5-3-2-迭代器"><a href="#5-3-2-迭代器" class="headerlink" title="5.3.2 迭代器"></a>5.3.2 迭代器</h3><p>问题c++的迭代器在我第一次学习的时候，我不知道他和直接i++的区别是什么</p>
+<p>书中所说，迭代器像是数组索引或指针，可以移至下一个元素（我也知道）</p>
+<p>但是！迭代器通常是容器类的<strong>友元</strong>，因此可以高效迭代访问容器，不向外面暴露容器类的实现细节</p>
+<p>其次，迭代器简化了迭代过程，无论数据结构多复杂，我都可以<code> iterator++</code></p>
+<p>这个又涉及到前置递增++i和后置递增i++的问题</p>
+<p>原文：在深度流水线CPU上，前置递增必须完成递增才能使用这个值，会引起<strong>流水线停顿</strong></p>
+<p>在for循环里面前置和后置没有区别，<strong>当用到值的时候建议使用后置递增</strong></p>
+<p>在使用类类型的时候，由于前置和后置可能是自定义的运算符重载</p>
+<p>而后置递增需要对对象进行拷贝，会造成性能消耗，因此<strong>在类类型尽量使用前置递增</strong></p>
+<hr>
+<h3 id="5-3-3-算法复杂度"><a href="#5-3-3-算法复杂度" class="headerlink" title="5.3.3 算法复杂度"></a>5.3.3 算法复杂度</h3><p>这个大家面试的时候应该都刷烂了，但是书里边对于复杂度的常见解释</p>
+<p>写的不错所以还是可以记一下的：</p>
+<p>若算法的运行时间和容器中的元素数目无关的话，称算法为O（1）；</p>
+<p>若算法循环访问容器里面的元素，每个元素当访问一次，则算法为O（n）；</p>
+<p>若算法有两层循环，每层循环访问每个元素一次，则算法为O（n2）（自动联想上标）；</p>
+<p>若算法使用分治法（二分查找），每次都能消去余下元素的一半，则算法为O（logn）；</p>
+<p>若算法执行一个子算法n次，且子算法为O（logn），则整个算法为O（nlogn）</p>
+<p>最长预见的数量级O（1），O（logn）,O（n）,O（nlogn）,O（n2）</p>
+<p>同时也应该考虑容器的内存布局和使用特性</p>
+<p>数组的内存连续，更加缓存友好，且除了元素不需要额外的内存开销（对比链表需要存指向下一元素的指针）</p>
+<p>若插入以及移除元素的速度很重要，则应该使用链表</p>
+<hr>
+<h3 id="5-3-4-自建容器"><a href="#5-3-4-自建容器" class="headerlink" title="5.3.4 自建容器"></a>5.3.4 自建容器</h3><p>这里对于是否使用自建的数据结构提供了讨论，使用自建容器有以下好处：</p>
+<ul>
+<li>可以自己控制如何分配内存，自由的进行优化</li>
+<li>可自行提供第三方库没有的功能（stl中只能搜索单个最有关元素，而不能搜索n个）</li>
+<li>不需要第三方库支持则可以消除第三方团队的外部依赖</li>
+<li>可全权控制多线程或多核系统的保护机制</li>
+</ul>
+<hr>
+<p>常见第三方：</p>
+<p><strong>STL：</strong></p>
+<p>优势：功能丰富，多平台的壮健表现，几乎所有c++编译器自带stl</p>
+<p>缺点：难学，对于特定问题速度不如自建容器快，对比自建容器会占用更多内存</p>
+<p>会进行许多动态分配，要控制stl的内存占用量</p>
+<p>STL适合pc游戏引擎，因为对比游戏主机内存受限，缺乏高级CPU和虚拟内存</p>
+<p>现代pc拥有高级虚拟内存系统，通常也能忽略物理内存不足的可能性</p>
+<p><strong>Boost：</strong></p>
+<p>优势：文档写得好，功能比stl更多，能有效处理智能指针</p>
+<p>缺点：核心类是模板，可能会生成较大的lib，不适合小项目</p>
+<p>不保证向后兼容，Boost团队也不提供保障。</p>
+<hr>
+<p>数组和动态数组不加赘述，没什么好说的</p>
+<hr>
+<p>链表这块讲的很不错：</p>
+<p>外露式链表：</p>
+<pre><code>template&lt;typename ELEMENT&gt;
+struct Link
+&#123;
+   Link&lt;ELEMENT&gt;* Prev;
+   Link&lt;ELEMENT&gt;* Next;
+   ELEMENT* Elem;
+&#125;
+</code></pre>
+<p>节点数据结构和元素数据结构完全分离，每个节点含指针指向元素。</p>
+<p>外露式链表的特点在于，一个元素可以置于多个链表中，只需要节点指向该元素</p>
+<p>但分配节点时必须进行动态分配，许多时候会使用池分配器。</p>
+<hr>
+<p>侵入式链表：</p>
+<pre><code>template&lt;typename ELEMENT&gt;
+struct Link
+&#123;
+   Link&lt;ELEMENT&gt;* Prev;
+   Link&lt;ELEMENT&gt;* Next;
+&#125;
+class SomeElement:public Link&lt;SomeElement&gt;
+&#123;
+   //其他成员
+&#125;
+</code></pre>
+<p>使用侵入式链表的好处是，分配元素时无须再动态分配节点（已经获得了节点）</p>
+<p>但每个元素不能置于多个列表中，（元素只有一个节点数据），因此侵入式链表不如外露式有弹性</p>
+<hr>
+<p>循环链表的结构一般会包含头尾指针：</p>
+<pre><code>template&lt;typename ELEMENT&gt;
+struct Link
+&#123;
+   Link&lt;ELEMENT&gt;* Tail;
+   Link&lt;ELEMENT&gt;* Head;
+   
+   //相关操作成员函数
+&#125;
+</code></pre>
+<p>用Link类来管理头尾指针有些好处:</p>
+<pre><code>template&lt;typename ELEMENT&gt;
+struct Link
+&#123;
+   Link&lt;ELEMENT&gt; Root; //包含了头尾指针
+   
+   
+   //相关操作成员函数
+&#125;
+</code></pre>
+<p>这样一来最后节点的next和第一个节点的pre都是指向root的</p>
+<p>这样设计能简化插入和移除的逻辑，我们先看看独立头尾指针移除元素的代码：</p>
+<pre><code>void LinkList::remove(Link&lt;ELEMENT&gt;&amp; link)
+&#123;
+  if(link.next)link.next.pre=link.pre;
+  else this.Tail=link.pre  //移除链表末元素
+  
+  if(link.pre)link.pre.pre=link.next;
+  else this.Head=link.next//移除链表首元素
+  
+  link.pre=link.next=nullptr;
+
+&#125;
+</code></pre>
+<p>在这个设计中首节点的pre和末节点的next必为空指针，若列表只有一个节点，则两个指针都会是空指针</p>
+<p>不能单凭一个指针得知他是否属于一个链表</p>
+<p>若使用root的设计：</p>
+<pre><code>void LinkList::remove(Link&lt;ELEMENT&gt;&amp; link)
+&#123;
+  ASSERT(link.next);
+  ASSERT(link.pre);
+  
+  link.next.pre=link.pre;
+  link.pre.pre=link.next;
+  
+  link.pre=link.next=nullptr;
+
+&#125;
+</code></pre>
+<p>最后节点的next和第一个节点的pre都是指向root的</p>
+<p>因此若首节点的pre和末节点的next为空指针，则他不属于这个链表</p>
+<hr>
+<p>字典，散列表（哈希表）</p>
+<p>笔者不可能去手写哈希函数所以感觉没什么好说的哈哈哈</p>
+<p>感觉还是乖乖std::吧</p>
+<hr>
+<h2 id="5-4-字符串"><a href="#5-4-字符串" class="headerlink" title="5.4 字符串"></a>5.4 字符串</h2><p>问了问魔方的引擎前辈</p>
+<p>那边好像基本上都是在改ue的，说在游戏引擎里面处理这个不多</p>
+<p>而且ue内部的字符串管理也还行</p>
+<p>那我就选择性忽略这章吧</p>
+<hr>
+<h2 id="5-5-引擎配置"><a href="#5-5-引擎配置" class="headerlink" title="5.5 引擎配置"></a>5.5 引擎配置</h2><p>5.5这章感觉也没有提供什么对我比较有启发的东西</p>
+<p>讲到ini，xml还有注册表什么的感觉算是短期之内比较接触不到的东西</p>
+<p>如果具体想做的话应该很快能找到不错的解决方案</p>
+<hr>
+<p>今天就到这吧 赶紧shadowmapping去了</p>
+<p>2022.3.9 17:35</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
