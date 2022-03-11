@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || Games202 Lecture3 (Shadow 1)</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>Games202 Lecture3 (Shadow 1) </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/11
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>在做opengl的时候做到了shadowmapping，效果做出来了但其实并不能算吃的很透</p>
+<p>刚巧想起之前在202已结搭建好了框架环境，可以成功把202娘跑起来</p>
+<p>所以会跟着202好好的把课听一遍</p>
+<p>这次开坑的任务：</p>
+<p>总结202课上精要内容，加入自己理解作为输出</p>
+<p>在作业1的框架上完成shadowmapping的硬阴影</p>
+<p>开始吧 Let ‘s go!</p>
+<span id="more"></span>
+
+<hr>
+<h1 id="Recap-Shadow-Mapping"><a href="#Recap-Shadow-Mapping" class="headerlink" title="Recap Shadow Mapping"></a>Recap Shadow Mapping</h1><p>做两次光栅化（pass）</p>
+<p>第一次从<strong>光的视角（light space）</strong>做一次pass，得到光看到的更近的更浅的深度值</p>
+<p>将其渲染到一个texture上记录下来，作为ShadowMap</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220311104355661.png" alt="image-20220311104355661"></p>
+<p>第二次从<strong>观察视角（camera）</strong>做一次pass，得到物体更远的深度值</p>
+<p>取一阶段的ShadowMap深度进行比较</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220311104321858.png" alt="image-20220311104321858"></p>
+<p>若第二次的深度值小于第一次的深度值，则生成硬阴影</p>
+<hr>
+<p>优势：不需要场景的几何信息，一旦shadowmap已经生成，shadowmap就能作为场景的几何表示</p>
+<p>缺陷：会发生自遮挡和比较严重的走样（锯齿）</p>
+<hr>
+<p>备注：生成z值时用的矩阵如果是用正交的，第二个阶段也要拿正交的去比</p>
+<p>同理用透视生成的z也一样，两者只要对应上都能生成正确结果</p>
+<p>但大佬提醒，平行光用正交投影，点光源和聚光灯用透视。</p>
+<hr>
+<h2 id="self-occlusion"><a href="#self-occlusion" class="headerlink" title="self-occlusion"></a>self-occlusion</h2><p>如果没有在做深度对比的时候进行bias（偏移）出来的图大概率是像这样的：</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/QQ%E5%9B%BE%E7%89%8720220311110853.jpg" alt="(QQ图片20220311110853.jpg"></p>
+<p>原因是这样的：</p>
+<p>我们在第一阶段用一个像素来记录深度值，但此时如果光对于平面来说是斜照的</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220311111336669.png" alt="image-20220311111336669"></p>
+<p>那一块区域就都只能取小红线这个深度值（即小红线就是像素记录的深度值）</p>
+<p>当从上往下垂直照射（光线和平面法线重合）的时候，自遮挡的现象最不明显</p>
+<p>为了尽量缩小影响bias带来的计算偏差</p>
+<p>因此我们会根据光照和法线的夹角来计算一个bias在比较深度的时候使用：</p>
+<pre><code>float bias = max(0.05 * (1.0 - dot(fs_in.Normal, lightDir)), 0.005);
+</code></pre>
+<p>这样做也会带来一些问题，例如我们看上去物体就像浮在表面上一样</p>
+<p>阴影并不是贴合着物体的轮廓的，我们称这种现象为悬浮(Peter Panning)</p>
+<p>（这个概念在Learnopengl Shadowmapping有不错的解释：[阴影映射 - LearnOpenGL CN (learnopengl-cn.github.io)](<a target="_blank" rel="noopener" href="https://learnopengl-cn.github.io/05">https://learnopengl-cn.github.io/05</a> Advanced Lighting/03 Shadows/01 Shadow Mapping/#_6)）</p>
+<hr>
+<p>RTR doesn’t trust in complexity（实时渲染不相信复杂度）就像电子竞技不相信眼泪哈哈哈</p>
+<hr>
+<p>晚上玩了下原神观察了下阴影，听大佬说人物的阴影用的CSM（Cascaded Shadow Mapping 级联阴影映射）</p>
+<p>即给不同位置的shadowmap不同的分辨率，降低开销同时也能提升细节</p>
+<p>动态阴影基本上都是用各种改进的Shadowmap做的，还有就是光追阴影</p>
+<p>因此Shadowmap需要解决改进的就是锯齿问题</p>
+<hr>
+<h1 id="The-Math-Behind-Shadow-Map"><a href="#The-Math-Behind-Shadow-Map" class="headerlink" title="The Math Behind Shadow Map"></a>The Math Behind Shadow Map</h1><p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220311230849772.png" alt="image-20220311230849772"></p>
+<p>将两个函数乘积再积分近似等于积分再乘积（分母相当于做归一化）</p>
+<p>当g(x)的support（支撑集）很小,或者g(x)的函数曲线足够光滑（smooth）</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220312000423444.png" alt="image-20220312000423444"></p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220312001718439.png" alt="image-20220312001718439"></p>
+<p>左边是visibility，右边是纯Shader的结果</p>
+<p>对于点光源和方向光源来说，相当于是Small Support满足了第一条件</p>
+<p>所以是可以近似认为，可以用约等式将shader和visibility的部分拆开分别计算再叠加</p>
+<p>对于面光源来说，面光源内的radiance认为是相等各处不变的，即L是smooth的，也可以满足第一条件</p>
+<p>而对于shading point来说diffuse的表面我们认为变化是比较小的</p>
+<p>而glossy的表面（被打磨的铜镜之类的材质效果，是较为模糊的镜面）是较为剧变的，结果就比较不准确</p>
+<hr>
+<h1 id="Percentage-Closer-Soft-Shadow-PCSS"><a href="#Percentage-Closer-Soft-Shadow-PCSS" class="headerlink" title="Percentage Closer Soft Shadow (PCSS)"></a>Percentage Closer Soft Shadow (PCSS)</h1><p>对于硬阴影来说，阴影在边界上没有从无到有的过渡，看上去很不自然</p>
+<p>在生活中，光源基本上都是理想的面光源，看到的阴影都更倾向于软阴影，有一个良好的过渡。</p>
+<p>PCSS是用来生成软阴影的技术，建立在PCF（percentage Closer Filter）之上</p>
+<p>PCF是起初用于解决阴影边界的抗锯齿而非计算软阴影。</p>
+<p><strong>PCF不是对最后生成的结果的锯齿做模糊</strong>，而是在做阴影的判断时做的Filter</p>
+<p>同样是因为不能先得到一个走样的结果，然后再做一个模糊（和做反走样的概念是一样的）</p>
+<p><strong>PCF同样不是对生成的ShadowMap做了模糊</strong>，因为对Shadowmap本身就是记录非0即1的结果来表示阴影</p>
+<p>做平均然后和模糊了的深度做测试是没有意义的</p>
+<p>PCF的做法是在投影到light space找对应像素时，不单单只找那一个像素，而是找周围一圈的像素做一个平均（Filter）</p>
+<p>![image-20220312005309957]image-20220312005309957.png)</p>
+<hr>
+<p>借用learnOpenGL的对此的解释：（个人感觉很到位而且给出了具体的代码演示）</p>
+<p>核心思想是从深度贴图中多次采样，每一次采样的纹理坐标都稍有不同。</p>
+<p>每个独立的样本可能在也可能不再阴影中。所有的次生结果接着结合在一起，进行平均化，我们就得到了柔和阴影。</p>
+<pre><code>float shadow = 0.0;
+vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+for(int x = -1; x &lt;= 1; ++x)
+&#123;
+    for(int y = -1; y &lt;= 1; ++y)
+    &#123;
+        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+        shadow += currentDepth - bias &gt; pcfDepth ? 1.0 : 0.0;        
+    &#125;    
+&#125;
+shadow /= 9.0;
+</code></pre>
+<p>这个textureSize返回一个给定采样器纹理的0级mipmap的vec2类型的宽和高。</p>
+<p>用1除以它返回一个单独纹理像素的大小，我们用以对纹理坐标进行偏移，确保每个新样本，来自不同的深度值。</p>
+<p>这里我们采样得到9个值，它们在投影坐标的x和y值的周围，为阴影阻挡进行测试，并最终通过样本的总数目将结果平均化。</p>
+<p>使用更多的样本，更改texelSize变量，就可以增加阴影的柔和程度。</p>
+<p>效果可行，但对于一个shading point要做更多次的计算，所以会变得很慢</p>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220312010426704.png" alt="image-20220312010426704"></p>
+<p>课程中的对比图</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220312005843526.png" alt="image-20220312005843526"></p>
+<p>这是自己手搓的3x3的卷积，Filter越大则阴影越软，因此软阴影就是因此计算而来的</p>
+<p>而一般来说，离物体越近的地方阴影就越硬越明显，因此就有了Percentage Closer Soft Shadow的概念</p>
+<p>即根据阴影与遮挡物的距离给定不同大小的filter size</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220312020418634.png" alt="image-20220312020418634"></p>
+<p>这张图很好的说明了Light面越大则软阴影的区域就越大（图中相似三角形的关系）</p>
+<p>我们可以想象，若遮挡物Blocker的离接收物Receiver越近，相似三角形就会更小</p>
+<p>这就很好的解释了为什么有“离物体越近的地方阴影就越硬”的这个现象</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/11/2022-03-11-Games202-Lecture3-(Shadow-1)/image-20220312021607801.png" alt="image-20220312021607801"></p>
+<p>恰巧笔者最近也在玩消光，有机会的话去游戏里好好观察一番</p>
+<hr>
+<p>打异度之刃2去咯  2022/3/12 2:20</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
