@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏引擎架构精要（才怪）④</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏引擎架构精要（才怪）④ </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/15
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>《Game Engine Architecture》是一直以来我很有兴趣也很想阅读的书，书的译者是我很敬重的milo叶劲峰前辈（魔方引擎中心的大大）。</p>
+<p>但是由于自己基础不牢，再加上这本厚厚的大书所带来的畏难情绪，同时自己过于功利总是把时间抽去做容易提升的事情，</p>
+<p>以及n个自己给自己找的理由，让这个阅读计划一直搁置。</p>
+<p>但这学期拿到了暑期实习的offer，刚巧也在魔方，对于就业的压力就减小了很多</p>
+<p>再加上自己有意往引擎方向发展，阅读这本书就提上了日程。</p>
+<span id="more"></span>
+
+<p>今天进104官网看，发现引擎架构理所当然成为了这门课的官方教科书</p>
+<p>这本书确实聊的蛮浅，但本人毕竟也才疏学浅看完这本书也需要些精力</p>
+<p>今天晚上104就开课了，感觉自己进度好慢什么都跟不上</p>
+<p>虽然是有点急了但是我菜的离谱也是当务之急，赶紧多肝吧</p>
+<p>今天保底把第六章搞完，有机会的话肝肝第七章</p>
+<hr>
+<h1 id="资源及文件系统"><a href="#资源及文件系统" class="headerlink" title="资源及文件系统"></a>资源及文件系统</h1><p>游戏引擎必须有载入和管理多种媒体的能力，包括texture，mesh，animation，sound，collision，physics，scene</p>
+<p>这涉及到如何同步或者异步IO（串流载入）的问题，涉及到如何跨平台编写文件系统，</p>
+<p>涉及到如何管理runtime的资产占用的内存，涉及到怎么保存交叉引用的复合对象</p>
+<p>（今天就只记得看了这么多了，真的很摸鱼）</p>
+<hr>
+<h2 id="6-1-文件系统"><a href="#6-1-文件系统" class="headerlink" title="6.1 文件系统"></a>6.1 文件系统</h2><h3 id="6-1-1-文件名和路径"><a href="#6-1-1-文件名和路径" class="headerlink" title="6.1.1 文件名和路径"></a>6.1.1 文件名和路径</h3><p>路径是描述了文件系统层次中文件或目录位置的字符串</p>
+<p>在windows上（不讨论其他平台了），路径是一般是c:\Windows\System32这样的</p>
+<p>路径分为绝对路径和相对路径，（有机会可以提提在UE里面导资产的事情）</p>
+<p>在运行时寻找资产是十分费时的，最好在运气前就搜寻完所有的资产</p>
+<p>若想开发跨平台的游戏引擎，则需要实现一个轻量化的路径处理API而非直接使用平台API</p>
+<hr>
+<h3 id="6-1-2-文件I-O"><a href="#6-1-2-文件I-O" class="headerlink" title="6.1.2 文件I/O"></a>6.1.2 文件I/O</h3><p>一般会建议引擎将文件IO的API封装成自己的API，</p>
+<p>好处是可以保证所有平台上都有相同的表现，可以降低维护量同时也能满足拓展的需求</p>
+<p>我们一般会<strong>推荐使用异步文件IO API</strong>，因为如果使用同步的IO API</p>
+<p>那么这意味着在所有数据读取完之前程序会进入<strong>阻塞</strong>，这明显是十分蛋疼的</p>
+<p>我们希望游戏都<strong>有串流（背后加载数据，主程序继续持续运行）</strong>的功能</p>
+<p>说起来圣莫尼卡的《战神》就把这一块玩的很好，全程基本不会黑屏读图</p>
+<p>为了支持串流就必须使用异步的IO API，具体伪代码详见原书p278</p>
+<p>多数异步IO库允许主程序在请求发出一段时间后，等待IO完成才继续允许</p>
+<p>如果需要在等待IO时做些有限的工作，则这种方式十分适用。</p>
+<p>有些IO库允许程序员取得某些异步操作的时间估计，并设置时限</p>
+<p>以及超出时限的安排（取消请求，通知程序，继续尝试）</p>
+<hr>
+<h2 id="6-2-资源管理器"><a href="#6-2-资源管理器" class="headerlink" title="6.2 资源管理器"></a>6.2 资源管理器</h2><p>游戏资源必须被妥善处理，包括离线时将资产转化为引擎适用资产的离线工具</p>
+<p>还有在runtime时载入，卸下，以及操作资源的工具。</p>
+<h3 id="6-2-1-离线资源管理以及工具链"><a href="#6-2-1-离线资源管理以及工具链" class="headerlink" title="6.2.1 离线资源管理以及工具链"></a>6.2.1 离线资源管理以及工具链</h3><p>资产的版本控制这方面因为没有和别人协同开发过</p>
+<p>因此更不了解如何做好一个版本控制了，这对自己搓的玩具来说也不算大事，略过</p>
+<p>对于大部分资产来说，游戏引擎不会使用原来的格式（就好像虚幻的uasset）</p>
+<p>每个资产会流经资产调节管道（asset Conditioning Pipeline）</p>
+<p>此时需要一些<strong>元数据（metadata，我悟了什么是元数据）</strong>来描述如何处理资产</p>
+<p><strong>元数据就是描述数据的数据，例如要压缩位图使用哪一种压缩方式</strong></p>
+<p>为了管理这些metadata以及资产，我们需要某种数据库。</p>
+<p>数据库（也可以说是资产编辑器了）一般满足如下功能：</p>
+<p>能处理多个资产，创建，删除，查看，修改，移动（磁盘上的位置）</p>
+<p>交叉引用，维持交叉引用完整性，保存历史版本，多种搜索方式</p>
+<hr>
+<p>UE4的unreal editor就是个很棒的例子，editor几乎负责一切事物</p>
+<p>包括元数据管理，资产创建，关卡布局，</p>
+<p>可以在创建资产时直接看到资产在游戏世界的样子（所见即所得）</p>
+<p>还可以在Editor中直接运行游戏，以便观察其如何在游戏中运作</p>
+<p>同时UE的引用完整性做的也相当好（读的知识越多越感觉ue做的叼）</p>
+<p>顽皮狗和ogre的离线资产管理方案这里就不做总结了</p>
+<hr>
+<p>资产调节管道也称（resource conditioning pipeline，名字不重要）</p>
+<p>每个资产管道的始端都是原生格式的源资产，通常会经过三个处理阶段到达引擎</p>
+<ol>
+<li><p><strong>导出器（expoter）</strong>将原生格式的资产中的数据导出为中间格式供后续管道使用</p>
+</li>
+<li><p><strong>编译器（compiler）</strong>将第一阶段的数据进行小改动，例如重新压缩纹理，并非所有资产都需要重新编译</p>
+</li>
+<li><p><strong>链接器（linker）</strong>将多个文件结合成一个包再一起导入引擎，类比cpp的链接过程</p>
+</li>
+</ol>
+<hr>
+<h3 id="6-2-2-运行时资产管理"><a href="#6-2-2-运行时资产管理" class="headerlink" title="6.2.2 运行时资产管理"></a>6.2.2 运行时资产管理</h3><p>runtime管理的许多责任和功能都和其主要功能（载入资源到内存）有关：</p>
+<p>确保任何时候同一份资源只有一份副本，管理资源生命周期（需要时载入不需要时卸载）</p>
+<p>处理符合资源（多个资源组成的资源），维护引用完整性，管理资源载入后的内存</p>
+<p>载入资源后初始化资源，提供较为统一的api，尽可能支持异步</p>
+<p>资源文件及目录组织，一般是树状的不太关心（没啥好写的）</p>
+<hr>
+<p>游戏中所有资源必须有某种<strong>全局唯一标识符（GUID）</strong>常见的GUID就是资源的文件系统路径</p>
+<p>这能很直观的反应他们硬盘上的物理路径且GUID因此不会重复</p>
+<p>为了保证在任何时间载入内存的都只有一份副本</p>
+<p>大部分资源管理器会使用某种形式的资源注册表记录已载入的资源</p>
+<p>以键值对的集合（键为GUID值为指针）的方法则非常经典</p>
+<p>资源被载入内存时限以其GUID为键，加载资源注册表字典，卸载资源时删除记录</p>
+<p>游戏请求资源时就会用GUID寻找资源注册表，找得到就传指针</p>
+<p>找不到就自动载入一个新的资源或者返回错误码</p>
+<p>在runtime载入资源会对游戏的帧率造成非常大的影响，甚至是停顿</p>
+<p>因此引擎可以采用串流（异步加载）或者是在游戏进行时完全禁止加载</p>
+<hr>
+<p>每个资产对生命周期有不同的要求：</p>
+<ul>
+<li>有些资产在游戏开始时必须被载入，驻留在内存一直到整个游戏结束，或者说其生命周期是无限的。典型例子有角色网格，材质，纹理以及核心动画，HUD，以及其他全程可以听到看到的资源</li>
+<li>有些资产的生命周期则对应某个关卡，在玩家离开关卡时资源才被弃置（就好像ue的level资产，假设我们这里所说的关卡是一个实体而非逻辑概念的话）</li>
+<li>有些资产的生命周期短于一个关卡的时间，例如过场动画，一小段BGM</li>
+<li>有些资产的生命周期如很难定义，例如一些音乐和音效，因为每字节只短暂停留在内存中，这类资源通常以特定大小区块为单位载入。</li>
+</ul>
+<hr>
+<p>在何时载入资源是已知的好解决的，但我们应该在何时卸载资源归还内存呢</p>
+<p>许多资源依然会在之后的关卡继续共享，我们当然不希望将某些资源卸载后马上又加载他们</p>
+<p>一个很好的方案就是使用引用计数（提到引用计数你应该想起智能指针类）</p>
+<p>载入新的关卡时先遍历这些关卡所需的资源，并将其引用计数加1</p>
+<p>然后再遍历即将卸载的资源将其引用计数减一，引用计数跌到0的就应该卸载掉。</p>
+<hr>
+<p>载入资源是不可避免的问题是考虑资源加载到哪一块内存，之前所述的内存分配系统通常与资源管理系统有很大的关系</p>
+<p>要么利用已有的内存分配器设计系统资源，要么就设计内存分配器以配合资源管理所需。</p>
+<p><strong>基于堆</strong>：若目标平台为PC，则由于操作系统支持高级的虚拟内存分配，这个方法还算勉强可以接受</p>
+<p>但如果游戏运行在一个物理内存有限的游戏机上，只配上了最基础的虚拟内存管理器（可能还没有）</p>
+<p>那么内存碎片就会是一个较为严重的问题，可以回顾之前所说的定期整理内存碎片的方案。</p>
+<p><strong>基于栈：</strong>因为栈的内存分配是连续的，因此不会有内存碎片的问题。若能确保游戏是线性以及以关卡为中心</p>
+<p>且一次内存足够容纳一整个关卡，那么就可以用这个方法。我们甚至可以用堆载入资源</p>
+<p>标记栈的堆顶位置，每次完成关卡后都重新将栈顶指针重新指回到开始标记的位置，这样就可以迅速的释放关卡的所有资源</p>
+<p>而且永远不会导致内存碎片</p>
+<p><strong>基于池：</strong>在支持串流（异步加载）的游戏引擎中，一个常见分配技巧是将数据转化为同等大小的区块（chunk）。</p>
+<p>因为chunk大小一致，因此就可以使用池分配器。但与此同时就得考虑分块的空间浪费问题</p>
+<p>同时也要避免大型数据结构的使用，取而代之使用小于单个组块的数据结构</p>
+<hr>
+<p>游戏的复合资源通常包含着大量交叉引用：A引用B，B引用CD，ABCD必须同时在内存才能运行</p>
+<p>要完整的载入复合资源，就得载入其依赖的所有资源。在Cpp中交叉引用一般以指针实现。</p>
+<p>一个好的方式是使用GUID做交叉引用，资源管理器维护一个全局资源查找表</p>
+<p>每次将资源对象载入内存后，都要把其指针以GUID为键加入查找表中。</p>
+<p>当所有资源对象都载入内存后，扫描一次所有对象，将其交叉引用资源对象的GUID通过查找表换成指针</p>
+<hr>
+<p>有的资源在载入后还需要进行初始化，例如定义mesh的顶点和索引值，这些数据在渲染前得传送到缓存</p>
+<p>而初始化的步骤又只能在runtime进行，包括建立顶点和索引缓冲，锁定缓冲读入缓冲以及解锁缓冲</p>
+<p>在Cpp中许多开发者更喜欢把载入后初始化和卸载置于Init（）Destory（）这样的虚函数中</p>
+<hr>
+<p>肝到了0点18分，没想到这一章节感觉东西不多但是居然肝了有3k字，太难以置信了</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
