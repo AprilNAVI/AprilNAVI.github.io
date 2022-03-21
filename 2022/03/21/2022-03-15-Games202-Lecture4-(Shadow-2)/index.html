@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || Games202 Lecture4 (Shadow 2)</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>Games202 Lecture4 (Shadow 2) </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/21
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>呜呜呜这段时间真的太忙了，感觉自己做什么都进度缓慢</p>
+<p>希望渲染这方面可以不要忘掉放掉吧</p>
+<p>今天的内容是202的阴影部分，希望听完课就会做作业了555</p>
+<p>这样做一个记录也不知道是不是有效果的，但总比什么都没留下</p>
+<p>ps：文章是15开的，21才写完，笑死</p>
+<span id="more"></span>
+
+<h1 id="More-On-PCSS"><a href="#More-On-PCSS" class="headerlink" title="More On PCSS"></a>More On PCSS</h1><p>让我们回顾一下之前PCSS（一星期没看了我自己回顾一下）</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321091523016.png" alt="image-20220321091523016"></p>
+<p>图中等号右边的算式中，以·为分界线，左边是权右边是值</p>
+<p>我们看向值的部分，其中X被称为chi，是一个符号函数，算式的值大于0函数值就为1，小于零结果就是0</p>
+<p>这同时也是我们阴影比较的结果，即用SM中的所有点q的depth值和场景中x的depth值比大小得到非零即一的值</p>
+<p>随后在一个区域内对所有的值做一个卷积最后加入到结果中</p>
+<p>所以我们很清楚的是，我们做卷积的是<strong>SM和场景Shading point深度值比较的结果</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321092902960.png" alt="image-20220321092902960"></p>
+<p>因此我们也能重新好好的解释为什么不是在Shadow Map上做的卷积（这个内容在之前第一章的部分有重新换了个更好的说明方式）</p>
+<p>因为我即使对Shadow Map做了模糊最后得到的值还是非零即一的，这显然没什么意义</p>
+<p>同时我当然也不是在图像空间上做的卷积（我在已经生成好的有锯齿的图像上做一个模糊那会让图形更糊）</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321094426193.png" alt="image-20220321094426193"></p>
+<p>我们看看PCSS的完整算法步骤</p>
+<ol>
+<li><strong>在一个确切的区域（Blocker Search Region）计算区域内遮挡物的平均深度</strong></li>
+<li><strong>根据这个平均距离去决定卷积域的大小</strong></li>
+<li><strong>用这个卷积去做PCF</strong></li>
+</ol>
+<p>很显然第一步和第三步的开销最大，第一步得遍历区域内所有点的深度取平均，第三步遍历每个点的深度做比较</p>
+<p>为了加速这个过程我们一般会在区域内随机取一些样本以减少计算量，这样的结果是噪声会较多</p>
+<p>工业界的做法偏向于随机采样，对于生成的噪声多的结果在图像空间上做一个降噪处理（这是比较容易的）</p>
+<hr>
+<h1 id="VSSM"><a href="#VSSM" class="headerlink" title="VSSM"></a>VSSM</h1><p>为了解决PCSS这两个较慢的步骤，我们引出了VSSM（Variance Soft Shadow Mapping）的概念</p>
+<p>PCF中percentage的意义在于，我们想知道一个区域内有多少的像素是比较成功的（即比较结果为有阴影）</p>
+<p>通常来说我们为了知道这个百分比，会把所有像素都遍历计算一遍</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321101541364.png" alt="image-20220321101541364"></p>
+<p>闫神这里打了个比方，即我想知道考试分数符合条件的同学，在班里面有多少个，我会把所有同学的成绩都看一遍</p>
+<p>我们假如知道成绩的直方图，我们就能估算出我们所要的百分比，那如果我们再大胆一点呢？</p>
+<p>我们直接把这个直方图视作为一个正态分布，我们甚至都不需要得知正确的直方图了</p>
+<hr>
+<p>为了定义一个正态分布我们需要<strong>均值</strong>（决定了中间的尖尖在什么位置）和<strong>方差</strong>（决定正态分布的胖瘦23333）</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321103257378.png" alt="image-20220321103257378"></p>
+<p><strong>平均值部分：</strong></p>
+<p>所以我们的关键思想就是， 我们想快速得知这个区域内深度的平均值是多少</p>
+<p>一张图，区域，平均值，我们能回忆起什么？没错！Mipmap！（我第一次也没想起来，滚回去补基础吧QAQ）</p>
+<p>但是mipmap的结果不太准，而且只能查询方形的区域，所以我们还引入了SAT的概念（Summed Area Tables）</p>
+<p><strong>方差部分：</strong></p>
+<p>用了一个很经典的公式，即方差=平方的期望-期望的平方，在这里期望和平均具有同等概念</p>
+<p>期望的平方好说，我们有一个区域那就可以很快的得到这个区域的深度值的平均值</p>
+<p>我还想快速的得到平方的期望，那怎么做呢，我们再生成一张Shadow mapping来记录信息吧</p>
+<p>用新SM的某个像素值来记录深度值的平方（经典空间换时间）</p>
+<p>这里提一嘴，在Opengl里面我们写入SM一般是写在一个通道里面（例如r通道）</p>
+<p>那么我们将深度值的平方也写入另外一个通道的话，甚至不需要更多的空间（好耶）</p>
+<hr>
+<p>得到了均值和方差之后，我们就要来生成正态分布了，我想知道有多少深度值大于某某某</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321103550098.png" alt="image-20220321103550098"></p>
+<p>PDF（概率密度函数）指的是上面那条曲线，我们想计算的则是CDF，即曲线之下的面积</p>
+<p>怎么算曲线之下的面积捏，对于一个较为通用的高斯分布的曲线来说，我们往往会把f(x)直接打印成一张表去查询</p>
+<p>这个f(x)被称为error function（误差函数），只有数值解没有解析解，在Cpp中用erf函数就能查到对应的值</p>
+<p>我们依然觉得这样查这样算是件很麻烦的事情，所以我们找来了切比雪夫不等式</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321104834653.png" alt="image-20220321104834653"></p>
+<p>切比雪夫不等式可以告诉我们随机变量超过某个值的概率大概是什么样的，但却不需要知道随机变量满足什么样的分布</p>
+<p>我们只需要期望和方差就够啦，我们甚至不需要知道分布是不是一个正态分布或者其他牛鬼蛇神的函数曲线</p>
+<p>因此就可以知道大于t的面积（概率）不会超过（小于等于）多少，而我们只需要期望和方差</p>
+<p>另一边也很好算直接用1去减就能得到，相当于我两边都可以直接快速计算获取</p>
+<p>看到≤号直接很理所当然的在脑海里面把他替换成了≈</p>
+<p>因此，最后我们有了均值和方差就可以很快的计算出我们所需要的CDF（概率）</p>
+<p>切比雪夫不等式必须得满足t在均值的右边，否则就不准了，t只对半边是管用的，但是够了</p>
+<hr>
+<p>PS：这就是图形学吗，一次又一次的近似得到一个蒙骗人眼的理想效果，太有趣了（Trick这个词用的很妙）</p>
+<hr>
+<p>最后的表现如何呢？</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321110328534.png" alt="image-20220321110328534"></p>
+<ul>
+<li>我们生成了square depth map（深度平方值map），和shadow map一起生成的</li>
+<li>在shadow map上想去一个范围的平均，直接就能查到（借助mipmap或者sat）</li>
+<li>想要范围内深度平方值的期望，深度平方值也是一张图我们也能很快查到</li>
+<li>均值方差都知道我们直接就把切比雪夫不等式代入，这也是很快的</li>
+</ul>
+<p>我们直接就可以很快速的回答：在这个范围内有百分之几的像素深度大于shading point（不可见区域的百分比）</p>
+<p>不需要进行额外的采样或者循环，我们的第三步就直接圆满解决了（好耶）</p>
+<p>（提醒一下第三步做的是PCF，我们在这一步做的是给定卷积域我想知道不可见区域的百分比是多少）</p>
+<p>但很显然，我们如果有物体或者光源移动，我们就得重新生成mipmap，但在GPU上做这些非常的快（快到可以忽略 ）</p>
+<hr>
+<p>记得我们在PCSS第一步做的什么吗，我们要在一个所谓“ A Certain Blocker Search Area，确切的阻挡检测区域 ” 获得<strong>遮挡物的平均深度</strong></p>
+<p>（<strong>注意是遮挡物的平均深度哦，是深度值大于Shading Point的pixel平均深度哦，不是区域所有pixel的平均深度哦</strong>）</p>
+<p>我用mipmap可以快速得到这整个区域的平均深度，但我怎么获得遮挡区域的平均深度呢</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321114259114.png" alt="image-20220321114259114"></p>
+<p>遮挡物部分的N1/N我们用切比雪夫不等式去计算，非遮挡物的部分就（1-N1/N）</p>
+<p>但我们依然是不知道遮挡物的深度和非遮挡物的深度捏</p>
+<p>我们再次做出大胆假设：非遮挡物的深度都和shading point的深度一模一样（阴影照射的地方很多是平面，所以这么假设也情有可原吧）</p>
+<p>所以已知Zavg，Zunocc，N1/N，N2/N，直接代入计算就能得到Zocc，即遮挡物的平均深度</p>
+<p>至此，第一步我们用几乎可以忽略的额外开销直接也解决了，VSSM的所有要点到这里也就结束了</p>
+<hr>
+<p>VSSM包含了很多很大胆却又有那么一点河里的假设，让人直呼一声妙</p>
+<p>VSSM可以理解为PCSS的快速版本，<strong>没有噪声，速度更快</strong></p>
+<p>但随着现代降噪手段越来越高明，而VSSM也会出现一些不合理的结果，PCSS逐渐盖过了VSSM</p>
+<p>但VSSM解决问题的思路是大胆而精巧的，完全值得我们学习</p>
+<hr>
+<h1 id="MIPMAP-and-Summed-Area-Variance-Shadow-Maps"><a href="#MIPMAP-and-Summed-Area-Variance-Shadow-Maps" class="headerlink" title="MIPMAP and  Summed-Area Variance Shadow Maps"></a>MIPMAP and  Summed-Area Variance Shadow Maps</h1><p>mipmap关键：<strong>快速，近似，方形区域的快速查询</strong></p>
+<p>但只能做方形，而且不准确，若查询范围不是2的次方，我们还需要做三线性插值，那就更加不准确了</p>
+<p>但我们的SAT却是绝对准的，他紧密的和前缀和结构联系在一起</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321120710542.png" alt="image-20220321120710542"></p>
+<p>还记得我们要做的是范围查询吗，给定一个区域能马上获得那个区域的平均。</p>
+<p>一维的数组花O(n)的时间做一个预处理，就能得到这个SAT</p>
+<p>接着我们对于任意范围都能很快的获得那个区域的总和，平均值也做个除法直接呼之欲出</p>
+<p>那么在二维上我们怎么做SAT呢</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321122613383.png" alt="image-20220321122613383"></p>
+<p>我们可以生成一张表，表里面每个元素都是从左上角加到此元素的值</p>
+<p>我们生成的每个SAT都是从左上角为起点开始的，因此我们只需要查四次表就能快速获得方形内的求和</p>
+<p>生成这个SAT可以理解成对于每一行做一遍生成，然后也对每一列做一个生成（这部分其实有一点抽象）</p>
+<p>生成STA的时间复杂度为O(n)，这里的n认为是个数</p>
+<p>行与行之间的SAT生成是可以并行的，因此就可以通过GPU进行并行，但开销依然是有的</p>
+<p>PS：SAT这方面感觉不太像适合初学者手撕的内容，感觉写VSSM直接用mipmap好一点</p>
+<hr>
+<h1 id="Moment-Shadow-Mapping"><a href="#Moment-Shadow-Mapping" class="headerlink" title="Moment Shadow Mapping"></a>Moment Shadow Mapping</h1><p>VSSM的问题，结果不准确，在一些情况下，阴影内有突然变白变亮的现象（Light Leaking），这是不能忍受的</p>
+<p>为了避免VSSM中描述分布不准确的问题，Moment SM采用更高阶的矩来描述分布</p>
+<p>矩可以简单理解为次方数，像我们的VSSM就只用了一阶矩和二阶矩</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321125226388.png" alt="image-20220321125226388"></p>
+<p>Moment SM用四阶的矩刚好可以得到足够近似的分布结果</p>
+<p>而且也对应RGBA四个通道，不太需要考虑额外的存储问题</p>
+<p><img src="/images/loading.jpg" data-original="/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/image-20220321125501665.png" alt="image-20220321125501665"></p>
+<p>如图所示Moment SM的开销大一些，但是效果显然好了很多</p>
+<p>具体怎么做emmmm，就不细究了。</p>
+<hr>
+<p>我们从这次的学习历程也能看出图形算法更迭的思路，这对于其他领域也同样适用</p>
+<p>我们为了得到一个好的结果，开发出一个好的方案，但对于美中不足的点我们再单独去想办法改进他们</p>
+<p>为了获取实时动态阴影我们有了Shadow map，为了这个阴影可以更软更真实更高质量我们有了PCF和PCSS</p>
+<p>为了PCF可以计算得更快，我们又有了VSSM来改进PCSS的第一步和第三步</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
