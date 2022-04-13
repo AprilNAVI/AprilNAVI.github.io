@@ -1,0 +1,489 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 从零开始的PBR渲染</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>从零开始的PBR渲染 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/4/13
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>本文会梳理在LearnOpenGL学习时使用的IBL以及PBR框架和Shader，这是个很重要的知识点</p>
+<p>在我看来，这意味着渲染知识以及一门Shader语言的入门知识到这里就已经结束了（基本渲染概念，渲染管线，brdf）</p>
+<p>因此这也是个重要的学习节点，因此笔者在这里进行一遍知识梳理，希望可以在这里站稳脚跟</p>
+<span id="more"></span>
+
+<h1 id="聊聊一些闲话"><a href="#聊聊一些闲话" class="headerlink" title="聊聊一些闲话"></a>聊聊一些闲话</h1><p>算了算从上次发布搓布林冯的模型，已经过去了79天了，再加上一开始的时间</p>
+<p>自己从浑然不知到入门渲染以及稍微掌握ogl做一些好玩的东西，才用了不到一百天</p>
+<p>虽然想说进步确实还可以，没有虚度光阴，但一想到鸭鸭所说的速度快的一星期就能速通</p>
+<p>再加上有些数学公式其实还是蛮囫囵吞枣的，有些api会用但是也不算很知道其原理（经典推导等到面试前再去刷面经吧）</p>
+<p>所以也马马虎虎啦，但是过程中真的很开心，搓出来了不少好玩的玩具，渲染真的是好玩的东西</p>
+<hr>
+<p>学习进度上是这个样子，事业上虽然我很紧张也很焦虑，但是客观上来说应该也会有好的结果的</p>
+<p>我总是愿意相信我人生的所有运气都押在了事业上，而事实上也确实如此</p>
+<p>导师和我说我分到了我们那边投入最大的在研项目，而我实习的内容就是优化引擎和看ue源码</p>
+<p>说实话我以为我这么菜过去可能会做些劳累的边缘活，没什么收益又花时间的那种</p>
+<p>结果分到了类似引擎开发这样的工作，真的感觉会收益很大（不用写逻辑太开心了）</p>
+<p>我实习的内容再加上我所学习的渲染相关的知识，或许秋招真的有机会可以试试看引擎岗</p>
+<p>（虽然我真的很不信，但是按照前辈所说客户端可以扯到图形基本上已经爆杀了）</p>
+<p>这样下去就算我在tx死赖一年半载的实习的话收益应该也会很大，只是从零开始的引擎研究之旅还真的很迷茫</p>
+<p>包括跟不上进度的104还有举步维艰的渲染学习，也让我觉得紧张和焦虑</p>
+<hr>
+<p>好在一路上认识了不少伙伴，他们为我的学习路径提供了很多不错的意见</p>
+<p>也陪伴我度过了很多的时光，我很感激他们，也会带着我们共同的梦想走下去</p>
+<p>虽然前路依然布满荆棘，但好在迷雾已经散去，我会有很好的未来的，我始终这么相信</p>
+<hr>
+<h1 id="PBR部分"><a href="#PBR部分" class="headerlink" title="PBR部分"></a>PBR部分</h1><p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413150414508.png" alt="image-20220413150414508"></p>
+<p>先康康我们的效果图，对比简单用布林冯模型渲染出来的模型，我们PBR看上去有更多的细节也更加逼真了</p>
+<p>那是因为PBR指基于物理的渲染(Physically Based Rendering)，采用的是与物理世界更相符的计算方式和参数</p>
+<p>美术师几乎也是直接以物理参数为依据来编写表面材质的，例如这个初号机的头就是朋友从Blender里面丢出来然后我渲出来的</p>
+<p>要说pbr的话其实也不知道从哪说起，如果从辐射度量学那边开始的话篇幅就太大了</p>
+<p>因此我的想法是和别人相反，打算从代码往理论上回推，然后慢慢引申出pbr多了些什么和以前有什么区别</p>
+<hr>
+<h2 id="PBR多了些什么"><a href="#PBR多了些什么" class="headerlink" title="PBR多了些什么"></a>PBR多了些什么</h2><p>我们来康康pbr的渲染对比以前的布林冯多了什么</p>
+<pre><code>// build and compile shaders
+// -------------------------
+Shader ourShader(&quot;pbr.vs&quot;, &quot;pbr.fs&quot;);
+</code></pre>
+<p>起码shader的部分我们依然是只用了一个shader，也就是说我们目前并没有依靠其他shader来生成什么玩意</p>
+<p>我们的计算还有最终的表现都是在这一个shader里面完成的</p>
+<p>再看看我们的参数都需要用到哪些吧（顶点着色器没什么变化，和往常一样）</p>
+<pre><code>// pbr.fs
+
+#version 330 core
+out vec4 FragColor;
+in vec2 TexCoords;
+in vec3 WorldPos;
+in vec3 Normal;
+
+// material parameters
+uniform sampler2D albedoMap;
+uniform sampler2D metallicMap;
+uniform sampler2D roughnessMap;
+//uniform sampler2D ao;
+
+// lights
+uniform vec3 lightPositions[4];
+uniform vec3 lightColors[4];
+
+uniform vec3 camPos;
+
+const float PI = 3.14159265359;
+</code></pre>
+<p>纹理坐标，世界空间的着色点坐标和法线，相机位置，这些都和往常一样区别不大</p>
+<p>而不同的是我们多了几张用来采样的纹理参与计算，他们分别是albedo,normal,metallic,roughness,ao</p>
+<p>而这些就是我们让渲染结果看上去更真实的关键！</p>
+<hr>
+<h2 id="PBR的核心理念"><a href="#PBR的核心理念" class="headerlink" title="PBR的核心理念"></a>PBR的核心理念</h2><p>在浅墨前辈梳理的PBR核心理念中</p>
+<p>PBR遵循以下理论：</p>
+<p><strong>微平面理论（Microfacet Theory）</strong></p>
+<p><strong>能量守恒 （Energy Conservation）</strong></p>
+<p><strong>基于F0建模的菲涅尔反射（Fresnel Reflection）</strong></p>
+<p><strong>线性空间光照（Linear Space Lighting）</strong></p>
+<p><strong>色调映射（Tone Mapping）</strong></p>
+<p><strong>基于真实世界测量的材质参数</strong></p>
+<p><strong>光照与材质解耦（Decoupling of Lighting and Material）</strong></p>
+<p>这里附上原链：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/56967462">【基于物理的渲染（PBR）白皮书】（二） PBR核心理论与渲染光学原理总结 - 知乎 (zhihu.com)</a></p>
+<p>不明白上面在说什么？没关系，我们会在代码中一步步的阐述这些理论做了什么</p>
+<hr>
+<h2 id="代码中是怎么处理渲染方程的"><a href="#代码中是怎么处理渲染方程的" class="headerlink" title="代码中是怎么处理渲染方程的"></a>代码中是怎么处理渲染方程的</h2><p>假设我们都知道渲染方程（这里是没加间接光的反射率方程）为何物，那么读者应该也可以理解，布林冯模型也是渲染方程的一种简化形式</p>
+<p>（理解不了也没事你姑且认为是就行了）</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413153200054.png" alt="image-20220413153200054"></p>
+<p>在我的理解内，渲染方程阐述了在p点位置朝着ωo方向（出射方向，也就是我们视线方向）的光线是什么样的（颜色，强弱）</p>
+<p>每一道入射光乘以brdf之后才是他们能为最终结果所做的贡献（乘以n⋅ωi确保我们所获取的光是直射的有效的值）</p>
+<p>将所有的这些结果在半球上做一个积分（其实也就是把无限个光方向给合起来），就得到我们所看到的样子了</p>
+<p><strong>能量守恒 （Energy Conservation）</strong>不就用上了吗，这个公式看起来就很合乎直觉吧</p>
+<p>而我们的PBR就可以理解我们这里的brdf采用了微平面Cook-Torrance模型</p>
+<p>（其实是不太严谨的，真正的pbr是包含了基于物理的材质，基于物理的光照，基于物理适配的摄像机）</p>
+<hr>
+<p>首先很明确的一点我们当然没法真的计算“无限“这个概念，而渲染方程中的积分，它的运算包含了半球Ω内所有入射方向上的dωi</p>
+<p>由于渲染方程和反射率方程都没有解析解，因此我们将会用离散的方法来求得这个积分的数值解</p>
+<pre><code>int steps = 100;
+float sum = 0.0f;
+vec3 P    = ...;
+vec3 Wo   = ...;
+vec3 N    = ...;
+float dW  = 1.0f / steps;
+for(int i = 0; i &lt; steps; ++i) 
+&#123;
+    vec3 Wi = getNextIncomingLightDir(i);
+    sum += Fr(p, Wi, Wo) * L(p, Wi) * dot(N, Wi) * dW;
+&#125;
+</code></pre>
+<p>不过要记住代码的dW相当于一个离散的步长，而数学上，用来计算积分的dW表示的是一个连续的符号</p>
+<p>现在很明朗了吧，L(p, Wi)是Wi方向打到p点的光（已知），dot(N, Wi)（已知）</p>
+<p>接下来我们要算的就只剩下brdf了</p>
+<hr>
+<h2 id="Cook-Torrance-BRDF做了些什么"><a href="#Cook-Torrance-BRDF做了些什么" class="headerlink" title="Cook-Torrance BRDF做了些什么"></a>Cook-Torrance BRDF做了些什么</h2><p>实际上我们的pbr渲染所做的也就是将Cook-Torrance的公式带进了shader里面</p>
+<p>（接下来的内容几乎是照搬教程的，但是教程说的真的很好，我第一次学时就可以清晰的理解到位）</p>
+<p>附上原链：[理论 - LearnOpenGL CN (learnopengl-cn.github.io)](<a target="_blank" rel="noopener" href="https://learnopengl-cn.github.io/07">https://learnopengl-cn.github.io/07</a> PBR/01 Theory/#_4)</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413163826664.png" alt="image-20220413163826664"></p>
+<p>这里的kd是入射光线中<strong>被折射</strong>部分的能量所占的比率，而ks是<strong>被反射</strong>部分的比率。</p>
+<p>BRDF的左侧表示的是漫反射部分，被称为Lambertian漫反射，这和我们之前在漫反射着色中使用的漫反射系数类似，用如下公式表示</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413164005974.png" alt="image-20220413164005974"></p>
+<p>c表示表面颜色（回想一下我们之前所做的采样diffuse纹理）</p>
+<p>除以π是为了对漫反射光进行标准化，因为前面含有BRDF的积分方程是受π影响的（别问为什么你除就对了）</p>
+<p>这个Lambertian漫反射和我们之前经常使用的漫反射其实是差不多的</p>
+<p>之前我们是用表面法向量与光照方向向量进行点乘，然后再将结果与平面颜色相乘得到漫反射的结果</p>
+<p>点乘依然还在，但是却不在BRDF之内，而是转变成为了Lo积分末公式末尾处的n⋅ωi了</p>
+<hr>
+<p>BRDF的镜面反射部分要稍微复杂一些，它的形式如下所示：</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413164758382.png" alt="image-20220413164758382"></p>
+<p>字母D，F与G分别代表着一种类型的函数，各个函数分别用来近似的计算出表面反射特性的一个特定部分。</p>
+<p>他们分别是<strong>法线分布函数(Normal Distribution Function)<strong>，</strong>菲涅尔方程(Fresnel Rquation)<strong>和</strong>几何函数(Geometry Function)</strong></p>
+<hr>
+<h2 id="法线分布函数-Normal-Distribution-Function"><a href="#法线分布函数-Normal-Distribution-Function" class="headerlink" title="法线分布函数(Normal Distribution Function)"></a>法线分布函数(Normal Distribution Function)</h2><p>还记得我们一开始提到的<strong>微表面模型理论</strong>吗</p>
+<p>这是一个将物体表面建模成无数微观尺度上有随机朝向的理想镜面反射的小平面（microfacet）的理论。</p>
+<p>最终的效果是在表面上的不同点处改变微平面的法线，从而改变反射和折射的光方向。</p>
+<p>出于着色的目的，通常会用统计方法处理这种微观几何现象，将表面视为具有微观结构法线的随机分布。</p>
+<p>也就是表面越粗糙，反射越模糊，表面越光滑，反射越集中。（这就是为什么粗糙度是参数之一啦）</p>
+<p>而<strong>法线分布函数D</strong>则近似的表示了与某些半程向量h取向一致的微平面的比率</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413170335847.png" alt="image-20220413170335847"></p>
+<p>其中参数n为法线，h为半程向量，α为粗糙度</p>
+<p>假设我们用不同的粗糙度来渲染同一个球的话（这个时候同一个点的n和h就都是一样的，变量只有粗糙度）</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413170522909.png" alt="image-20220413170522909"></p>
+<p>粗糙度很低（也就是说表面很光滑）的时候，与中间向量取向一致的微平面会高度集中在一个很小的半径范围内，NDF最终会生成一个非常明亮的斑点</p>
+<p>当表面比较粗糙的时候，微平面的取向方向会更加的随机，与h向量取向一致的微平面分布在一个大得多的半径范围内</p>
+<p>pbr shader中的真实函数是这样的：</p>
+<pre><code>//pbr.fs
+
+
+float DistributionGGX(vec3 N, vec3 H, float roughness)//法线分布函数D项
+&#123;
+    float a      = roughness*roughness;
+    float a2     = a*a;
+    float NdotH  = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH*NdotH;
+
+    float nom   = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
+
+    return nom / denom;
+&#125;
+</code></pre>
+<p>可以理解为直接将NDF套公式了，还是很好理解的</p>
+<hr>
+<h2 id="几何函数-Geometry-Function"><a href="#几何函数-Geometry-Function" class="headerlink" title="几何函数(Geometry Function)"></a>几何函数(<strong>G</strong>eometry Function)</h2><p>几何函数从统计学上近似的求得了微平面间相互遮蔽的比率，这种相互遮蔽会损耗光线的能量。</p>
+<p>最后呈现出来的效果就是模型上光照被损耗，变得没有那么亮</p>
+<p>我们将要使用的几何函数是GGX与Schlick-Beckmann近似的结合体，因此又称为Schlick-GGX：</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413171334985.png" alt="image-20220413171334985"></p>
+<p>在开头提到的渲染eva的工程里，shader用的是针对直接光照的k</p>
+<p>与NDF类似，几何函数采用一个材料的粗糙度参数作为输入参数，越粗糙不平的的表面其微平面间相互遮蔽的概率就越高。</p>
+<p>其余两个参数是法线n和光线方向v，这同样是涉及到了开始提到的微表面理论模型。</p>
+<p>为了有效的估算几何部分，需要将观察方向（几何遮蔽(Geometry Obstruction)）和光线方向向量（几何阴影(Geometry Shadowing)）都考虑进去</p>
+<p>我们可以使用史密斯法(Smith’s method)来把两者都纳入其中：即G(n,v,l,k)=Gsub(n,v,k)Gsub(n,l,k)</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413171810764.png" alt="image-20220413171810764"></p>
+<p>看看我们的shader是怎么写的：</p>
+<pre><code>//pbr.fs
+
+
+float GeometrySchlickGGX(float NdotV, float roughness)//几何函数G项
+&#123;
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+
+    float nom   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return nom / denom;
+&#125;
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)//史密斯法
+&#123;
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+&#125;
+</code></pre>
+<p>同样是很好理解的套公式</p>
+<hr>
+<h2 id="菲涅尔方程-Fresnel-Rquation"><a href="#菲涅尔方程-Fresnel-Rquation" class="headerlink" title="菲涅尔方程(Fresnel Rquation)"></a>菲涅尔方程(Fresnel Rquation)</h2><p><strong>菲涅尔方程</strong>是用来描述光在不同折射率的介质之间的行为的方程，定义了被反射的光线对比光线被折射的部分所占的比率</p>
+<p>公式如下：</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413213554395.png" alt="image-20220413213554395"></p>
+<p>在菲涅尔方程中我们拿<strong>F0（即0度角入射时的菲涅尔反射率）</strong>作为材质的<strong>基本反射率</strong>参与运算</p>
+<p>对于一般仅有实数折射率的非金属而言，可以通过查询到的物质的折射率和上面的公式，计算出F0</p>
+<p>而我们的机甲里边用的都是金属对吧，所以我们一般还会对基础反射率添加它的表面色彩</p>
+<pre><code>vec3 F0 = vec3(0.04);
+F0      = mix(F0, albedo.rgb, metalness);
+</code></pre>
+<p>因为金属表面会吸收所有折射光线而没有漫反射，所以我们也可以<strong>直接使用表面颜色纹理</strong>来作为它们的基础反射率。</p>
+<p>其他两个参数h（半程向量）和v（这里是观察方向）我们当然是已知的</p>
+<p>看看菲涅尔项的shader是什么样的：</p>
+<pre><code>vec3 fresnelSchlick(float cosTheta, vec3 F0)//菲涅尔项F
+&#123;
+    return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+&#125;  
+</code></pre>
+<p>同样是精彩的套公式环节</p>
+<hr>
+<h2 id="从Cook-Torrance反射率方程回到shader"><a href="#从Cook-Torrance反射率方程回到shader" class="headerlink" title="从Cook-Torrance反射率方程回到shader"></a>从Cook-Torrance反射率方程回到shader</h2><p>对于我们的每个shading point来说，我们最终的结果是依照反射率方程来进行的</p>
+<p><img src="/images/loading.jpg" data-original="/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/image-20220413214925496.png" alt="image-20220413214925496"></p>
+<p>整体的流程是怎么做的呢？</p>
+<pre><code>void main()
+&#123;
+    vec3 albedo     = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+    float metallic  = texture(metallicMap, TexCoords).r;
+    float roughness = texture(roughnessMap, TexCoords).r;
+    float ao        = texture(aoMap, TexCoords).r;
+    
+    vec3 N = normalize(Normal); //法线
+    vec3 V = normalize(camPos - WorldPos);//观察方向
+    
+    vec3 F0 = vec3(0.04); 
+    F0      = mix(F0, albedo, metallic);
+&#125;
+</code></pre>
+<p>我们先将所需要的数据进行采样，同时预计算出了F0以及其他我们所需要的向量的值。</p>
+<pre><code>    vec3 Lo = vec3(0.0);
+    for(int i = 0; i &lt; 4; ++i) 
+    &#123;
+        vec3 L = normalize(lightPositions[i] - WorldPos);//入射光
+        vec3 H = normalize(V + L);//半程向量
+
+        float distance    = length(lightPositions[i] - WorldPos);
+        float attenuation = 1.0 / (distance * distance);
+        vec3 radiance     = lightColors[i] * attenuation; 
+
+        vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        float NDF = DistributionGGX(N, H, roughness);       
+        float G   = GeometrySmith(N, V, L, roughness);  
+
+        vec3 nominator    = NDF * G * F;//cook torrance的分子
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; 
+        vec3 specular     = nominator / denominator;  
+
+        vec3 kS = F;//镜面反射系数等于菲涅尔项
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallic;  
+
+
+
+        float NdotL = max(dot(N, L), 0.0); 
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+    &#125;
+</code></pre>
+<p>我们在场景中的不同位置放置了四个点光源，他们都参与运算并且最后将贡献相加，对于不同的光源来说他们的入射光和半程向量当然是不同的</p>
+<p>接着我们会计算点光源的和shading point的距离，根据衰减公式算出他们最终的radiance（也就是原公式中的Li(p,ωi)）</p>
+<p>这也诠释了PBR中基于物理的光照理念（我们的衰减不一定准确，但一定要体现这点）</p>
+<p>因为菲涅尔方程直接给出了kS， 因此可以直接使用F表示kS（镜面反射在所有打在物体表面上的光线的贡献）</p>
+<p>接着剩下的所有部分就都是精准的套公式了（注意我们在分母项中加了一个0.001为了避免出现除零错误）</p>
+<p>这样所求得的最终的结果Lo（<strong>出射光线的Radiance</strong>）实际上已经是反射率方程的在半球领域Ω的积分的结果了</p>
+<p>因为在这个简单场景中我们只有四个点光源参与真正的运算，只有它们四个入射光线会影响最终的着色</p>
+<pre><code>vec3 ambient = vec3(0.03) * albedo * ao;
+vec3 color   = ambient + Lo;  
+</code></pre>
+<p>剩下的工作就是加一个环境光照项给Lo，乘上环境光遮蔽，然后我们就拥有了片段的最后颜色</p>
+<p>但我们的工作依然没有做完，因为所有光照的输入都接近他们在物理上的取值，因此先采用色调映射使Lo从LDR的值映射为HDR的值</p>
+<p>因为我们的计算都是在线性空间中计算的，所以还要进行伽马校正，这样输出的才是最终片元的值</p>
+<pre><code>color = color / (color + vec3(1.0));
+color = pow(color, vec3(1.0/2.2)); 
+FragColor = vec4(color, 1.0);
+</code></pre>
+<p>在上述的计算过程中，光照和材质不存在什么依赖关系，光可以自由自在的变化和材质产生互动</p>
+<p>这也对应了<strong>光照与材质解耦（Decoupling of Lighting and Material）</strong></p>
+<hr>
+<p>PBR的渲染考虑到了我们对于render equation和brdf的理解，是一个很关键的分水岭</p>
+<p>过程中自己半抄半改网上的教程，最终也做出了自己满意的玩具渲染器</p>
+<p>现在熟悉的敲下这些文字应该也意味着自己真正的将渲染入门啦，恭喜恭喜</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

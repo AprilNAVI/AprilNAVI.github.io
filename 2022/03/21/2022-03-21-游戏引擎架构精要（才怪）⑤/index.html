@@ -1,0 +1,395 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || 游戏引擎架构精要（才怪）⑤</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>游戏引擎架构精要（才怪）⑤ </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/3/21
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>《Game Engine Architecture》是一直以来我很有兴趣也很想阅读的书，书的译者是我很敬重的milo叶劲峰前辈（魔方引擎中心的大大）。</p>
+<p>但是由于自己基础不牢，再加上这本厚厚的大书所带来的畏难情绪，同时自己过于功利总是把时间抽去做容易提升的事情，</p>
+<p>以及n个自己给自己找的理由，让这个阅读计划一直搁置。</p>
+<p>但这学期拿到了暑期实习的offer，刚巧也在魔方，对于就业的压力就减小了很多</p>
+<p>再加上自己有意往引擎方向发展，阅读这本书就提上了日程。</p>
+<span id="more"></span>
+
+<p>上次翻书还是在15号，然后上周的日志还是空的。我更加好奇上星期我都做了些什么</p>
+<p>看到这个标题我想起很久以前看的《编程模式》里面提及的游戏循环的更新方式</p>
+<p>即unity的Update函数和ue4中的Tick函数，不过这一章节好像不是说这些的</p>
+<hr>
+<h1 id="游戏循环及实时模拟"><a href="#游戏循环及实时模拟" class="headerlink" title="游戏循环及实时模拟"></a>游戏循环及实时模拟</h1><p>这一章我们会探讨时间和引擎的关系，以及在引擎中运用时间的常见方法</p>
+<h2 id="7-1-渲染循环"><a href="#7-1-渲染循环" class="headerlink" title="7.1 渲染循环"></a>7.1 渲染循环</h2><p>在实时渲染的应用中，我们的大部分程序体都运行在渲染循环里面</p>
+<p>渲染循环的结构一般如下,写过OpenGL应该很熟悉了：</p>
+<pre><code>while(!quit)
+&#123;
+//更新相机，在光栅化里面我们会更新view矩阵
+UpdateCamera();
+
+//更新场景中所有动态元素的位置，方向，以及其他相关视觉信息
+UpdateSceneElements();
+
+//把静止的场景渲染到离屏的帧缓冲
+RenderScene()
+
+//交换帧缓冲
+SwapBuffers
+&#125;
+</code></pre>
+<h2 id="7-2-游戏循环"><a href="#7-2-游戏循环" class="headerlink" title="7.2 游戏循环"></a>7.2 游戏循环</h2><p>游戏由很多种子系统组成，包括IO，渲染，动画，物理。网络同步等</p>
+<p>其中每个子系统的循环频率可能不同，例如动画往往和渲染有着同样的刷新率</p>
+<p>而物理可能需要更高的刷新率（可能是120hz？）而AI往往是30帧</p>
+<p>我们先以最简单的方法来更新引擎的所有子系统，即采用单一循环</p>
+<p>这种循环称为游戏循环，是整个游戏的主循环</p>
+<p>底下的伪代码个人感觉和自己写的OpenGL程序也有相似之处</p>
+<p>毕竟我们的OpenGL代码也是跑在glfw窗口库里面的嘛</p>
+<pre><code>void Main()
+&#123;
+   Init();
+
+   While(true)
+  &#123;
+    ReadHumanInterFaceDevices();
+    
+    if(QuitButtonPressed())
+    &#123;
+      break;//离开循环
+    &#125;
+    
+    //移动手柄更新输入
+    //更新球的位置
+    //碰撞检测和球的弹射逻辑
+    //球是否碰壁，碰壁则加分，重置球的位置
+    
+    Render();
+    
+  &#125;
+&#125;
+</code></pre>
+<hr>
+<h2 id="7-3-游戏循环的架构风格"><a href="#7-3-游戏循环的架构风格" class="headerlink" title="7.3 游戏循环的架构风格"></a>7.3 游戏循环的架构风格</h2><p><strong>视窗消息泵：</strong></p>
+<p>没什么卵用，鼠标移动视窗大小的话游戏会愣住不动</p>
+<p><strong>回调框架驱动：</strong></p>
+<p>有些引擎和中间套件以框架构成，我们只需要填补框架中空缺的自定义实现部分（或者override预设行为）</p>
+<p>例如OGRE渲染引擎就是用OGRE框架实现，程序员需要从Ogre:FrameListener派生一个类</p>
+<p>并Override两个虚函数FrameStart和FrameEnd，OGRE在渲染三维场景时会调用这两个虚函数</p>
+<p>因此就可以在渲染前处理一些输入，更新相机，更新物理等工作，在帧结束时也做一些工作</p>
+<p><strong>基于事件更新：</strong></p>
+<p>有些游戏引擎使用事件系统来更新，游戏在实现更新时只需要加入这个事件进入队列</p>
+<p>在处理这个事件时可以以我们想要的周期进行更新，接着这串代码会发送一个新事件进入队列</p>
+<p>周而复始的完成游戏的周期循环</p>
+<h2 id="7-4-抽象时间线"><a href="#7-4-抽象时间线" class="headerlink" title="7.4 抽象时间线"></a>7.4 抽象时间线</h2><p><strong>真实时间：</strong></p>
+<p>通过CPU的高分辨率计时寄存器获取的真实的时间</p>
+<p><strong>游戏时间：</strong></p>
+<p>只使用一条时间线的限制很大，我们可以独立出另一条时间线。</p>
+<p>在正常情况下这条时间线和真实时间线是一样的，但暂停游戏时可以停止这条时间线</p>
+<p>我们此刻可以通过基于另一条正常时间线的飞行摄像机在场景中游览</p>
+<p>为了实现慢动作，可以把这条时间线放慢，以此实现很多效果</p>
+<p>要谨记暂停游戏时，我们的游戏循环依然在运行，只是时钟停止了</p>
+<p><strong>局部时间：</strong></p>
+<p>在ue里面我们播的动画，音频，timeline都是局部的时间线，很好理解</p>
+<hr>
+<h2 id="7-5-测量以及处理时间"><a href="#7-5-测量以及处理时间" class="headerlink" title="7.5 测量以及处理时间"></a>7.5 测量以及处理时间</h2><p>我们平时所说的帧率是屏幕一秒钟刷新的次数，通常以FPS（frame per second）来度量</p>
+<p>可以简单理解为我们把一秒钟分成了多少个周期，恰巧我们经常以每帧为一个更新周期</p>
+<p>两帧之间间隔的时间△t称之为时间增量，这个增量对于我们的游戏逻辑运算有着很重要的意义</p>
+<hr>
+<p><strong>随性能进行更新</strong></p>
+<p>假设我们的飞船以恒定速来40m/s飞行，则飞船的速率v乘以△t，就能得到△x＝v△t，下一帧的位移x2就=x1+△x</p>
+<p>但早期游戏开发中，并不会过于在意恒定的帧率，程序员可能完全忽略△t</p>
+<p>因此物体的速度可能依赖于机器的帧率，而这个帧率是不稳定的。</p>
+<p>记得我们玩过的早期宝可梦吗，按住快进按钮人物和动画音乐以及整个游戏的一切都会以数倍速度运行</p>
+<hr>
+<p><strong>使用固定步长更新</strong></p>
+<p>若不希望△t与CPU的运行速度不挂钩，我们可以读取一个特定某帧的△t，存下来作为全局变量之后使用</p>
+<p>许多引擎用的也是这种方式，但使用某次的帧率来代表接下来所有的帧率可能会带来不好的后果</p>
+<p>例如当前帧率为30fps，即33.3ms更新一次，假如有一帧特别慢花了更久的时间，例如66.6ms</p>
+<p>那我们下一帧就要对系统更新两次来追上刚刚错失的速率，就好比我们今天摸鱼了明天就得加倍</p>
+<p>这样可能造成恶性循环导致下一帧变成像这一帧那么慢甚至更慢</p>
+<hr>
+<p><strong>使用平均帧数更新</strong></p>
+<p>一个合理的方式是连续计算几帧所耗时的平均时间，用来估计下一帧的△t</p>
+<p>此方法可以使游戏适应转变中的帧率。平均帧数越多，对帧率急速转变的应变能力越小，但是受影响越小</p>
+<hr>
+<p><strong>限制帧率</strong></p>
+<p>我们可以将帧数限定在例如60fps，当这一帧耗时很短时，我们就让主线程休眠，直到达到休眠时间</p>
+<p>但只有当游戏的平均帧率接近目标帧率时，此方法才有效，若经常遇到慢帧，游戏就会不断的在45到60跳动</p>
+<p>为了应对不稳定的帧率，也得将引擎系统设计成接受任意的△t。维持稳定的帧率，对游戏很多方面都很重要</p>
+<p>例如物理模拟中的数值积分，以固定时间运作是最好的。稳定的帧率使画面看上去也更流畅</p>
+<hr>
+<p><strong>画面撕裂</strong></p>
+<p>这种现象出现在背景缓冲区和前景缓冲区交换时，显示硬件只绘制了部分屏幕，旧的部分和新的部分就衔接在了一起就造成了画面撕裂。</p>
+<p>为了避免画面撕裂，许多渲染引擎会在交换缓冲区之前等待显示器的垂直消隐区间。</p>
+<p>等待垂直消隐区间的行为被称为垂直同步，它也是一种调控帧率的方法。</p>
+<p>实际上他可以限制住游戏主循环的帧率，使其必然为屏幕刷新率的倍数，若两帧之间的时间超过了1/60s</p>
+<p>则必须等待下一次消隐区间，即该帧花了2/60s</p>
+<hr>
+<p>大多数操作系统都提供获取系统时间的函数，但这类函数的分辨率一般为秒</p>
+<p>并不适合用于度量游戏中的时间，因为游戏中每一帧仅耗时数毫秒</p>
+<p>但好在所有现代CPU都有高分辨率计时器和相应的硬件寄存器，计算启动之后经过的CPU周期数</p>
+<p>倘若用64位的整数来储存时间，则能支持非常高的精度，但相应的空间耗费也不小</p>
+<p>要测量高精度但较短的时间的话，32位整数也是个不错的选择</p>
+<p>浮点数的话，只适合存储相对较短的持续时间，通常用于储存帧</p>
+<hr>
+<p>假如游戏在调试时遇到断点，而碰巧游戏和调试器都是在同一台机器上运行</p>
+<p>当我们在查看断点处的代码时，时间会一直流逝，如果我们在计算平均帧率来确定时间增量</p>
+<p>那么下一帧就会受到非常大的影响，甚至可能导致游戏崩溃，因此可以添加类似的代码段</p>
+<pre><code>while(true)
+&#123;
+updateA();
+updateB();
+
+//...
+
+//估算下一帧的时间增量
+U64 end_ticks=readHiResTimes();
+dt=(F32)(begin_ticks-end_ticks)/(F32)getHiRestTimerFrequency();
+
+if(dt&gt;1.0f)
+&#123;
+dt=1.0/30.0;
+&#125;
+
+//把end
+begin_tickS=end_ticks;
+&#125;
+</code></pre>
+<p>有些引擎会把时间封装成一个时间类，引擎包含数个这个类的实例，用于表示真实挂钟时间</p>
+<p>另一些用于表示游戏时间（可以暂停，可以缩放，来完成一些常见的trick）</p>
+<hr>
+<h2 id="7-6-多处理器的游戏循环"><a href="#7-6-多处理器的游戏循环" class="headerlink" title="7.6 多处理器的游戏循环"></a>7.6 多处理器的游戏循环</h2><p>这一内容来讨论如何让游戏运行在多核系统来取代复古的单游戏主循环去服务其多个子系统</p>
+<p>多线程游戏的设计比单线程游戏要难得多，通常做法是让几个引擎的子系统做并行化</p>
+<p>我们这个时候就得关注不同平台上的不同架构是怎么样的了（什么xbox360 ps3架构看着挺头晕的）</p>
+<p>PS4上有着双总线，统一内存架构（异构统一内存架构）为程序员在灵活性和原始性能之间提供了不错的权衡</p>
+<p>这类架构也适合大部分游戏常见的内存访问形式，即渲染数据有两种形式：</p>
+<p>数据在CPU和GPU共享（物体变换的矩阵，光照参数，以及其他着色器参数）；数据几乎由GPU独占生产和管理；</p>
+<p>GPU本质上是大型并行高性能微处理器集群，可以执行成百上千个并行执行的运算</p>
+<p>我们也能利用GPU做一些非图形运算的任务，被称为GPU通用计算。</p>
+<p>PS4上引入的比较新的异构统一内存架构是为了消除各个计算机系统各个处理中心之间的瓶颈</p>
+<p>在此之前CPU和GPU是两个完全分离的设备，各自具有各自的内存，两者之间传输需要累赘以及高延迟的专门总线</p>
+<hr>
+<p>多数的现代CPU会提供单指令多数据（SIMD）指令集，这类指令能让一个运算同时执行在多个数据之上</p>
+<p>游戏中最常用的是并行操作4个32位浮点数的指令，因为这种SIMD指令可以使三维矩阵矢量和其他矩阵运算速度提升四倍</p>
+<hr>
+<p>也可以采用分治然后汇合的算法，将一个单位的工作分割成更小的子任务，分配到多个线程，所有工作完成后再汇合结果</p>
+<p>假如我们要进行动画混合，此时有五个角色，每份角色骨骼有一百个关节，我们需要处理五百对关节姿势</p>
+<p>这五百个任务可以被切个到N个批次进行并行化，此时N的数目由可用的核心来决定</p>
+<p>但因为每个骨骼单独计算全局姿势时，需用上他所有关节的局部姿势（有依赖关系），对单份骨骼运算只能串行计算</p>
+<hr>
+<p>另一个多任务方法是把子系统置于独立线程上运行，主控线程负责控制和同步这些子系统和刺激子系统</p>
+<p>并继续处理游戏的大部分高级系统。此时的子系统一般是重复性运行且隔离度较高的，例如物理，渲染，动画，音频</p>
+<p>多线程架构需要目标硬件平台上的线程库支持，例如win32的线程api</p>
+<hr>
+<p>使用多线程会带来一些问题，例如我们将物理放一个线程，渲染放一个线程，这会限制其他系统中多个处理器的利用率</p>
+<p>若某个子系统线程未完成工作，可能就会阻塞主线程和其他线程，我们可能得将粒度再切割一点</p>
+<p>为了充分利用并行硬件架构，另一种方式是让游戏引擎把工作分成很多细小的作业</p>
+<p>作业可以理解为一组数据和操作该组的代码结合成对，准备就绪后就可以加入队列。</p>
+<p>在作业模型里面，工作被拆分成细粒度的作业，可以在任何闲置的处理器中运行，可以最大化处理器的利用率</p>
+<hr>
+<p>为了利用多处理器硬件，我们必须小心使用异步方法（发出操作请求通常不能立刻得到结果）</p>
+<p>而平时的同步方法是程序得到结果之后才能继续运行。许多时候可以在次帧启动异步请求，而在下一帧得到结果</p>
+<hr>
+<h2 id="7-7-网络游戏多人循环"><a href="#7-7-网络游戏多人循环" class="headerlink" title="7.7 网络游戏多人循环"></a>7.7 网络游戏多人循环</h2><h3 id="主从式模型-CS"><a href="#主从式模型-CS" class="headerlink" title="主从式模型 CS"></a>主从式模型 CS</h3><p>大部分逻辑运行在服务器上，服务器的代码和非网络的单人游戏很相似，多个客户端连接到服务器一起参与游戏</p>
+<p>客户端相当于一个不智能的”渲染引擎“，拙劣的模仿服务器上发生的事情</p>
+<p>客户端会接收输入，以控制本地的玩家角色，除此之外客户端渲染什么都由服务器告知</p>
+<p>但这样一来延迟可能不小，因此客户端代码也得将玩家输入即时转换成屏幕上的动作，这被称为玩家预测</p>
+<p>服务器单独运行于一台机器上，这种运行方式被称为专属服务模式（dedicated server mode）</p>
+<p>也可以客户端机器同时运行服务器，被称为客户端于服务器之上模式（client on top of server mode）</p>
+<h3 id="点对点模型-P2P"><a href="#点对点模型-P2P" class="headerlink" title="点对点模型 P2P"></a>点对点模型 P2P</h3><p>没啥用没啥意思，不谈</p>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

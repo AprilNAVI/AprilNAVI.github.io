@@ -2,9 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://aprilnavi.github.io/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/</loc>
+    <loc>https://aprilnavi.github.io/2022/04/13/2022-04-13-%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84PBR%E5%92%8CIBL%E6%B8%B2%E6%9F%93/</loc>
     
-    <lastmod>2022-03-21</lastmod>
+    <lastmod>2022-04-13</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://aprilnavi.github.io/2022/03/28/2022-03-28-%E7%AC%AC%E5%85%AD%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97/</loc>
+    
+    <lastmod>2022-03-30</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://aprilnavi.github.io/2022/03/21/2022-03-21-%E6%B8%B8%E6%88%8F%E5%BC%95%E6%93%8E%E6%9E%B6%E6%9E%84%E7%B2%BE%E8%A6%81%EF%BC%88%E6%89%8D%E6%80%AA%EF%BC%89%E2%91%A4/</loc>
+    
+    <lastmod>2022-03-25</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -12,6 +30,15 @@
   
   <url>
     <loc>https://aprilnavi.github.io/2022/03/21/%E7%AC%AC%E4%BA%94%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%97%A5%E5%BF%97/</loc>
+    
+    <lastmod>2022-03-25</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://aprilnavi.github.io/2022/03/21/2022-03-15-Games202-Lecture4-(Shadow-2)/</loc>
     
     <lastmod>2022-03-21</lastmod>
     
@@ -427,7 +454,7 @@
 
   <url>
     <loc>https://aprilnavi.github.io/</loc>
-    <lastmod>2022-03-21</lastmod>
+    <lastmod>2022-04-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
