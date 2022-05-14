@@ -1,0 +1,565 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UE4中Game线程的最外层Tick</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UE4中Game线程的最外层Tick </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/5/6
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>在印象里面，这篇文章只用了两天时间就完成了</p>
+<p>也就是在入职的第二天，在别人都还在配环境拉项目的时候</p>
+<p>我已经速度拉满的根据profiler和源码弄懂了最外圈的引擎循环！</p>
+<span id="more"></span>
+
+<h1 id="FengineLoop-Tick"><a href="#FengineLoop-Tick" class="headerlink" title="FengineLoop::Tick"></a>FengineLoop::Tick</h1><p><strong>前言</strong></p>
+<p>我们从启动入口launch.cpp中的流程来看</p>
+<p>引擎在完成PreInitPreStartupScreen，PreInitPostStartupScreen，init</p>
+<p>等一些初始化操作完成之后，便调用进入FengineLoop::Tick，这也是我们这次分析的主体</p>
+<p>本次分析会以game线程所执行的流程来理解</p>
+<p>由于UE的运行代码涉及到许多宏，插入性能测试，还有一些可能写了注释也看不懂的玩意</p>
+<p>所以希望按图索骥先逐步摸清game线程中引擎所做的事情，而后再进一步分析game线程是怎么和渲染线程结合的</p>
+<p>有些比较简单的流程会稍微深入查看1或者2层Depth看看他们的细节（具体怎么跑的，有什么需要注意的）</p>
+<hr>
+<h2 id="总体流程"><a href="#总体流程" class="headerlink" title="总体流程"></a>总体流程</h2><p>GameThread是引擎运行的心脏，承载游戏逻辑、运行流程的职责</p>
+<p>在FEngineLoop::Tick函数执行每帧逻辑的更新</p>
+<p>宏观来看，GameThread的流程包括以下部分</p>
+<p><strong>WaitFPS</strong>：</p>
+<p>如果上一帧没有达到<strong>最小的MaxFPS所需的时间</strong>（这里理解最大帧率也就是最小帧耗时没有达到最小帧耗时就是这一帧处理的太快了）</p>
+<p>会在此处进行Sleep让这一帧耗时更久点（可能是为了更新尽可能稳定，同时也方便其他线程和GameThread通信）</p>
+<p>PS：Stat显示的FrameTIme其实是下一帧WaitFPS结束减去这一帧的WaitFPS结束</p>
+<p>因为其实把WaitFPS连在结尾更符合直觉，Stat也是这么算的</p>
+<p><strong>SlateInput：</strong></p>
+<p><strong>Slate</strong> UE4自带的自定义与平台无关的用UI框架</p>
+<p>SlateInput阶段主要用于接收slate收到的鼠标键盘输入</p>
+<p><strong>EngineTick：</strong></p>
+<p>EngineTick是整个引擎流程Tick的主体，也是主要的耗时部分</p>
+<p>其中的UWorld::Tick以每个level为单位进行分组方式</p>
+<p>调用actor ticking，timer ticking ，tickable三种tick框架</p>
+<p><strong>SlateTick：</strong></p>
+<p>对Slate利用先前已经处理好的input进行Tick</p>
+<p>这也是一个FengineLoop单位里面比较耗时的部分</p>
+<p><strong>FrameSync：</strong></p>
+<p>FrameSync一个loop里面进行的第二次的等待</p>
+<p>意在完成render线程和game线程的同步，即使他们有一帧之差</p>
+<p>在SlateTick完成之后会进行一个渲染命令的调用，之后会等待上一帧的render线程跑完</p>
+<p>但因为game线程本来就比render线程要快一帧，所以基本上这里不怎么需要等待</p>
+<p>如果这里还耗时了就说明render线程跑的不理想，存在瓶颈</p>
+<p><strong>DeferredTickTime</strong></p>
+<p>DeferredTickTime是一次loop的最后阶段，这个阶段以Fticker::tick为主体</p>
+<p>同时也执行TickDeferredCommands，即为所有当前排队的延迟命令</p>
+<p>Fticker::tick做了什么还不清楚，如何理解延迟命令还有哪些命令会排队也是暂未理解的</p>
+<hr>
+<h2 id="WaitFPS"><a href="#WaitFPS" class="headerlink" title="WaitFPS"></a>WaitFPS</h2><p>在收起一些宏（我认为是做引擎的运行状态检查，平台检查，性能测试）之后</p>
+<p>框架大概如下</p>
+<pre><code>void FengineLoop::Tick()
+&#123;
+
+...
+        FCoreDelegates::OnBeginFrame.Broadcast();
+...
+
+        // exit if frame limit is reached in benchmark mode, or if time limit is reached
+        if ((FApp::IsBenchmarking() &amp;&amp; MaxFrameCounter &amp;&amp; (GFrameCounter &gt; MaxFrameCounter)) ||
+            (MaxTickTime &amp;&amp; (TotalTickTime &gt; MaxTickTime)))
+        &#123;
+            FPlatformMisc::RequestExit(0);
+        &#125;
+
+        // set FApp::CurrentTime, FApp::DeltaTime and potentially wait to enforce max tick rate
+        &#123;
+            QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_UpdateTimeAndHandleMaxTickRate);
+            GEngine-&gt;UpdateTimeAndHandleMaxTickRate();
+            GEngine-&gt;SetSimulationLatencyMarkerStart(CurrentFrameCounter);
+        &#125;
+        
+        ....
+        
+        // beginning of RHI frame
+        ENQUEUE_RENDER_COMMAND(BeginFrame)([CurrentFrameCounter](FRHICommandListImmediate&amp; RHICmdList)
+        &#123;
+            BeginFrameRenderThread(RHICmdList, CurrentFrameCounter);
+        &#125;);
+        
+        ....
+        
+            FStats::AdvanceFrame( false, FStats::FOnAdvanceRenderingThreadStats::CreateStatic( &amp;AdvanceRenderingThreadStatsGT ) );
+            
+        bool bIdleMode;
+        &#123;
+
+            QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_Idle);
+
+            // Idle mode prevents ticking and rendering completely
+            bIdleMode = ShouldUseIdleMode();
+            if (bIdleMode)
+            &#123;
+                // Yield CPU time
+                FPlatformProcess::Sleep(.1f);
+            &#125;
+        &#125;            
+        
+        
+
+&#125;
+</code></pre>
+<p>我认为的WaitFPS从<code> FCoreDelegates::OnBeginFrame.Broadcast()</code>开始的</p>
+<p>一开始是这点没有什么疑惑，随后去找Sleep操作发生在哪里</p>
+<p>第一眼看见的是FPlatformProcess::Sleep(.1f)，但是发生他在FStats::AdvanceFrame这一标志之后</p>
+<p>也发生在提交BeginFrame的提交渲染命令之后，所以应该不是这句</p>
+<p>随后把注意力锁到了中间的两段语句上</p>
+<pre><code>if ((FApp::IsBenchmarking() &amp;&amp; MaxFrameCounter
+&amp;&amp; (GFrameCounter &gt; MaxFrameCounter)) 
+||(MaxTickTime &amp;&amp; (TotalTickTime &gt; MaxTickTime)))
+&#123;
+FPlatformMisc::RequestExit(0);
+&#125;
+</code></pre>
+<p>这说的应该是当实际的TotalTickTime达到了所能容忍的MaxTickTime</p>
+<p>应该请求退出（稍微看了一下这个exit好像是直接退出引擎而非跳过此次循环）</p>
+<p>接着是这一段：</p>
+<pre><code>        // set FApp::CurrentTime, FApp::DeltaTime and potentially wait to enforce max tick rate
+        &#123;
+            QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_UpdateTimeAndHandleMaxTickRate);
+            GEngine-&gt;UpdateTimeAndHandleMaxTickRate();
+            GEngine-&gt;SetSimulationLatencyMarkerStart(CurrentFrameCounter);
+        &#125;
+</code></pre>
+<p>按注释所言这里可能会等待执行的Max tick rate，和我们的MaxFPS应该是同一个东西</p>
+<p>Sleep的操作应该是在<code>GEngine-&gt;UpdateTimeAndHandleMaxTickRate();</code>中完成了</p>
+<p>随后就是以RHICmdList, CurrentFrameCounter发送渲染命令RenderCmd_BeginFrame</p>
+<p>还有FStats::AdvanceFrame将前进的这一帧（我理解这里的Advance是推进，前进）加入到统计数据里面来</p>
+<p>这样WaitFPS的部分就完成了，进入SlateInput的部分。</p>
+<hr>
+<h2 id="Slate-Input"><a href="#Slate-Input" class="headerlink" title="Slate Input"></a>Slate Input</h2><p>整段收集Slate input的代码数量比较少</p>
+<pre><code>        // process accumulated Slate input
+        if (FSlateApplication::IsInitialized() &amp;&amp; !bIdleMode)
+        &#123;
+            CSV_SCOPED_TIMING_STAT_EXCLUSIVE(Input);
+            SCOPE_TIME_GUARD(TEXT(&quot;SlateInput&quot;));
+            QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_Tick_SlateInput);
+            LLM_SCOPE(ELLMTag::UI);
+
+            FSlateApplication&amp; SlateApp = FSlateApplication::Get();
+            &#123;
+                QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_Tick_PollGameDeviceState);
+                SlateApp.PollGameDeviceState();
+            &#125;
+            // Gives widgets a chance to process any accumulated input
+            &#123;
+                QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_Tick_FinishedInputThisFrame);
+                SlateApp.FinishedInputThisFrame();
+            &#125;
+        &#125;
+</code></pre>
+<p>首先是确认Slate是否初始化完成，且引擎不在Idle模式</p>
+<p>暂时还不清楚这个idle模式是什么含义，但起码能清楚在这里我们不希望引擎是idle模式的</p>
+<p>然后我们get到一个SlateApp，查询游戏设备的状态，</p>
+<p>做完这步就结束这一帧的所有Slateinput储存起来</p>
+<p>这一步也可能将之前累积的输入也一并进行处理</p>
+<hr>
+<h2 id="Engine-Tick"><a href="#Engine-Tick" class="headerlink" title="Engine Tick"></a>Engine Tick</h2><pre><code>GEngine-&gt;Tick(FApp::GetDeltaTime(), bIdleMode);
+</code></pre>
+<p>在一个Loop里面关于EngineTick的调用就这一行，也就是UGameEngine::Tick</p>
+<p>但这一句调用的内部是十分复杂的，做了很多事情，所有gameplay相关的元素都在里面进行tick</p>
+<p>所以计划之后再分析这个EngineTick的流程</p>
+<hr>
+<h2 id="Slate-Tick"><a href="#Slate-Tick" class="headerlink" title="Slate Tick"></a>Slate Tick</h2><p>在insight中看，Slate Tick分为Slate::Tick (Platform and Input)和Slate::Tick (Time and Widgets)</p>
+<pre><code>FengineLoop::Tick()
+&#123;
+        ...
+   
+        // Tick the platform and input portion of Slate application, we need to do this before we run things
+        // concurrent with networking.
+        if (FSlateApplication::IsInitialized() &amp;&amp; !bIdleMode)
+        &#123;
+            &#123;
+                QUICK_SCOPE_CYCLE_COUNTER(STAT_FEngineLoop_ProcessPlayerControllersSlateOperations);
+                check(!IsRunningDedicatedServer());
+
+                // Process slate operations accumulated in the world ticks.
+                ProcessLocalPlayerSlateOperations();
+            &#125;
+
+            FSlateApplication::Get().Tick(ESlateTickType::PlatformAndInput);
+        &#125;
+        
+        ...
+        
+        // Tick(Advance) Time for the application and then tick and paint slate application widgets.
+        // We split separate this action from the one above to permit running network replication concurrent with slate widget ticking and painting.
+        if (FSlateApplication::IsInitialized() &amp;&amp; !bIdleMode)
+        &#123;
+            FSlateApplication::Get().Tick(ESlateTickType::TimeAndWidgets);
+        &#125;
+&#125;
+</code></pre>
+<p>两部分Tick的中间的涉及到一些有关处理slate task并发的宏，还是以关注两部分的slate tick流程为主先将宏收起来</p>
+<p>在聊聊tick这两部分的处理之前可以先看看Slate::Tick里面：</p>
+<p>首先在FSlateApplication中有这样一句话：它（指slate::tick）在除了game thread之外的线程是无效的，除非我们只是更新时间</p>
+<p>在insight里面确实如此，slate相关的task没有分到除了game线程之外的任何线程。</p>
+<p>其次是不要在tick中不同的if-语句中添加代码，如果需要添加功能请添加在TickPlatform里面</p>
+<hr>
+<p>Slate的Tick第一部分tick了平台和输入，跳转到了FSlateApplication::TickPlatform中</p>
+<p>在这个函数中我理解的是将之前收集的input，转化为了消息然后pump出去</p>
+<p>会计算一个bSynthesizedCursorMove（是否同步光标移动的值），这在下一部分的Tick将派上用场</p>
+<p>然后会在所有user上GenerateGestures生成一个我们探测到的模拟姿态（还不理解做什么用）</p>
+<p>这一部分主要是为下一步的draw slate的流程做准备，所以在流程图里面被称为PrePass（预先阶段）</p>
+<hr>
+<p>Slate的Tick第二部分tick了时间和控件，TimeAndWidgets实际上在UE定义的枚举里面是包含了Time和Widgets的</p>
+<p>所以将执行FSlateApplication::TickTime()和FSlateApplication::TickAndDrawWidgets(float DeltaTime)</p>
+<p>TickTime里面的源码逻辑很简单</p>
+<pre><code>void FSlateApplication::TickTime()
+&#123;
+    LastTickTime = CurrentTime;
+    CurrentTime = FPlatformTime::Seconds();
+
+    // Handle large quantums
+    const double MaxQuantumBeforeClamp = 1.0 / 8.0;        // 8 FPS
+    if (GetDeltaTime() &gt; MaxQuantumBeforeClamp)
+    &#123;
+        LastTickTime = CurrentTime - MaxQuantumBeforeClamp;
+    &#125;
+&#125;
+</code></pre>
+<p>GetDeltaTime()会计算一个真实的更新时间DeltaTime</p>
+<p>如果超过了最大限制1/ 8秒会将LastTickTime减去1/ 8秒</p>
+<hr>
+<p>从TickAndDrawWidgets的名字就能看出函数做的不仅仅是DrawWidget，也承担了一部分tick的职责</p>
+<p>从后文来看，我们tick了一个一些时间用于后续计算，最主要的是tick了slate的通知（FSlateNotificationManager::Get().Tick()）</p>
+<p>函数内先是Renderer-&gt;ReleaseAccessedResources(/* Flush State */ false)</p>
+<p>释放我们可能缓存和报告的任何临时材质或纹理资源，然后报告防止这些资源被GC，释放最后一帧使用的队列</p>
+<p>然后FSlateInvalidationRoot::ClearAllWidgetUpdatesPending()清除所有上一帧挂起的更新</p>
+<p>看得出来在Draw控件的时候是急需资源来进行渲染的。</p>
+<p>接着一段比较复杂的计算平均更新时间的逻辑，具体实现看的不是很明白：</p>
+<pre><code>    // Update average time between ticks.  This is used to monitor how responsive the application &quot;feels&quot;.
+    // Note that we calculate this before we apply the max quantum clamping below, because we want to store
+    // the actual frame rate, even if it is very low.
+    &#123;
+        const float RunningAverageScale = 0.1f;
+        AverageDeltaTime = AverageDeltaTime * ( 1.0f - RunningAverageScale ) + GetDeltaTime() * RunningAverageScale;
+        if( FSlateThrottleManager::Get().IsAllowingExpensiveTasks() )
+        &#123;
+            // Clamp to avoid including huge hitchy frames in our average
+            const float ClampedDeltaTime = FMath::Clamp( GetDeltaTime(), 0.0f, 1.0f );
+            AverageDeltaTimeForResponsiveness = AverageDeltaTimeForResponsiveness * ( 1.0f - RunningAverageScale ) + ClampedDeltaTime * RunningAverageScale;
+        &#125;
+    &#125;
+</code></pre>
+<p>但根据注释所言，最后计算出来的是一个真实的平均时间间隔，用于反应UI程序的感受和反应</p>
+<p>这个值并不是为我们接下来渲染widget的流程服务的</p>
+<p>它用于反应帧率是否在我们所理想的状态（FSlateApplication::IsRunningAtTargetFrameRate()）</p>
+<hr>
+<p>接着就是draw widget的部分，先是根据我们在外部上层计算得到的LastTickTime</p>
+<p>计算了两个bool值bIsUserIdle和bAnyActiveTimersPending（是否闲置，是否有活跃的timer在等待）</p>
+<p>来决定在下文是否要跳过我们的draw widget ：</p>
+<pre><code>        const float SleepThreshold = SleepBufferPostInput.GetValueOnGameThread();
+        const double TimeSinceInput = LastTickTime - LastUserInteractionTime;
+        const double TimeSinceMouseMove = LastTickTime - LastMouseMoveTime;
+    
+        const bool bIsUserIdle = (TimeSinceInput &gt; SleepThreshold) &amp;&amp; (TimeSinceMouseMove &gt; SleepThreshold);
+        const bool bAnyActiveTimersPending = AnyActiveTimersArePending();
+</code></pre>
+<p>这就很符合直觉，毕竟假如用户没有做任何事情（Idle），那么这个Slate不刷新也是完全合理的</p>
+<p>如果一直执行下去（没有sleep），则最后DrawWindows（）更新所有的窗口</p>
+<hr>
+<h2 id="GetPendingCleanupObjects"><a href="#GetPendingCleanupObjects" class="headerlink" title="GetPendingCleanupObjects"></a>GetPendingCleanupObjects</h2><p>首先我并没有直接看到同步的代码，而是看到了GetPendingCleanupObjects的操作</p>
+<pre><code>        // Find the objects which need to be cleaned up the next frame.
+        FPendingCleanupObjects* PreviousPendingCleanupObjects = PendingCleanupObjects;
+        PendingCleanupObjects = GetPendingCleanupObjects();
+</code></pre>
+<p>注释所言这段是用于获取下一帧用来清理的对象，也就是说这部分的GC是在每一帧都进行的</p>
+<p>每帧获取当前的PendingCleanupObjects准备delete（其实感觉很少在ue里面看见原生的delete）</p>
+<p>然后用GetPendingCleanupObjects将PendingCleanupObjects更新</p>
+<p>点进函数里面看发现这部分是从render线程拿来的东西</p>
+<p>准备被Delete的部分会在最后的tick ticker部分中被delete掉</p>
+<h2 id="Frame-Sync"><a href="#Frame-Sync" class="headerlink" title="Frame Sync"></a>Frame Sync</h2><p>看着这个部分名字望文生义感觉像帧同步（其实根本不是网络那个帧同步）</p>
+<p>但实际上是等待上一帧的render线程执行完成game线程才往下走（也就是渲染指令提交完毕之后）</p>
+<p>因为在UE中允许Game线程比Render线程执行快一帧（也有可能是两帧）</p>
+<p>这样就确保Render拿到的数据是完完全全计算好的了数据，Render线程可以尽情的自由发挥</p>
+<p>（即使是这样做，很多项目的瓶颈也还是在Render上面）</p>
+<p>这部分的代码构造也很简单：</p>
+<pre><code>        &#123;
+            SCOPE_CYCLE_COUNTER(STAT_FrameSyncTime);
+            // this could be perhaps moved down to get greater parallelism
+            // Sync game and render thread. Either total sync or allowing one frame lag.
+            static FFrameEndSync FrameEndSync;
+            static auto CVarAllowOneFrameThreadLag =             IConsoleManager::Get().FindTConsoleVariableDataInt(TEXT(&quot;r.OneFrameThreadLag&quot;)); 
+            FrameEndSync.Sync( CVarAllowOneFrameThreadLag-&gt;GetValueOnGameThread() != 0 );
+        &#125;
+</code></pre>
+<p>所做的是同步Game和Render线程，要么完全同步要么有一帧之差</p>
+<p>通过x函数拿到某个数作为Sync的参数，真正做同步操作的也是FrameEndSync.Sync这一步</p>
+<p>一般来说波动小的情况下，Game线程不用在这里花太多时间等待render线程，除非Render线程的瓶颈太严重了</p>
+<hr>
+<h2 id="Deferred-Tick-Time"><a href="#Deferred-Tick-Time" class="headerlink" title="Deferred Tick Time"></a>Deferred Tick Time</h2><p>这个流程是以FengineLoop为单位的循环中的最后一步流程</p>
+<p>在这个流程中我们tick core ticker，threads，还有一些DeferredCommands</p>
+<p>首先的当务之急是先在前一帧之前排队等待延迟清理的对象：</p>
+<pre><code>delete PreviousPendingCleanupObjects;
+</code></pre>
+<p>紧接着是三行关键代码分别对应core ticker，threads，DeferredCommands：</p>
+<pre><code>FTicker::GetCoreTicker().Tick(FApp::GetDeltaTime());
+FThreadManager::Get().Tick();
+GEngine-&gt;TickDeferredCommands();
+</code></pre>
+<hr>
+<p>我最关心的是CoreTicker所指的是什么，而FTicker::Tick又做了什么事情</p>
+<pre><code>void FTicker::Tick(float DeltaTime)
+&#123;
+
+    ....
+    
+    if (!Elements.Num())
+    &#123;
+        return;
+    &#125;
+
+    // make sure we scope the &quot;InTick&quot; state
+    TGuardValue&lt;bool&gt; TickGuard(bInTick, true);
+
+    CurrentTime += DeltaTime;
+
+    while (Elements.Num())
+    &#123;
+        
+        if (Elements.Last().FireTime &gt; CurrentTime)
+        &#123;
+            TickedElements.Add(Elements.Pop(false));
+        &#125;
+        else
+        &#123;
+            CurrentElement = Elements.Pop(false);
+            bCurrentElementRemoved = false;
+            bool bRemoveElement = !CurrentElement.Fire(DeltaTime);
+            if (!bRemoveElement &amp;&amp; !bCurrentElementRemoved)
+            &#123;
+                CurrentElement.FireTime = CurrentTime + CurrentElement.DelayTime;
+                TickedElements.Push(CurrentElement);
+            &#125;
+        &#125;
+    &#125;
+    Exchange(TickedElements, Elements);
+    CurrentElement.Delegate.Unbind();
+&#125;
+</code></pre>
+<p>首先是检查属性Elements的数量，为空则直接跳过这次tick</p>
+<p>我们发现Elements实际上是个以FElement和TInlineAllocator&lt;1&gt;为索引的二维数组</p>
+<p>指的是未来将被fire（销毁，解雇，炒鱿鱼）的委托</p>
+<p>接着往下看到<code>while(Elements.Num())</code>就知道整个FTicker::Tick都在做与委托相关的事情</p>
+<p>我们会遍历整个Elements数组，挨个将数组内的元素弹出并跟踪他们确保他们的安全更新</p>
+<p>在遍历完成之后会交换Elements和TickedElements，当tick完成时清除CurrentElement委托</p>
+<p>这样一来我明白FTicker::Tick实际上就是用来fire（理解成解雇还挺不错的）所有延迟的委托的</p>
+<p>虽然我此时也还并不是很清楚这么做的目的是什么</p>
+<hr>
+<p>接着是FThreadManager::Tick()，根据他声明和定义中的注释</p>
+<p>猜测这一步做的是tick所有的fake线程还有运行在他们之上的对象</p>
+<hr>
+<p>实际上DeferredCommands是一个Fstring类型的数组，其中的元素一一对应着真正的Commands</p>
+<p>通过ULocalPlayer::Exec( LocalPlayer-&gt;GetWorld(), *DeferredCommands[DeferredCommandsIndex], *GLog )</p>
+<p>来将DeferredCommands一一执行，但哪些命令会在tick里面被延迟也还不清楚</p>
+<hr>
+<p>完成所有流程后，我会广播FCoreDelegates::OnEndFrame.Broadcast()和调用EndFrame的RenderCmd</p>
+<p>然后计算一下CPU的使用情况<code>const FCPUTime CPUTime = FPlatformTime::GetCPUTime();</code></p>
+<p>如果有加入性能分析的代码例如Trace框架，也会在这里打个桩告知Profiler以此为单位结束一个FengineLoop</p>
+<p>这样一来一个单位的FengineLoop流程就走完了，虽有些细节还不了解是怎么做的为什么这么做</p>
+<p>但大体的流程已经摸的差不多了，之后会深入的看下以Gengine和Uworld为单位的tick</p>
+<p>也了解下整个tick的框架和actor的分组tick是怎么联系的</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

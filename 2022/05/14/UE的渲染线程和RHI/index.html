@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UE的render线程和RHI</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UE的render线程和RHI </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/5/14
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>在入职一星期多一点的时候，成功的通过集思广益一些前辈的文章还有对源码的了解</p>
+<p>梳理出了主线程和render以及RHI线程是如何分工的</p>
+<p>这样一来，虽然不清楚各个模块的细节，但UE的整体架构和执行流程弄清楚了</p>
+<p>也根据自己已学的内容和前辈的经验尝试总结出了一些优化的方案</p>
+<p>我很庆幸我拥有一个特别好的导师，在学习的旅途中总是及时出现为我梳理思路解答难题</p>
+<p>而我也很幸运的一路向前冲没有掉进哪个模块的坑里，最后能把全局都大体拿下</p>
+<p>能在一星期掌握整套的流程，真的感觉十分的开销</p>
+<span id="more"></span>
+
+<h1 id="UE的渲染线程和RHI以及相关优化"><a href="#UE的渲染线程和RHI以及相关优化" class="headerlink" title="UE的渲染线程和RHI以及相关优化"></a>UE的渲染线程和RHI以及相关优化</h1><p>在UE中，game线程负责逻辑tick和其他线程的调度</p>
+<p>render线程负责剔除、合批，场景遍历和draw api的生成</p>
+<p>RHI线程负责drawapi的执行（我理解是把渲染命令serialize，通过图形API到GPU）</p>
+<p>UE以前是没有RHI的，只有game线程和render线程</p>
+<p>为了加快渲染线程的计算能力，把场景遍历放到了task system中的其他线程上，</p>
+<p>可见性剔除则继续留在渲染线程中，提交渲染命令就轮给RHI来做</p>
+<p>本篇会梳理一次EngineLoop中，提交渲染命令的几个关键点，</p>
+<p>适当的深入源码，配合insight还有一些前辈的整合的资料来分析UE的渲染和RHI是如何执行的</p>
+<p>Let’s Go！</p>
+<hr>
+<h2 id="渲染线程一览"><a href="#渲染线程一览" class="headerlink" title="渲染线程一览"></a>渲染线程一览</h2><p>拿张图来稍微梳理一下三大线程模型的概念是什么样的</p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/14/UE%E7%9A%84%E6%B8%B2%E6%9F%93%E7%BA%BF%E7%A8%8B%E5%92%8CRHI/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_16522382484033-16522385781534.png" alt="img"></p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/14/UE%E7%9A%84%E6%B8%B2%E6%9F%93%E7%BA%BF%E7%A8%8B%E5%92%8CRHI/52235fc6156142d29460fd0f510da2f0-16525086961133.png"></p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/14/UE%E7%9A%84%E6%B8%B2%E6%9F%93%E7%BA%BF%E7%A8%8B%E5%92%8CRHI/image-20220511111049070-16522386502305.png" alt="image-20220511111049070"></p>
+<p>不难看出，我们在render线程从BeginFrame开始作为一个循环，在EndFrame结束渲染工作进入CPU Stall Wait</p>
+<p>render线程的具体工作分为两部分，即Draw Scene和Draw Slate，在他们的流程中调度RHI线程来协助工作</p>
+<p>render线程依次从渲染队列拿任务来做的，当没有任务时就会等待，同时在渲染中也可能等待RHI</p>
+<p>当任务特别多时，game线程会在许多阶段触发flush操作强行等待渲染线程执行到某个位置，这样则会导致game线程等待</p>
+<p>我们还是会希望尽量把线程跑满，尽可能减少等待的情况发生</p>
+<hr>
+<h3 id="BeginFrame-and-EndFrame"><a href="#BeginFrame-and-EndFrame" class="headerlink" title="BeginFrame and EndFrame"></a>BeginFrame and EndFrame</h3><p>把开始和结束放在一起，是因为他们性质相似，都在FengineLoop中简单的往渲染队列发送命令</p>
+<p>render线程会告知相关的rhi线程开始和停止工作</p>
+<pre><code>FengineLoop::Tick()
+&#123;
+....
+        // beginning of RHI frame
+        ENQUEUE_RENDER_COMMAND(BeginFrame)([CurrentFrameCounter](FRHICommandListImmediate&amp; RHICmdList)
+        &#123;
+            BeginFrameRenderThread(RHICmdList, CurrentFrameCounter);
+        &#125;);
+        
+....
+        
+        // end of RHI frame
+        ENQUEUE_RENDER_COMMAND(EndFrame)(
+            [CurrentFrameCounter](FRHICommandListImmediate&amp; RHICmdList)
+            &#123;
+                EndFrameRenderThread(RHICmdList, CurrentFrameCounter);
+            &#125;);
+....
+&#125;
+</code></pre>
+<p>两个操作分别在FengineLoop::Tick()的开头与末尾，他们的具体执行的函数分为两部分，之后往后其他入队操作也是如此</p>
+<p>一部分后边传入进宏的lambda表达式，用于计算和提供信息，而ENQUEUE_RENDER_COMMAND对应的宏的则跑了：</p>
+<pre><code>template&lt;typename TSTR, typename LAMBDA&gt;
+FORCEINLINE_DEBUGGABLE void EnqueueUniqueRenderCommand(LAMBDA&amp;&amp; Lambda)
+</code></pre>
+<p>这个函数一般跑在渲染线程上，同时根据一些状态判断来决定是否调用RHI或者其他线程来协助渲染任务的进行。</p>
+<p>一般情况下往往会走到调用传入的lambda然后调度RHI的if分支。</p>
+<hr>
+<h3 id="DrawScene"><a href="#DrawScene" class="headerlink" title="DrawScene"></a>DrawScene</h3><p>我们一般在计算完场景之后，往渲染队列发送渲染场景的命令，具体位置如下</p>
+<pre><code>FengineLoop Tick()
+&#123;
+   UGameEngine::Tick()
+   &#123;
+     UGameEngine::RedrawViewports()
+      &#123;
+       FViewport::Draw()
+       &#123;
+          EnqueueBeginRenderFrame()  //实际上是更新RT到BackBuffer上
+          ...
+          ViewportClient-&gt;Draw()
+          &#123;
+             UGameViewportClient::Draw()
+             &#123;
+             
+                //calculate scene in game thread 
+                FRendererModule::BeginRenderingViewFamily()
+                &#123;
+                  ...
+                  ENQUEUE_RENDER_COMMAND(FDrawSceneCommand)
+                  ...
+                &#125;
+                
+             &#125;
+          &#125;
+          ...
+          UGameViewportClient::OnViewportRendered().Broadcast(this);
+        &#125;
+      &#125;
+   &#125;
+&#125;
+</code></pre>
+<p>由Insight和渲染关系的流程图可知，计算场景的部分还是由game线程做的</p>
+<p>计算场景完之后才往渲染队列发送FDrawSceneCommand命令，两个过程是串行的同步的，有依赖关系</p>
+<p>在ENQUEUE_RENDER_COMMAND(FDrawSceneCommand)中将SceneRenderer以lambda传给渲染线程</p>
+<p>FDrawSceneCommand分为三个部分，Init，PostInit，ExecCmd</p>
+<p>实际上每个阶段所做的都是Flush一些API calls</p>
+<p><strong>Init：</strong></p>
+<p>主要是做visibility（裁剪）和shadow的计算</p>
+<p><strong>PostInit：</strong></p>
+<p>这个时候需要等待RHI线程执行完（所以说RHI线程如果执行有瓶颈也会反卡到Render线程）</p>
+<p><strong>ExecCmd：</strong></p>
+<p>这个地方就真正的生成各种Pass流程的api往RHI上送</p>
+<p>可以说这个部分是一次绘制中真正的大头</p>
+<p>（实际观察发现这里的时间并不是最多的，有些时候在Init阶段做裁剪甚至比这个阶段时间更多）</p>
+<hr>
+<p>结束场景绘制之后，还会进行一些DebugHUD（stat）的绘制，</p>
+<p>这个步骤也处于ReDrawViewport中，紧接着场景的计算之后由Game线程执行</p>
+<p>可以理解绘制场景和HUD都依赖场景的计算，而绘制场景在Render线程中进行，绘制HUD则在Game线程</p>
+<hr>
+<h3 id="DrawState"><a href="#DrawState" class="headerlink" title="DrawState"></a>DrawState</h3><p>真正绘制UI的地方绘制场景之后，由Game线程上的Slate::Tick(Time and Widget)</p>
+<p>在Game线程的FSlateApplication::TickAndDrawWidgets中发生，相关的计算都进行在Game线程</p>
+<p>在调用相关的宏之后往render线程塞入RenderCmd_DrawSlate</p>
+<p>render线程在完成绘制场景的任务后才会执行绘制State的部分</p>
+<p>因为game线程往往跑得快，而绘制State也不需要什么预计算直接拿着game线程的数据跑</p>
+<p>因此这一步在渲染线程上也不怎么耗时</p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/14/UE%E7%9A%84%E6%B8%B2%E6%9F%93%E7%BA%BF%E7%A8%8B%E5%92%8CRHI/image-20220513190949587.png" alt="image-20220513190949587"></p>
+<p>此时render线程上做的和当时在绘制场景时做的也差不多，也是flush生成一堆api往RHI送</p>
+<hr>
+<h3 id="ENQUEUE-RENDER-COMMAND"><a href="#ENQUEUE-RENDER-COMMAND" class="headerlink" title="ENQUEUE_RENDER_COMMAND"></a>ENQUEUE_RENDER_COMMAND</h3><p>ENQUEUE_RENDER_COMMAND执行在Rendering线程，调用则是一般在Game线程</p>
+<p>我们可以看看这个ENQUEUE_RENDER_COMMAND的宏是做什么的</p>
+<pre><code>#define ENQUEUE_RENDER_COMMAND(Type) \
+    struct Type##Name \
+    &#123;  \
+        static const char* CStr() &#123; return #Type; &#125; \
+        static const TCHAR* TStr() &#123; return TEXT(#Type); &#125; \
+    &#125;; \
+    EnqueueUniqueRenderCommand&lt;Type##Name&gt;
+</code></pre>
+<p>以FengineLoop中每帧结束的地方为例，将原处替换就变成了</p>
+<pre><code>// end of RHI frame
+        struct EndFrameName 
+        &#123;  
+        static const char* CStr() &#123; return &quot;EndFrame&quot;; &#125; 
+        static const TCHAR* TStr() &#123; return TEXT(&quot;EndFrame&quot;); &#125; 
+        &#125;; 
+        EnqueueUniqueRenderCommand&lt;EndFrameName&gt;(
+            [CurrentFrameCounter](FRHICommandListImmediate&amp; RHICmdList)
+        &#123;
+            EndFrameRenderThread(RHICmdList, CurrentFrameCounter);
+        &#125;);
+</code></pre>
+<p>实际上所做的是将lambda表达式子的值传入到EnqueueUniqueRenderCommand里面</p>
+<p>我们可以看看几个比较典型此处的lambda中的函数（因为不习惯lambda一开始还以为只跑一个函数）</p>
+<p><strong>EndFrameRenderThread：</strong></p>
+<pre><code>static inline void EndFrameRenderThread(FRHICommandListImmediate&amp; RHICmdList, uint64 CurrentFrameCounter)
+&#123;
+    RHICmdList.EnqueueLambda([CurrentFrameCounter](FRHICommandListImmediate&amp; InRHICmdList)
+    &#123;
+        GEngine-&gt;SetRenderSubmitLatencyMarkerEnd(CurrentFrameCounter);
+    &#125;);
+
+    FCoreDelegates::OnEndFrameRT.Broadcast();
+    RHICmdList.EndFrame();
+&#125;
+</code></pre>
+<p>实际上是接受了RHI的命令列表还有帧数的计数器</p>
+<p>在其中做一个广播，通知RT已经清空，然后在RHI的列表上告知这一帧已结束</p>
+<p>同理我们也可以分析一下BeginFrame时做了什么</p>
+<p><strong>BeginFrameRenderThread：</strong></p>
+<pre><code>static inline void BeginFrameRenderThread(FRHICommandListImmediate&amp; RHICmdList, uint64 CurrentFrameCounter)
+&#123;
+
+    GRHICommandList.LatchBypass();
+    GFrameNumberRenderThread++;
+
+    RHICmdList.BeginFrame();
+    FCoreDelegates::OnBeginFrameRT.Broadcast();
+
+    RHICmdList.EnqueueLambda([CurrentFrameCounter](FRHICommandListImmediate&amp; InRHICmdList)
+    &#123;
+        GEngine-&gt;SetRenderSubmitLatencyMarkerStart(CurrentFrameCounter);
+    &#125;);
+&#125;
+</code></pre>
+<p>同样接受了RHI的命令列表还有帧数的计数器</p>
+<p>从命名上推断，给渲染线程的帧数计数++，然后在RHI列表里面启动这一帧，做一个广播通知RT已经准备完成</p>
+<p>看了一下GFrameNumberRenderThread等重要数据会放在CoreGlobalscpp里面</p>
+<p>其中还存了GInputTime，GFrameNumber，推测这里的G可能是Global或者是Game的意思（感觉前者）</p>
+<p>其实和渲染相关的函数内部也很符合直觉，有较高的可读性，毕竟这些线程什么都是跑在CPU上的</p>
+<hr>
+<p>我们的函数EnqueueUniqueRenderCommand，在RenderingThread.cpp上</p>
+<p>这个是在ENQUEUE_RENDER_COMMAND宏之内的，用于发送渲染命令的较为通用的一个函数</p>
+<pre><code>template&lt;typename TSTR, typename LAMBDA&gt;
+FORCEINLINE_DEBUGGABLE void EnqueueUniqueRenderCommand(LAMBDA&amp;&amp; Lambda)
+&#123;
+    typedef TEnqueueUniqueRenderCommandType&lt;TSTR, LAMBDA&gt; EURCType;
+
+    if (IsInRenderingThread())
+    &#123;
+    
+        FRHICommandListImmediate&amp; RHICmdList = GetImmediateCommandList_ForRenderCommand();
+        Lambda(RHICmdList);
+        //执行lambda表达式
+    &#125;
+    else
+    &#123;
+        if (ShouldExecuteOnRenderThread())
+        &#123;
+            //检查渲染线程，创建一个渲染任务，压入渲染队列立即由渲染线程执行
+            CheckNotBlockedOnRenderThread();
+            TGraphTask&lt;EURCType&gt;::CreateTask().ConstructAndDispatchWhenReady(Forward&lt;LAMBDA&gt;(Lambda));
+        &#125;
+        else
+        &#123;
+            //直接由主线程执行
+            EURCType TempCommand(Forward&lt;LAMBDA&gt;(Lambda));
+            FScopeCycleCounter EURCMacro_Scope(TempCommand.GetStatId());
+            TempCommand.DoTask(ENamedThreads::GameThread, FGraphEventRef());
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>调用ENQUEUE_RENDER_COMMAND一般都在主线程，也就是Game线程</p>
+<p>而ENQUEUE_RENDER_COMMAND执行往往是在Rendering线程，所以往往走if的第一个分支</p>
+<p>我们传入的Lambda表达式由此处被执行，因此假如在BeginFrame时调用的ENQUEUE_RENDER_COMMAND，</p>
+<p>则展开就是EnqueueUniqueRenderCommand<BeginFrame>(LAMBDA&amp;&amp; Lambda)</BeginFrame></p>
+<p>实际上就是将底下的这个式子传入给RHI线程跑，我们最终也是通过这个来调度RHI的</p>
+<pre><code>[CurrentFrameCounter](FRHICommandListImmediate&amp; RHICmdList)
+        &#123;
+            BeginFrameRenderThread(RHICmdList, CurrentFrameCounter);
+        &#125;);
+</code></pre>
+<hr>
+<h2 id="Insight截取分析"><a href="#Insight截取分析" class="headerlink" title="Insight截取分析"></a>Insight截取分析</h2><p>我们跑了UE官方的的ActionRPG项目（手游，PC端调试运行，延迟渲染管线）</p>
+<p>添加了-statnamedevents命令行参数，获得了我们所需的几乎所有想知晓的事件</p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/14/UE%E7%9A%84%E6%B8%B2%E6%9F%93%E7%BA%BF%E7%A8%8B%E5%92%8CRHI/image-20220510183221588-16521787442661.png" alt="image-20220510183221588"></p>
+<hr>
+<p>这个案例走的是延迟渲染的管线，截取帧耗时16.4ms，其中13.4ms用于Wait FPS，游戏线程的真实tick实际上只做了2.9ms</p>
+<p>看得出来我们的目标帧率为60fps，13.4ms的时间在等待说明我们很轻易的就在游戏线程上跑Tick</p>
+<p>假设我们耗时16.4ms的gameloop对应的是图中右下角的render loop</p>
+<p>同样的看我们从WaitFPS时塞入渲染队列的BeginFrame，渲染用时4.9ms</p>
+<p>一样是很轻松，大部分时间都用于CPU Stall，出色的完成了任务</p>
+<p>这证明在此机器上，我们在较低负载的情况下完成了游戏循环，循环进行的较为理想和可控</p>
+<p>因此综上所述，目前没有明显的性能瓶颈。</p>
+<hr>
+<h2 id="移动端的性能优化目标"><a href="#移动端的性能优化目标" class="headerlink" title="移动端的性能优化目标"></a>移动端的性能优化目标</h2><p>笔者目前在研究移动平台的性能优化，对比PC端来说，移动端的硬件性能较为羸弱</p>
+<p>需要考虑尽可能的减少Wait时间来提高CPU和GPU的效率，并结合安卓/IOS的平台做线程的优化</p>
+<p>同时也需要考虑高负载带来的电量消耗和性能问题，所以满载运行也不一定是最好的选择</p>
+<p>因此我所理解的性能优化，是根据不同设备进行不同的性能分级</p>
+<p>尽可能的在目标机型可以承受的情况下拉高占用率提高硬件效率跑到目标帧率</p>
+<p>同时通过限定目标帧率来控制功耗和温度，达到尽可能长时间在移动平台上有稳定表现</p>
+<p>（例如能偶尔跑上60或者刚开始可以跑3分钟60，不如全程锁45）</p>
+<hr>
+<h2 id="目前能想到的优化手段"><a href="#目前能想到的优化手段" class="headerlink" title="目前能想到的优化手段"></a>目前能想到的优化手段</h2><p>按照前面的截取示例来说，我们的游戏循环已经较为理想了</p>
+<p>但假设我们会希望再好一些，把等待的时间再缩短，负载率再提高，应该怎么做呢</p>
+<h3 id="优化Uworld的分组Tick"><a href="#优化Uworld的分组Tick" class="headerlink" title="优化Uworld的分组Tick"></a>优化Uworld的分组Tick</h3><p>在我们截取的项目中，Uworld的Tick中的PrePhysics阶段是耗时较高的一个阶段</p>
+<p>PrePhysics用的是上一次Tick完的最新的物理数据，也是我们的默认tick，不加以优化的话可能很多事情都会在这里做</p>
+<p>此时会启动物理线程来进行物理模拟，和DuringPhysics并行执行</p>
+<p>而由于分组Tick是串行的，所以后续步骤需要等待DuringPhysics和他并行的物理线程走完才能接着往下</p>
+<p>也就是说即使我们在DuringPhysics什么也不做，他也会被物理线程拖慢时间</p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/14/UE%E7%9A%84%E6%B8%B2%E6%9F%93%E7%BA%BF%E7%A8%8B%E5%92%8CRHI/v2-386a23e022143754706776076d79501e_720w.jpg" alt="img"></p>
+<p>因此我们可以将一些不依赖物理结果的步骤放到During或者其他地方</p>
+<p>这样看来我们在等待物理线程执行时Game线程在During时期就不用处于等待状态，也能进行一些Tick的工作</p>
+<p>这样一来虽然总的Tick任务还是一样的，但是省去了Game线程上等待物理线程的时间</p>
+<hr>
+<h3 id="提前写入UI的深度跳过一些绘制"><a href="#提前写入UI的深度跳过一些绘制" class="headerlink" title="提前写入UI的深度跳过一些绘制"></a>提前写入UI的深度跳过一些绘制</h3><p>在Render线程中，每次渲染Slate的部分都是在渲染场景之后才进行的</p>
+<p>这样不免有一些像素可能会被UI挡住，这些被挡住的场景像素实则是浪费掉的</p>
+<p>可以考虑在每次渲染流程开始之前，先在RT上UI的对应位置先写入深度值</p>
+<p>这样在处理场景绘制的时候在进行到深度测试时就会自动跳过这些对应区域的绘制</p>
+<hr>
+<h3 id="在合适的情况下增加RHI线程"><a href="#在合适的情况下增加RHI线程" class="headerlink" title="在合适的情况下增加RHI线程"></a>在合适的情况下增加RHI线程</h3><p>经过一些前辈的优化文章和对RHI线程的介绍，我对RHI的也多了一些了解和想法</p>
+<p>在4.22时RHI甚至还是实验性功能，也就是说一开始UE的渲染是不包含RHI的</p>
+<p>RHI是Render Hardware Interface的缩写，把各个平台的图形API包装成统一接口，供上层渲染来使用</p>
+<p>RHI线程负责将Render API serialize推送到GPU上执行（iOS不开RHI单独的线程，安卓会开单独的RHI线程）</p>
+<p>而图形API中的一些heavy指令例如glDrawArray这种，会要求GPU分配缓冲区执行各种操作</p>
+<p>GPU此时会禁止CPU再提交命令过来，这个时候CPU就会进行等待，而单RHI线程只拥有单个cmdbuffer的serialize能力</p>
+<p>因此在渲染场景中的大物件或者其他需要大量Draw Call的情况下，RHI线程会成为瓶颈</p>
+<p>有些先进的图形API例如METAL/Vulkan则具有多个cmdbuffer，可以多开RHI然后并行化的serialize API command</p>
+<hr>
+<p>所以不难看出，其实并不是越多draw call就越有可能引起RHI卡顿，实际上还是heavy api的锅</p>
+<p>RHI通常是卡GPU在对api的处理上，而不是对api的serielize上</p>
+<p>所以在一些前辈的优化方案中可以看到他们采取的是将一些heavy api分离到其他的RHI中去做</p>
+<p>但本身RHI一条线上具有依赖时序关系的工作线被分到几条线上去做</p>
+<p>如果不能解决相对应的依赖关系，最后导致几个RHI线程互等也是没法解决问题的</p>
+<p>例如，draw api有对资源的依赖（buffer，shader link to program，texture）</p>
+<p>因此如何最终的真正做到将RHI线程上的工作做到并行化才是真正的难题</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

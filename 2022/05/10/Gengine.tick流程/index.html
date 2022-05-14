@@ -1,0 +1,412 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UE4中Game线程的主流程Tick</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UE4中Game线程的主流程Tick </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/5/10
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>这篇文章中间磨洋工磨了比较久，整体写的也不是很好</p>
+<p>主要是Uworld的更新涉及到太多的宏和函数跳转嵌套，给我整的麻麻的</p>
+<p>但好在最后还是弄清楚了最主要的tick流程是在做什么</p>
+<p>为接下来弄清楚RHI线程和Render线程做好铺垫</p>
+<span id="more"></span>
+
+<h1 id="UGameEngine-tick"><a href="#UGameEngine-tick" class="headerlink" title="UGameEngine::tick"></a>UGameEngine::tick</h1><p>是FengineLoop中游戏线程的tick主体，实际上是UGameEngine::tick</p>
+<p>其实这里困惑了我好久，因为我对着Gengine-&gt;Tick并不能直接找到其定义，到相关的cpp文件找也没找到</p>
+<p>再加上ue源码的头文件和Cpp文件也不是一一对应的，一度怀疑自己眼花了还是cpp学的有问题</p>
+<p>然后发现了是PURE_VIRTUAL这个宏搞的鬼，最后定位到了真正的tick函数的位置</p>
+<p>（cpp文件中可以不用实现此函数，同时自己其他函数中又可以直接调用此函数，且子类需要强制实现此函数）</p>
+<p>在FengineLoop的注释上对这个函数的解释是main game engine tick (world, game objects, etc.)</p>
+<p>也印证game线程的主要tick都是在这个函数里面完成的</p>
+<p>主要的学习方式还是按照一些前辈整合的一些流程先看看有个印象，然后再去源码里面挨个验证思想</p>
+<hr>
+<h2 id="总体流程"><a href="#总体流程" class="headerlink" title="总体流程"></a>总体流程</h2><p>engine的tick分为以下几个阶段：</p>
+<p><strong>TickAsyncLoading：</strong></p>
+<p>也被称为StaticTick阶段，主要是做一些异步资源的更新</p>
+<p><strong>WorldTick：</strong></p>
+<p>遍历WorldList，逐World的做tick，也是我们这阶段tick的主体</p>
+<p>里面其实还包含了对每个world都做一遍TickWorldTravel处理关卡加载逻辑</p>
+<p><strong>Tickable GameObjects Without World</strong>：</p>
+<p>引擎会让一些对象继承FTickableGameObject来获得tick的功能</p>
+<p>我们这里tick的是不在世界内的tick，世界内Tickable的tick在Utick里面做</p>
+<p><strong>RedrawViewPort：</strong></p>
+<p>注释写的是Render everything，意思就是说这个draw操作就渲染了所有所需的元素</p>
+<p>但写成Redraw让我怀疑这一次Loop里面在这之前也有draw的操作</p>
+<p>后边想想这个Redraw可能是对应上一帧的，所以说Redraw也没错</p>
+<p>渲染的流程走完以后还会进行一些后处理，例如PostRenderAllViewports做一些渲染完场景才能做的任务</p>
+<p>然后还会给渲染队列塞个TickRenderingTimer来更新RT池</p>
+<hr>
+<h2 id="TickAsyncLoading"><a href="#TickAsyncLoading" class="headerlink" title="TickAsyncLoading"></a>TickAsyncLoading</h2><p>这里应该是涉及到UE4运行时期间加载资源的方法，引擎在这里调用了一个StaticTick</p>
+<p>这样看得出来UE4的有些资源是runtime进行异步加载的，而且是逐tick</p>
+<p>（可能猜想有些资源是逐world或者逐level更新，但还没有注意到相关内容）</p>
+<hr>
+<h2 id="WorldTick："><a href="#WorldTick：" class="headerlink" title="WorldTick："></a>WorldTick：</h2><p>worldtick是GameEngine::Tick的主体之一，我们的逐level和分组tick都在里面完成</p>
+<p>我们除了对每个world都做了tick之前还对他们做TickWorldTravel(Context, DeltaSeconds)来处理关卡加载的逻辑</p>
+<hr>
+<h3 id="Level的分组tick之前"><a href="#Level的分组tick之前" class="headerlink" title="Level的分组tick之前"></a>Level的分组tick之前</h3><p>首先是<code>FDrawEvent* TickDrawEvent = BeginTickDrawEvent();</code></p>
+<p>BeginTickDrawEvent()的构造里有ENQUEUE_RENDER_COMMAND(BeginDrawEventCommand)</p>
+<p>向渲染队列发送一个BeginDrawEventCommand的命令，之后在DrawViewport阶段还会再塞一个BeginDrawingCommand</p>
+<p>这种很相似的命名让我目前还没能分出这俩的功能差异</p>
+<p>这个TickDrawEvent 会在最后再被调用一次，给渲染队列发送一个EndDrawEventCommand</p>
+<hr>
+<p>首先会发送一个广播告知世界开始tick</p>
+<pre><code>FWorldDelegates::OnWorldTickStart.Broadcast(this, TickType, DeltaSeconds);
+</code></pre>
+<p>然后会更新我们的网络</p>
+<pre><code>        BroadcastTickDispatch(DeltaSeconds);
+        BroadcastPostTickDispatch();
+
+        if( NetDriver &amp;&amp; NetDriver-&gt;ServerConnection )
+        &#123;
+            TickNetClient( DeltaSeconds );
+        &#125;
+</code></pre>
+<p>接着验证是否是启用了高优先级的加载和无缝的切换地图，如果是就给异步加载更多时间</p>
+<pre><code>    if (Info-&gt;bHighPriorityLoading || Info-&gt;bHighPriorityLoadingLocal || IsInSeamlessTravel())
+    &#123;
+        CSV_SCOPED_SET_WAIT_STAT(AsyncLoading);
+        // Force it to use the entire time slice, even if blocked on I/O
+        ProcessAsyncLoading(true, true, GPriorityAsyncLoadingExtraTime / 1000.0f);
+    &#125;
+</code></pre>
+<p>然后Tick我们的Nav导航系统：</p>
+<pre><code>    if (NavigationSystem != nullptr)
+    &#123;
+        NavigationSystem-&gt;Tick(DeltaSeconds);
+    &#125;
+</code></pre>
+<p>Nav更新完以后会进行一个广播作为分组Tick开始的标志，在分组tick结束时也会进行一个广播</p>
+<pre><code>FWorldDelegates::OnWorldPreActorTick.Broadcast(this, TickType, DeltaSeconds);
+
+....
+
+FWorldDelegates::OnWorldPostActorTick.Broadcast(this, TickType, DeltaSeconds);
+</code></pre>
+<p>然后会遍历LevelCollection收集需要Tick的level假如到LevelsToTick，进行分组Tick</p>
+<p>这取决于关卡是静态的还是动态的（一般我们所想可能是只会tick已加载的level）</p>
+<hr>
+<h3 id="Level的分组tick"><a href="#Level的分组tick" class="headerlink" title="Level的分组tick"></a>Level的分组tick</h3><p>分组tick如下：</p>
+<pre><code>    for (int32 i = 0; i &lt; LevelCollections.Num(); ++i) &#123;
+       
+        RunTickGroup(TG_PrePhysics);
+        RunTickGroup(TG_StartPhysics);
+        RunTickGroup(TG_DuringPhysics, false);
+        RunTickGroup(TG_EndPhysics);
+        RunTickGroup(TG_PostPhysics);
+        
+        GetTimerManager().Tick(DeltaSeconds);
+
+        FTickableGameObject::TickObjects(this, TickType, bIsPaused, DeltaSeconds);
+        
+        PlayerController-&gt;UpdateCameraManager(DeltaSeconds);
+        
+        RunTickGroup(TG_PostUpdateWork);
+        RunTickGroup(TG_LastDemotable);
+        
+
+    &#125;
+</code></pre>
+<p>其实一般写Gameplay我们能够选择的分组主要就是四个：</p>
+<p><strong>TG_PrePhysics，TG_DuringPhysics，TG_PostPhysics，TG_PostUpdateWork</strong></p>
+<p>首先在PrePhysics开始之前就会StartFrame，进行模拟之前的工作，构建碰撞树</p>
+<p><strong>PrePhysics组</strong>：</p>
+<p>是一帧的开始。UE4很多component和actor的tick都在这里执行</p>
+<p>此 tick 中的物理模拟数据属于上一帧，因为这一帧的物理模拟还没有开始</p>
+<p>TG_StartPhysics：</p>
+<p>在此之前会EnsureCollisionTreeIsBuilt()检查是否构建完物理树</p>
+<p>随后通知PhysX进行物理模拟</p>
+<p><strong>TG_DuringPhysics</strong>：</p>
+<p>这个步骤和物理线程TG_StartPhysics组是并行的，不依赖物理的actor和component一般放这里tick</p>
+<p>常见用途为更新物品栏画面或小地图显示。此处物理数据完全无关，或显示要求不精确，一帧延迟不会造成问题。</p>
+<p>TG_EndPhysics：</p>
+<p>通知PhysX停止物理模拟</p>
+<p><strong>TG_PostPhysics</strong>：</p>
+<p>物理模拟已经完成，假如我们的actor或者component需要依赖物理（骨骼，布料），则一般放在这里tick</p>
+<p>渲染此帧时所有物理对象是位于它们的最终位置。</p>
+<p> <strong>GetTimerManager().Tick：</strong></p>
+<p>Timer是Unreal 的定时器调度机制, 服务对象为 <strong>Delegate</strong></p>
+<p><strong>FTickableGameObject::TickObjects(this, TickType, bIsPaused, DeltaSeconds)：</strong></p>
+<p>Tickable Ticking 服务对象为 C++ 类, 我们会让对象继承自 <strong>FTickableGameObject</strong> 基类</p>
+<p>重载<strong>Tick</strong>和<strong>GetStatId</strong>函数来获得Tick的功能</p>
+<p>实现是每次 Tick 后遍历 FTickableStatics 集合中的所有 Tickable 对象并执行</p>
+<p>因此 Tickable 对象会在每一帧执行, 不能设置 Tick 的时间间隔</p>
+<p><strong>UpdateCamera：</strong></p>
+<p>PlayerController-&gt;UpdateCameraManager(DeltaSeconds)会在这里更新相机</p>
+<p><strong>TG_PostUpdateWork：</strong></p>
+<p> 在摄像机更新后发生。如特效必须知晓摄像机朝向的准确位置，可将控制这些特效的 actor 放置于此。</p>
+<p>这也可用于在帧中绝对最靠后运行的游戏逻辑，如解决格斗游戏中两个角色在同一帧中尝试抓住对方的情况。</p>
+<p>其中每个分组任务之间是串行的，必须在执行上一阶段分组Tick完成之后（否则阻塞）</p>
+<p>才能执行下一阶段的分组Tick任务</p>
+<p>Actor的Tick蓝图版本是实现了ReceiveTick(DeltaSeconds)</p>
+<p>而cpp是通过LatentActionManager.ProcessLatentActions(this, MyWorld-&gt;GetDeltaSeconds());</p>
+<p>这个函数在FengineLoop一些地方也能看到</p>
+<p>Pawn是包含了AController的，它的tick通过AController 的 AddPawnTickDependency来实现</p>
+<p>其他想获得Tick功能继承Uobject的则是通过继承FTickableGameObject获得Tick功能</p>
+<p>在完成世界内的分组tick后，会进行一次广播宣告世界内的Tick完成</p>
+<pre><code>FWorldDelegates::OnWorldPostActorTick.Broadcast(this, TickType, DeltaSeconds);
+</code></pre>
+<hr>
+<h3 id="Level的分组tick之后"><a href="#Level的分组tick之后" class="headerlink" title="Level的分组tick之后"></a>Level的分组tick之后</h3><p>在进行完Level的分组之后会简单的进行两次广播来刷新网络</p>
+<pre><code>BroadcastTickFlush(RealDeltaSeconds); 
+BroadcastPostTickFlush(RealDeltaSeconds);
+</code></pre>
+<p>引擎会尝试GC（看来GC也是每帧都有），更新FX特效系统</p>
+<p>最后执行EndTickDrawEvent往渲染队列塞一个EndDrawEventCommand</p>
+<p>这样便于渲染线程知道卡在这里边的指令都是Uworld::Tick的</p>
+<hr>
+<h2 id="Tickable-GameObjects-Without-World"><a href="#Tickable-GameObjects-Without-World" class="headerlink" title="Tickable GameObjects Without World"></a><strong>Tickable GameObjects Without World</strong></h2><p>前边tick Tickable的时候是Tick处于Uworld之内的，剩下的就会在这一步进行Tick</p>
+<p>其实和Uworld内调用是同一个函数，只是参数Uworld设成了空指针</p>
+<hr>
+<h2 id="RedrawViewPort"><a href="#RedrawViewPort" class="headerlink" title="RedrawViewPort"></a>RedrawViewPort</h2><p>RedrawViewPort（只谈EngineTick里面的部分）在游戏线程也是大头，</p>
+<p>（我们的大头其实就是UWorld::Tick,DrawViewPort,DrawSlate）</p>
+<p>分为渲染场景和渲染UI的部分，渲染UI的部分只会渲染一些Debug的UI信息例如stat</p>
+<p>游戏UI采用的Slate的Tick层级实际上是和UworldTick在同一层级的）</p>
+<p>不过我想实际上Game线程中这部分的Tick耗时主要还是做的线程调度和计算</p>
+<p>渲染线程做culling、batching和渲染API的生成，RHI线程做渲染API的执行</p>
+<hr>
+<p>首先进行GameViewport-&gt;Tick(DeltaSeconds)来tick，实际上是发送一个TickDelegate的广播</p>
+<p>接着进入FViewport::Draw函数，进行一些截图数据的准备</p>
+<p>准备完之后调用EnqueueBeginRenderFrame(bShouldPresent)</p>
+<p>其中是ENQUEUE_RENDER_COMMAND(BeginDrawingCommand)发给渲染队列</p>
+<p>接着调用ViewportClient-&gt;Draw(this, &amp;Canvas)进行场景相关的计算</p>
+<p>Draw函数有许多的继承，游戏调用的实际上是UgameViewportClient::Draw</p>
+<p><img src="/images/loading.jpg" data-original="/2022/05/10/Gengine.tick%E6%B5%81%E7%A8%8B/Users\apnaviyang\AppData\Roaming\Typora\typora-user-images\image-20220510104406541.png" alt="image-20220510104406541"></p>
+<p>有一句重要的语句决定了我们走的是什么样的渲染管线，以及之后的渲染细节</p>
+<pre><code>GetRendererModule().BeginRenderingViewFamily(SceneCanvas,&amp;ViewFamily);    
+&#123;
+...
+FSceneRenderer* SceneRenderer = FSceneRenderer::CreateSceneRenderer(ViewFamily, Canvas-&gt;GetHitProxyConsumer());
+...
+ENQUEUE_RENDER_COMMAND(FInitFXSystemCommand)
+...
+ENQUEUE_RENDER_COMMAND(FDrawSceneCommand)
+...
+&#125;
+</code></pre>
+<p>这一句根据我们的ShadingPath决定走的是延迟渲染还是Mobile渲染（Mobile也可以做延迟渲染）</p>
+<p>接着会将场景计算完成，打包成一个FDrawSceneCommand然后也发送给渲染线程</p>
+<p>渲染场景的步骤完成后广播一次EndScene</p>
+<p>跳出这一步后会把RT给clear掉然后继续渲染HUD，不过渲染与否居然是Slate决定的</p>
+<pre><code>// Clear areas of the rendertarget (backbuffer) that aren&#39;t drawn over by the views.
+...
+
+// Render the UI
+if (FSlateApplication::Get().GetPlatformApplication()-&gt;IsAllowedToRender())
+&#123;
+...
+&#125;
+</code></pre>
+<p>做完这些以后做一个广播，然后根据是否开启垂直同步进行一个渲染队列的入队操作</p>
+<pre><code>Canvas.Flush_GameThread();
+UGameViewportClient::OnViewportRendered().Broadcast(this);
+...
+SetRequiresVsync(bLockToVsync);
+EnqueueEndRenderFrame(bLockToVsync, bShouldPresent);
+</code></pre>
+<p>做完RedrawViewports的操作之后会通知渲染线程TickRenderingTimer，实际上所做的更新RT池的操作</p>
+<p>这些以上就是ReDrawViewports的大部分主要操作，同时也是一套UGameEngine::tick的基本流程</p>
+<hr>
+<p>全程的广播，函数嵌套，虚函数继承，多次往渲染队列添加命令让人感觉眼花缭乱</p>
+<p>即使是大概看了一遍所有的流程依然还是觉得很晕，框架并没有像他的外层EngineLoop那么的简单明了</p>
+<p>不过之后结合Render和RHI线程来理解再次加深分析应该还能再加深一点印象</p>
+<hr>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2022 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
