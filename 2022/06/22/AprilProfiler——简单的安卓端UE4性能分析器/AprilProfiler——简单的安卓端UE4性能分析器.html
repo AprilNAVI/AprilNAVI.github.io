@@ -1,0 +1,151 @@
+<h1 id="AprilProfiler——简单的安卓端UE4性能分析器"><a href="#AprilProfiler——简单的安卓端UE4性能分析器" class="headerlink" title="AprilProfiler——简单的安卓端UE4性能分析器"></a>AprilProfiler——简单的安卓端UE4性能分析器</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在魔方实习的第二个星期，当我了解完UE引擎的执行流程（game render rhi多线程tick）之后</p>
+<p>亲爱的导师提出了下一个课题：</p>
+<p>把玩一下adb（安卓调试桥），然后试试看在游戏屏幕上实时显示一些数据（内存，CPU占用率，GPU Time）</p>
+<p>经过痛苦的一个月（写了十天其余时间都在苦痛debug），最后写出来的也算是比较完整的玩具了（能不能跑动随缘）</p>
+<p>最终仓库URL：<a href="https://github.com/AprilNAVI/April-Profiler/tree/master">AprilNAVI/April-Profiler at master (github.com)</a></p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\NLE]%[K$LTSD8VT5E{K}A$U-16558033918051.png" alt="img"></p>
+<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>得益于手机proc伪文件系统的存在，许多手机进程相关以及当前整体手机runtime的软硬件信息我们都能从中拿到</p>
+<p>我们的许多信息便是从此中提取然后加工得到的</p>
+<p>不过在未root的手机上，许多文件的没有读写权限的，我们能获取的信息极为有限，不过对我们来说已经足够了</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220621173435126.png" alt="image-20220621173435126"></p>
+<hr>
+<p>整个profiler涉及到一个subsystem的编写（subsystem全局单例的特性符合我们的需求）</p>
+<p>以及RHI上的OpenGL分支修改和插桩，一些实现过程借鉴了UE4的disjoint query和一些unity的插件实现</p>
+<p>主要的难点在于实现过程的idea（完全没有写这方面的经验）还有安卓端的麻烦调试和bug的排除</p>
+<p>（虽然鉴于本人教菜的项目经验，代码可能并不是那么的符合规范，但还是有尽量的朝正常的项目规格靠）</p>
+<p>其余在编码的数据结构组织以及方法的组织上来说，过程还算轻松</p>
+<p>（基本功能可以较快写完，只是跑不动而已2333）</p>
+<hr>
+<p>测试样机：小米9Pro 5g版（骁龙855,8+256）&lt;—这玩意是真的又烫又卡</p>
+<hr>
+<h2 id="整体设计"><a href="#整体设计" class="headerlink" title="整体设计"></a>整体设计</h2><p>在subsystem中设Start方法，其中设timer定时运行函数查询（如果证实放tick里面不大影响性能也会考虑放tick）</p>
+<p>其中为了支持timer使用，所以用的是WorldSubsystem而非EngineSubSystem（一开始用的EngineSubSystem会crash）</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622190647491.png" alt="image-20220622190647491"></p>
+<p>GPU time的部分则插在RHI中，伴随着渲染帧的结束每次更新全局变量GPU Time，我在tick中拿取</p>
+<p>这也是为什么后文提到由于渲染帧和逻辑帧的差异，要给query做缓存操作</p>
+<hr>
+<h2 id="进程id和内存率"><a href="#进程id和内存率" class="headerlink" title="进程id和内存率"></a>进程id和内存率</h2><p>在proc系统中，目录：进程ID/Stat 中存放着的信息有助于我们获取到进程和内存相关的信息</p>
+<p>有助于一个叫self的目录也能让我们快速定位到当前进程的stat文件，而无须进程ID</p>
+<p>一个pid/stat中的文件如下所示（这里以运行崩坏3为例，在游戏项目中获取只需要获取self/stat就行，无须进程ID）：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220621220416761-16558202580467.png" alt="image-20220621220416761"></p>
+<p>从前往后的24个参数分别是（我们所能用到的）：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622092006772.png" alt="image-20220622092006772"></p>
+<p>从前往后便是这些参数的含义，我们会在运行时将其读取并导入我们的数据结构</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220621172938717-16558167202624.png" alt="image-20220621172938717"></p>
+<p>如图所示，第一个参数就是我们当前进程的进程id，这是我们所需要的值之一</p>
+<p>在导入数据时为了方便操作，我是以原生是string类型来导入这些数据的</p>
+<p>因此最后进程ID的转化以这样的方式：</p>
+<pre><code>int32 ProcessId=std::stoi(this-&gt;PidStat.pid.c_str());
+</code></pre>
+<p>一般来说，在手机的内存管理中，以Pss（实际使用的物理内存，比例分配共享库占用的内存）是更加合理的</p>
+<p>但为了便于计算我这里只计算了RSS（Resident Set Size 实际使用物理内存）</p>
+<p>在安卓内存中，默认分配一页是4KB，因此我们最终拿到当前进程的占用内存（kb）的代码是这样的</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220621221815865.png" alt="image-20220621221815865"></p>
+<p>总内存的获取则是存放在proc/meminfo内，也可以用一样的方法（c++的原生io）读取获得</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220621222623506.png" alt="image-20220621222623506"></p>
+<p>将内存占用除以总的内存便能得到我们当前进程的内存占用率</p>
+<p>这些数据通过adb都能拿到，实测在手机ue4项目runtime时也能直接读取相应目录得到</p>
+<hr>
+<h2 id="CPU占用率"><a href="#CPU占用率" class="headerlink" title="CPU占用率"></a>CPU占用率</h2><p>CPU占用率的计算只需要一个很简单的公式：USAGE=ACTIVE_TIME/TOTAL_TIME</p>
+<p>拿到计算所需参数的过程则更为复杂一些，我们需要读取计算每个核心的信息录入我们的数据结构</p>
+<p>读取每个核心ACTIVE_TIME和TOTAL_TIME，相加它们得到总的时间再相除</p>
+<p>核心相关的信息存放在proc/stat（存放系统进程整体的统计信息）中，如图所示：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622093803722.png" alt="image-20220622093803722"></p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622094213631.png" alt="image-20220622094213631"></p>
+<p>这里我用一个结构体CPU data和枚举来管理各个字段：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622101444950-16558640862298.png" alt="image-20220622101444950"></p>
+<p>在读入数据时，使用的是c++原生的io和字符串相关函数，函数会将十个字段按序放入我们的CPU data中</p>
+<p>并会自动根据proc/stat中的数据来判断CPU的数量，用一个vector来储存当前所有核的信息，将这个整体返回</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622103703461.png" alt="image-20220622103703461"></p>
+<p>计算过程则会读入前后两次不同的Entity数据，以两次数据的差量作为最后用于计算的数据</p>
+<p>其中Active Time由字段USER，NICE，SYSTEM，IRQ，SOFTIRQ相加得到</p>
+<p>Idle Time由字段IDLE，IOWAIT相加得到，Active Time和Idle Time相加便得到</p>
+<p>两次的数据相减便是这两次读取期间的CPU用量数据，稍加计算便能得到最终结果：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622111046000.png" alt="image-20220622111046000"></p>
+<p>这里计算出来的是总体的CPU用量和占用率，对于特定进程的占用率的计算暂时没有写出，但思路同样很简单</p>
+<p>对于在上一步的proc/pid/stat文件中存在字段utime、stime、cutime、cstime的四元组</p>
+<p>某进程的Process Cpu Time = utime + stime+ cutime + cstime，该值包括了其他所有线程的cpu时间</p>
+<p>同样取一段时间内读取的差量，用来除以Total CPU Time就能得到当前进程的CPU占用率</p>
+<p>在数据的读取和管理方面，我们在每次计算中将其读取进我们的数据结构，然后与原本储存的上一次读取的状态进行比对和计算</p>
+<p>在计算完毕后我们会弃置旧的CPU data（类成员），并将新的写入以供下一次运算：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622112841361-165586852381210.png"></p>
+<hr>
+<h2 id="GPU-Time"><a href="#GPU-Time" class="headerlink" title="GPU Time"></a>GPU Time</h2><p>GPU Time的测量在Android端则是比较不方便的，过程碰了很多壁用了很多时间，但最终还是得以成功实现</p>
+<p>（ue自己写的在移动端跑不了，原因未知）</p>
+<p>最终的实现过程参照了一个unity插件和UE自带的disjoint query实现</p>
+<p>其实回头看来虽然几乎是把人家的版本copy了一遍，但确实大家写出来最终都是这个样子的</p>
+<p>（毕竟学习的最快方式就是抄）</p>
+<p>思路也很简单，在RHI的OpenGL分支用gl指令做插桩操作就能拿到，反而是debug的过程花了比较多的时间</p>
+<p>首先对于这方面确实不了解，不知道安卓上哪些不了解的地方会影响到gl指令结果的返回</p>
+<p>我不知道用ue原生的跨平台函数，会跳到哪个奇怪的地方然后给个奇怪的crash</p>
+<p>因此我先是把默认的开关全打开（我不清楚哪一步是必要的，但最终可以取到结果）</p>
+<p>AndroidOpenGL：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622153924446.png" alt="image-20220622153924446"></p>
+<p>OpenGL.h：<img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622154016195.png" alt="image-20220622154016195"></p>
+<p>紧接着，为了方便之后test，我不想直接改变引擎自带的全局变量GGPU Time的值（我可能用这个变量也做一些test）</p>
+<p>总而言之一个是不够我用的，因此我在EngineGlobal中增加了新的同为unit32类型的全局变量：</p>
+<p>（当然这么做的代价是一次全量编译，但换了SSD之后编译整个引擎的速度还是可观的）</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622154424667.png" alt="image-20220622154424667"></p>
+<p>对于GPU profiler的部分，我的数据结构和可能用到的init和release方法是直接照抄ue的</p>
+<p>UE的实现分为一个Timing（使用glQuerycounter指令）的实现和disjoint（glBeginQuery）的实现</p>
+<p>其余部分做了一些简化，我去掉了加锁的部分，去掉了Event Node的统计，只留下Disjoint的实现方案：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622161947054.png" alt="image-20220622161947054"></p>
+<p>采用的查询和计算的数据结构直接用的UE自己写的FOpenGLDisjointTimeStampQuery</p>
+<p>因为渲染帧和逻辑帧不是一一对应的，我们在读数据的时候拿的不一定是确切的渲染帧</p>
+<p>因此我们在Profiler中构建了一个数组来存放每次渲染帧中query的结果</p>
+<p>（UE用了4个buffer，但实际上用2个就够了，因为game线程只会比渲染线程快1到2帧）</p>
+<p>对于每一个单独的query结构而言，数据结构的布局是这样的，这方面和另一个unity插件也是差不多的</p>
+<p>一个上下文，一个储存内容，一个bool记录资源可用性，精简且使实用</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622154843887.png" alt="image-20220622154843887"></p>
+<p>初始化阶段，会调用每个query的init函数，实际上做的是调用UE封装的函数PlatformGetNewRenderQuery</p>
+<p>这个函数封装了使用gl指令来生成query查询结构的过程（我不知道这个函数能不能放心用，所以还是亲自把它搬出来了）：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622164129353.png" alt="image-20220622164129353"></p>
+<p>在渲染帧开始的时候（RHIBeginFrame）和渲染帧结束的时候（RHIEndFrame）插入我们的profiler函数</p>
+<p>（实际上架构方面的东西也很取巧，UE往哪插我就往哪插，省了很多研究这部分架构的时间）</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622165624885.png" alt="image-20220622165624885"></p>
+<p>对于Begin来说，做的是确认初始化，然后确定查询的index调用查询函数</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622170218396.png" alt="image-20220622170218396"></p>
+<p>tracking方面则是简单的调用了glBeginQuery和glEndQuery指令</p>
+<p>其中我会在EndTracking时尝试获取当前操作是否成功，并返回相应的错误代码（在debug阶段绑了大忙）</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622170103605.png" alt="image-20220622170103605"></p>
+<p>对于EndFrame来说，除了停止tracking之外，还会根据确切的index对应的query结果来计算这个渲染帧的GPU Time</p>
+<p>查询query结果时使用的glGetQueryObjectui64v指令很有意思，会根据传入的枚举值不同然后执行不同的操作</p>
+<p>UE也对此操作做了封装（改为使用UE的枚举而非OpenGL的枚举，亲测使用OpenGL的枚举在Android上打包会失败）</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\image-20220622170459940.png" alt="image-20220622170459940"></p>
+<p>之后会返回一个未经加工的时间，一般来说将其除以1e9就能得到最后所需的单位ms（下图算完就是1.05ms）：</p>
+<p><img src="C:\Users\apnaviyang\Desktop\UE4\AprilProfiler——简单的安卓端UE4性能分析器\企业微信截图_16557313882382.png" alt="img"></p>
+<p>我们将其写入我们的全局变量中（这样我在另一个profiler Subsystem中就可以直接拿到）</p>
+<p>这样我们测量GPU Time的部分也完成了</p>
+<h2 id="难点及解决方案"><a href="#难点及解决方案" class="headerlink" title="难点及解决方案"></a>难点及解决方案</h2><h3 id="实现过程的Idea"><a href="#实现过程的Idea" class="headerlink" title="实现过程的Idea"></a>实现过程的Idea</h3><p>由于本身一开始对于Android这块领域的知识是很空白的，因此Idea的构思花了比较多的时间</p>
+<p>对于Android来说，许多信息都需要计算得来，不像pc平台例如进程id这种数据可以直接用一个api拿到</p>
+<p>一开始我对于adb，shell，Android memory，proc这些概念是完全空白的不了解的</p>
+<p>甚至对于c++的输入输出以及文件读写的api操作用的都还不是很熟练</p>
+<p>在实现功能的时候碰了很多和最终结果完全不着调的壁（当时甚至还想到hook方面还有接入安卓sdk）</p>
+<p>后面经过一些其他同学和前辈的指点和开导，对于Android和linux的共通性有了一些脑中的概念</p>
+<p>通过KM还有一些其他地方零零碎碎的资料，对于不同种类的内存（pss，vss，rss）也有了一定的了解</p>
+<p>proc中一些闻所未闻的参数也和我之前所学OS的概念能慢慢对应上</p>
+<p>最终是借鉴了一个linux上计算cpu和memory的方案（实际上proc也是linux的东西）</p>
+<p>代码的编写过程没有遇到什么太大的阻碍，反而是借机还学习了一下正规项目的代码规范和命名规则</p>
+<p>其实最后总结的时候看来，要写出一个同款profiler的思路还是很简单很好借鉴的</p>
+<p>不过思考问题寻求答案的过程对我来说感觉还是很有意义的（每次问导师有没有提示都说先Google一下）</p>
+<hr>
+<h3 id="Android端读写proc的Debug"><a href="#Android端读写proc的Debug" class="headerlink" title="Android端读写proc的Debug"></a>Android端读写proc的Debug</h3><p>PC不是linux或者安卓平台，不存在proc可以直接读写调试</p>
+<p>因此确定能不能拿到proc的值并且成功计算，就成了一件很麻烦的事情</p>
+<p>再加上硬盘是HDD，CPU性能也比较羸弱，编译和打包要花很长很长的等待时间</p>
+<p>每次改代码都到手机上打包去看一眼结果，最后带来的就是地狱级的体验（有时候加一行log编译再打包就能花半小时）</p>
+<p>后来善用adb将proc内的文件数据进行cat，copy到PC上存进txt一定程度上的方便了读数据功能时的调试</p>
+<p>然后我也能拿到UE在Android端的log数据（之前问很多人不知道目录最后还是导师告诉的我）</p>
+<p>最后还是顺利完成了有关proc方面相关的功能（比较尴尬的就是runtime时proc/stat在项目上拿不到）</p>
+<hr>
+<h3 id="Android端的OpenGL-Debug"><a href="#Android端的OpenGL-Debug" class="headerlink" title="Android端的OpenGL Debug"></a>Android端的OpenGL Debug</h3><p>OpenGL在Android上的限制比较多，例如很多查询功能在源码内默认是关的</p>
+<p>对于以前简单的用win32 c++配置搭个框架就能写shader的环境</p>
+<p>在安卓上虽然不做什么开发操作反而感觉举步维艰，有很多限制</p>
+<p>最尴尬的就是每次glGetError结果都是1182_GL_INVALID_OPERATION</p>
+<p>然后查各种手机GPU的文档还有Android的文档都发现没问题（Android确实支持OpenGL的）</p>
+<p>然后每天盯着屏幕插log都快把ue插成海绵了还找不出问题</p>
+<p>最后导师提醒可能是我的query和ue自带的query产生了冲突（刚好我插桩代码的地方每次ue的代码都比我先跑）</p>
+<p>然后卡了十几天破案了我只觉得特别震撼（总的花了一个月左右，1/4想，1/4敲代码，1/4卡在查询指令）</p>
+<p>中间还一直很怀疑自己，就简简单单的一个指令的事情做不好，导师会不会觉得我是笨蛋哈哈哈</p>
+<hr>
+<p>总体而言虽然花了很多时间遇到了各种奇奇怪怪的bug</p>
+<p>但一边补知识框架，一边写功能的开发过程给我带来的收益，让我感到发自内心的喜悦</p>
