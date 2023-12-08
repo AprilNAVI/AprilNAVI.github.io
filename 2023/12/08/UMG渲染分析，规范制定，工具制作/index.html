@@ -1,0 +1,436 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UMG渲染分析，规范制定，工具制作</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UMG渲染分析，规范制定，工具制作 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2023/12/8
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>历经三天经历了对Slate流程的分析，规范指定，和简易工具落地</p>
+<span id="more"></span>
+
+<h1 id="UMG渲染分析，规范制定，工具制作"><a href="#UMG渲染分析，规范制定，工具制作" class="headerlink" title="UMG渲染分析，规范制定，工具制作"></a>UMG渲染分析，规范制定，工具制作</h1><h2 id="渲染原理和流程"><a href="#渲染原理和流程" class="headerlink" title="渲染原理和流程"></a>渲染原理和流程</h2><h3 id="Slate模块："><a href="#Slate模块：" class="headerlink" title="Slate模块："></a>Slate模块：</h3><p>Slate模块包括Slate，SlateCore，SlateRHIRenderer，UMG。</p>
+<p>Slate和SlateCore共同构筑了逻辑层部分，SlateRHIRenderer则是渲染部分。</p>
+<p>UMG是在Slate和SlateCore上面的封装层，由编辑器客户端主要使用。</p>
+<h3 id="UMG资产："><a href="#UMG资产：" class="headerlink" title="UMG资产："></a><strong>UMG资产：</strong></h3><p>UWidget是UMG模块中许多控件的基类，包括UserWidget</p>
+<p>UWidget持有SWidget，继承UObject,有UObject的GC系统，支持反射和蓝图功能</p>
+<p>SWidget处于SlateCore模块中，控件的绘制、点击以及大部分控件逻辑都集中在这里面</p>
+<p>每个UserWidget在计算时都会储存为WidgetTree规定的树状结构</p>
+<h3 id="绘制基本流程："><a href="#绘制基本流程：" class="headerlink" title="绘制基本流程："></a><strong>绘制基本流程：</strong></h3><p><strong>在游戏线程 （Game Thread），Slate Tick 每一帧会遍历两次 Widget Tree，主要负责渲染数据的收集</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208224722445.png"></p>
+<hr>
+<p><strong>DrawPrepass，计算Layout：</strong></p>
+<p>自底向上的先计算最叶子节点UI的DesiredSize，然后之上的每一层UI根据子UI的DesiredSize计算自己的DesiredSize</p>
+<p>这个过程发生在FSlateApplication::DrawPrepass，默认情况下会递归遍历所有的子节点。</p>
+<p><strong>DrawWindows，调用子控件的OnPaint，收集渲染元素：</strong></p>
+<p>自顶向下的过程，对于UI的叶子节点来说，这一步会输出可见图元</p>
+<p>对于有子节点的UI（比如各种Panel），它一般会先根据子UI的期望大小和自身的逻辑，控制子UI的位置</p>
+<p>在前面的DrawWindows阶段之前，会初始化一个DrawBuffer，其中存了绘制所需的ElementList。</p>
+<p>开启正式绘制之前，会把UI的图元全部压入这个ElementList才行，因此执行了DrawWindowAndChildren</p>
+<p>内部是给子UI分配特定的显示区域，再递归调用子控件的OnPaint方法，给每个控件分配LayerId，并从控件抽象出FSlateDrawElement。</p>
+<p>子UI的OnPaint方法会将具体的图元类型添加到这个List里</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231206161552115.png"></p>
+<p><strong>Renderer-&gt;DrawWindows，生成批数据，创建渲染命令</strong>：</p>
+<p>前面一步完成之后，就可以开始正式渲染，但从调用Renderer-&gt;DrawWindows之后的过程，包括合批也发生在GameThread上</p>
+<p>ElementList已经被填充好了这一次渲染需要提交的元素，这个列表会被送往ElementBatcher生成批数据。</p>
+<p>渲染器把FSlateDrawElement包装成FSlateRenderBatch批数据，并根据控件的信息生成VertexBuffer，执行渲染命令</p>
+<p>调用DrawWindow_RenderThread送往下游的渲染线程去做。</p>
+<hr>
+<p><strong>对于渲染线程（Render Thread）而言，Slate的渲染主要经历DrawWindow_RenderThread的过程。</strong></p>
+<p>Renderer-&gt;DrawWindows是每次渲染的入口，这里的Renderer会根据平台选择对应的渲染器</p>
+<p>在对WindowElementList做完合批，内部生成好渲染命令之后，调用DrawWindow_RenderThread把数据送往渲染层</p>
+<p>渲染线程主要做的是：</p>
+<ol>
+<li>合批更新定点数据和顶点索引数据到GPU缓冲区</li>
+<li>渲染操作类执行绘制:生成FRHICommand</li>
+<li>生成任务等待RHIThread执行完上一帧的FRHICommand</li>
+</ol>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208224635579.png"></p>
+<h2 id="UMG渲染的性能热点分析，制作规范"><a href="#UMG渲染的性能热点分析，制作规范" class="headerlink" title="UMG渲染的性能热点分析，制作规范"></a>UMG渲染的性能热点分析，制作规范</h2><p>使用的引擎版本是UE 5.2，主要通过Unreal Insight分析Slate渲染流程，使用Stat 相关命令行查看runtime耗时数据：</p>
+<p>主要关注Render Thread中SlateUI的渲染耗时，包括Draw Call，OverDraw现象，如果Game Thread中有造成瓶颈的部分也会关注</p>
+<p>主线程的耗时主要为Slate::DrawWindow，其中包括了Prepass，DrawWindow，AddElement的过程。</p>
+<p>这个过程较为耗时，平均耗时4ms左右，在一些坏帧可以到5ms，占用Game Thread一次逻辑帧的10%~15%左右，是一次绘制的主要瓶颈</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207111343653.png"></p>
+<p>渲染线程虽然有时会出现用时大于逻辑帧的情况，但有大部分时间都是在Wait Game Thread Task，瓶颈的可能性较小</p>
+<p>而对于一次渲染线程的DrawWindow而言，平均耗时不到1ms，做一次Slate绘制只占了Render Thread一次渲染帧的2~3%</p>
+<p>Slate作为绘制瓶颈的可能性较小，且Unreal本身对于Slate已经做了合批，剔除的操作。</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231206165248564.png"></p>
+<p>RHI Thread基本上在等待Render Thread分配任务，几乎没有这方面的瓶颈。</p>
+<hr>
+<p>Stat Slate相关性能参数，主要关注：</p>
+<p>Total Slate Tick Time：GameThread FSlateApplication::Tick总时间</p>
+<p><strong>SlatePrepass：</strong> DrawPrepass自底向上计算Size时间 SWidget::SlatePrepass</p>
+<p><strong>Draw Window And Children Time：</strong>自顶向下tickwidget paintUI的总时间</p>
+<p><strong>Num Layers :</strong> 总的批次层级</p>
+<p><strong>Num Batches：</strong> 总的批次</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207110336020.png"></p>
+<hr>
+<p>因此对UMG做Runtime时期的优化，主要聚焦于Game Thread上的CPU瓶颈优化，能减轻一次Slate绘制的总体压力。</p>
+<p>这方面应该从Widget Tree本身的遍历耗时，重建操作去分析，优化Widget Tree的耗时。</p>
+<p>对于渲染而言，UE自己本身对Slate进行了合批处理，但Runtime时GPU如果进行Bind的操作，就会打断合批，显著提高DrawCall的次数</p>
+<p>从Batch，DrawCall角度入手，考虑静止不动的静态资产是否会打断引擎合批。</p>
+<p>对于UMG资产中的资源（texture）方面的使用，也应该加以规范限制。</p>
+<p>由于UI的开销是线性增长的，哪怕制定了每个UI制作时的规范，如果同屏UI的数量同时出现过多，也可能导致性能异常</p>
+<p>这一点不便于做离线的规范和扫描，但也需要在开发时好好注意维护UI的生命周期。</p>
+<p>以下小标题是制作中需要遵守的具体规范，底下是对规范进一步的具体分析，讲清为什么这么做能达到优化目的</p>
+<hr>
+<h3 id="Game-Thread"><a href="#Game-Thread" class="headerlink" title="Game Thread"></a>Game Thread</h3><p>对于Game Thread而言，<strong>静态UI可以着重去降低Prepass，OnPaint这样的Tick耗时</strong>，手段可以通过缓存Element数据，</p>
+<p>WidgetTree是Slate模块用来管理UI资产，统计图元绘制信息的容器结构。对Widget的重建操作，会导致额外的CPU消耗。</p>
+<p>对于动态变化的UI，<strong>应该入手Widget Tree相关的开销</strong>，分为降低Widget Tree重构耗时和避免Widget Tree重构两个方向来分析。</p>
+<hr>
+<h4 id="对于静态UI，通过使用InviladitionBox来开启FathPath，加速整棵Widget-Tree的PrePass和OnPaint："><a href="#对于静态UI，通过使用InviladitionBox来开启FathPath，加速整棵Widget-Tree的PrePass和OnPaint：" class="headerlink" title="对于静态UI，通过使用InviladitionBox来开启FathPath，加速整棵Widget Tree的PrePass和OnPaint："></a>对于静态UI，通过使用InviladitionBox来开启FathPath，加速整棵Widget Tree的PrePass和OnPaint：</h4><p><strong>结论：最好的使用方式是根据Widget更新变化的频率，将Widget拆分到不同的 Invalidation Box 中</strong>。</p>
+<p><strong>对于布局需要，不太方便划分Invalidation Box的Widget的，可以将Widget设为Is Volatile易变的，</strong></p>
+<p><strong>这样上层在缓存时就会跳过这个Widget，这个Widget可能每次都会在Prepass 和 OnPaint被重新计算，但不会影响整棵Widget Tree的缓存</strong></p>
+<p><strong>由于两个InvalidationBox中的内容不能合批，所以具体怎么使用需要测试和权衡</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207180839577.png"></p>
+<p>目前分析来看，没有添加InviladitonBox的UI走的都是SlowPath，这意味着每次Tick都是从头到尾将所有的节点都遍历了一遍</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207151636073.png"></p>
+<p>使用InviladitonBox将子控件收录之后，UE就可以通过FastPath索引到变化的UI，当ui需要被更新的时候，才会重新计算UI大小。</p>
+<p><strong>所有 Prepass 和 OnPaint 计算结果，也就是DrawElements都会被缓存下来</strong></p>
+<p>如果某个 Child Widget 的渲染信息发生变化，就会通知 Invalidation Box 重新计算一次 Prepass 和 OnPaint 更新缓存信息。</p>
+<p>由于计算DesiredSize是其中比较耗时的操作，可以尝试更进一步采用更加激进的做法重写一些Widget的ComputeDesiredSize函数</p>
+<p>在成功开启了FastPath之后，在UI被更新但大小不改变的情况下，做一个强制缓存的机制跳过Widget的重新计算大小，继续使用缓存</p>
+<p>但使用时也需要注意，InviladitonBox渲染信息更新时，都会重新缓存Vertex Buffer，频繁的缓存Widget Tree也会造成很大的开销。</p>
+<p>备注：</p>
+<ol>
+<li>InviladitonBox的<strong>Cache Relative Transform功能</strong>可以达到缓存相对坐标，从而在更新位置不更新大小时继续使用缓存，</li>
+</ol>
+<p>但这个功能在我使用的UE 5.2已经被移除了，类似机制需要自己手动实现</p>
+<ol start="2">
+<li>命令<strong>Global Invalidation</strong>能够直接启用整个Swindow的Inviladiton功能，将整个UI封在一个InviladitonBox中，</li>
+</ol>
+<p>但会遇到上述所说的有Widget改变就会重复更新缓存，导致开销更大的问题，不建议使用。</p>
+<ol start="3">
+<li><p>对于控件中引用的，<strong>使用动画编辑器制作的Sequencer动画效果</strong>，在动画播放时引起渲染更新也会导致Layout失效，进而导致重新计算。</p>
+<p>为了避免这种情况，也应该将类似的Widget设为Is Volatile。对于循环动画，应考虑使用材质来实现，因为纯材质动画本身不产生CPU开销。</p>
+</li>
+</ol>
+<hr>
+<h4 id="开发时尽可能避免Widget-Tree的层数（layer）太多，对层级进行合并，Layer尽可能扁平化"><a href="#开发时尽可能避免Widget-Tree的层数（layer）太多，对层级进行合并，Layer尽可能扁平化" class="headerlink" title="开发时尽可能避免Widget Tree的层数（layer）太多，对层级进行合并，Layer尽可能扁平化"></a><strong>开发时尽可能避免Widget Tree的层数（layer）太多，对层级进行合并，Layer尽可能扁平化</strong></h4><p>因为使用Widget Tree时来管理子控件时，Widget Tree的Layer数量直接影响到整颗Widget Tree的计算复杂度。</p>
+<p>由于PrePass和DrawWindow阶段都需要遍历整棵树，因此整棵树的Layer增加时，SlateTick的耗时因此增加。</p>
+<p>制作时应该尽可能保证Widget Layer扁平，可以将相邻的Layer重新合并成到同一个Layer。</p>
+<p>这样能限制整颗树Runtime时期的递归总体深度，来减少Widget Tree每次Rebuild和遍历所需要的耗时。</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207180737131.png"></p>
+<hr>
+<h4 id="对于动态UI做生命周期维护，避免Runtime做会导致重构Widget-Tree的操作（插入和删除）："><a href="#对于动态UI做生命周期维护，避免Runtime做会导致重构Widget-Tree的操作（插入和删除）：" class="headerlink" title="对于动态UI做生命周期维护，避免Runtime做会导致重构Widget Tree的操作（插入和删除）："></a>对于动态UI做生命周期维护，避免Runtime做会导致重构Widget Tree的操作（插入和删除）：</h4><p>可以<strong>参考UE Common UI插件中的UCommonActivatableWidget的优化思路</strong>，</p>
+<p>Common UI单独了实现一套机制，<strong>让UI控制自身在生命周期内被激活和停用而非删除创建</strong>，能避免Runtime时期Widget Tree被重建。</p>
+<p>我们自己也可以通过类似对象池这样的结构来维护UI的生命周期，<strong>避免在Runtime时期对控件进行删除和动态创建并插入操作</strong>，从而重建Widget Tree。</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207180520837.png"></p>
+<hr>
+<h4 id="提高UMG逻辑性能本身（驱动方式），做更新频率划分："><a href="#提高UMG逻辑性能本身（驱动方式），做更新频率划分：" class="headerlink" title="提高UMG逻辑性能本身（驱动方式），做更新频率划分："></a><strong>提高UMG逻辑性能本身（驱动方式），做更新频率划分：</strong></h4><p>控件尽量使用事件驱动UI更新，本身尽可能少绑定（将属性绑定到UI字段上会触发轮询）或者避免使用Tick，避免不必要的开销</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207193954054.png"></p>
+<p>逻辑部分迁移到C++或者脚本中，避免使用蓝图，以获取更高的性能。</p>
+<p><strong>根据Widget的使用和更新频率，将Widget拆分为：始终可见的，必须尽快显示的，可以承受在显示时略有延迟的</strong></p>
+<p><strong>对于不同更新频率的Widget，放入不同的InviladitonBox，且采用不同的加载策略，</strong></p>
+<p>需要快速响应，使用频繁的的UI，例如竞技游戏中的物品栏和技能栏，最好将其保持在后台加载但不可见的状态。</p>
+<p>长时间不出现也没有快速响应需求的Widget，可以尝试使用异步加载策略，消除时评估对Widget Tree的影响选择销毁或者停用。</p>
+<p>这样一来可以避免一次性加载所有资源，加快启动时间，同时降低初始的内存占用。</p>
+<hr>
+<h3 id="Render-Thread"><a href="#Render-Thread" class="headerlink" title="Render Thread"></a>Render Thread</h3><p>对于Render Thread而言，减少Batch Draw Call的次数，不一定可以显著提高帧率，但可以减少对GPU的API调用，在移动端上有助于控制发热。</p>
+<p>这部分主要聚焦于规范那些会打断合批的操作，同时也会列举一些制作规范来提高渲染的效率。</p>
+<hr>
+<h4 id="检查可能打断合批的操作或者配置："><a href="#检查可能打断合批的操作或者配置：" class="headerlink" title="检查可能打断合批的操作或者配置："></a>检查可能打断合批的操作或者配置：</h4><p><strong>控制降低整体最终的Layer ID在一个理想的数目，设置合理的配置参数，是提高合批效率降低Draw Call的有效手段</strong></p>
+<p><strong>手动是否检查合批较为繁琐，应进一步开发自动化工具，检查资产的合批情况。</strong></p>
+<p>绘制是从SWindow::Paint开始，LayerId初始为0，在绘制中开始传递和更新；</p>
+<p>大部分控件使用参数中的LayerId，少部分控件改变LayerId，并作为返回值传递给父节点</p>
+<ol>
+<li><strong>引擎生成的LayerID如果不同则不能合批</strong></li>
+<li><strong>ShaderResource，使用Texture、图集不同的Image控件不能合批</strong></li>
+<li><strong>Tiling，设置Tiling的不能和普通控件合批</strong></li>
+<li><strong>ShaderType，DrawAs选了Border和文本控件，不能和普通控件合批</strong></li>
+<li><strong>DrawEffects，自己和父控件不能去掉IsEnable</strong></li>
+<li><strong>ClippingState， 设置了裁剪的不能参与合批</strong></li>
+</ol>
+<p>常用的Widget操作对LayerID的影响如下：</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207202114081.png"></p>
+<hr>
+<h4 id="使用Retainer-Box提高渲染效率，加速OnPaint过程，动静分离降低OverDraw："><a href="#使用Retainer-Box提高渲染效率，加速OnPaint过程，动静分离降低OverDraw：" class="headerlink" title="使用Retainer Box提高渲染效率，加速OnPaint过程，动静分离降低OverDraw："></a><strong>使用Retainer Box提高渲染效率，加速OnPaint过程，动静分离降低OverDraw：</strong></h4><p><strong>结论：对于静态的UI，可以使用RetainerBox，在参数中设置每几帧会触发一次重新绘制，控制每个像素的整体绘制频率。</strong></p>
+<p><strong>Retainer Box的使用区域应该尽量小，有助于提高渲染效率、降低显存使用。重复使用的 User Widget 不要使用 Retainer Box</strong></p>
+<p><strong>使用Retainer Box优化渲染需要创建Render Target占用内存，具体怎么使用需要测试和权衡</strong></p>
+<p><strong>Invalidation Box 放置在 Retainer Box 上方没有意义，通常做法是在 Retainer Box 下层放一个 Invalidation Box。</strong></p>
+<p><strong>可以拓展URetainerBox 和 SRetainerWidget，将Retainer Box改为事件驱动而非Tick，进一步优化。</strong></p>
+<p>通过合并批次和合并贴图的方式，UI 的 Draw Call 数量可以减少到比较低，但仍然会有很高的像素填充率。</p>
+<p>在很多情况下，静态UI 不需要每帧都重新渲染，因此可以通过 Retainer Box 缓存渲染结果，设置每隔几帧更新一次，</p>
+<p>PhaseCount表示多少帧绘制一次，Phase表示在第几帧绘制。</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207195010791.png"></p>
+<p>Retainer Box 的原理是将 UI 渲染缓存在 Render Target上，在OnPaint的时候可以直接提交，但由于需要缓存Render Target，所以会带来一定的内存消耗</p>
+<p>本质上还是用空间预计算来换时间，因此对于经常需要改变的UI不适用RetainerBox，且如果UI的覆盖面越大，RT的内存费用就会越高，需要权衡</p>
+<p>主要是优化了OnPaint的流程，渲染层也可以直接拿RT去做了，对于Game Thread和Render Thread都能起到帮助</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231207195624292.png"></p>
+<hr>
+<h4 id="尽可能的对UI元素进行合并（图集，材质）："><a href="#尽可能的对UI元素进行合并（图集，材质）：" class="headerlink" title="尽可能的对UI元素进行合并（图集，材质）："></a><strong>尽可能的对UI元素进行合并（图集，材质）：</strong></h4><p><strong>结论：将多个小的UI纹素合并成一个大图集，使用一张大图集而不是多张小纹理可以降低纹理切换的开销。</strong></p>
+<p><strong>同材质的component也可以合并成一个元素，这样也可以起到降低Draw Call的作用。</strong></p>
+<p>切换材质，切换纹理，都会触发GPU Bind，从而打断合批，增加Draw Call的次数。</p>
+<p>这对于减少内存开销，提高纹理的采样效率也能起到帮助。可以使用一些图集工具来合并纹理，在材质和 UMG 中使用这个图集</p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208224546780.png"></p>
+<hr>
+<h4 id="引擎中开启优化项使用Canvas-Panel的合批功能："><a href="#引擎中开启优化项使用Canvas-Panel的合批功能：" class="headerlink" title="引擎中开启优化项使用Canvas Panel的合批功能："></a>引擎中开启优化项使用Canvas Panel的合批功能：</h4><p><strong>结论：对于Canvas Panel的Child Widget，在项目设置中开启Explicit Canvas Child ZOrder，设定好ZOrder 属性，ZOrder 相同的可以自动合批</strong></p>
+<p><strong>尽可能使用Size Box，Horizontal Box、Vertical Box，Grid Box 结合使用来处理布局，Overlay也应该减少使用。</strong></p>
+<p>Slate中的Draw Call按Widget的Layer ID分组，Vertical Box或Horizontal Box等其他容器Widget会将其子Widget的Layer ID合并，从而减少Draw Call的数量。</p>
+<p>不开启优化设置的情况下，Canvas Panel会递增其子Widget的Layer ID，以便它们可以在必要时相互叠加渲染，这会造成Canvas Panel使用多个Draw Call。</p>
+<p>使用Overlay时，也会递增LayerID导致更多的Draw Call，也应该加以限制。</p>
+<hr>
+<h4 id="Texture分辨率检查："><a href="#Texture分辨率检查：" class="headerlink" title="Texture分辨率检查："></a><strong>Texture分辨率检查：</strong></h4><p><strong>结论：对于常规的UI，纹理的Texture Group应该设置为在UI，压缩格式应该为应该为User Interface 2D (RGBA)。</strong></p>
+<p><strong>对于3D的场景UI，所有纹理尺寸必须是2的乘数：2，4，8，16，32，64，128，256，512，1024，2048，4096，8193.</strong></p>
+<p>纹理尺寸是２的乘数引擎会在导入Texture时自动创建这个Texture的Mipmap，尺寸不是必须为正方形，4x16都是可以的，只要保证是2的乘数就好。</p>
+<p>这个规则只需要在制作3DUI的时候需要考虑，2DUI需要拥有保持最高分辨率不需要考虑Mipmap，3DUI有距离原因所以需要考虑引擎这个关于贴图优化的设置。</p>
+<p>3DUI的纹理应该要有一个TerxtureGroup，能更好的管理这些纹理的压缩设置，引擎内部管理TerxtureGroup时能有更好的渲染性能。</p>
+<hr>
+<h4 id="UMG资产开发时定期清理没有引用到的Widget。"><a href="#UMG资产开发时定期清理没有引用到的Widget。" class="headerlink" title="UMG资产开发时定期清理没有引用到的Widget。"></a>UMG资产开发时定期清理没有引用到的Widget。</h4><hr>
+<h2 id="Editor下的UMG资产检查工具"><a href="#Editor下的UMG资产检查工具" class="headerlink" title="Editor下的UMG资产检查工具"></a>Editor下的UMG资产检查工具</h2><h4 id="检查项，可能有哪些配置会打断合批？"><a href="#检查项，可能有哪些配置会打断合批？" class="headerlink" title="检查项，可能有哪些配置会打断合批？"></a>检查项，可能有哪些配置会打断合批？</h4><p>由于LayerID不好控制，影响因素多，且不直观，和在Widget Tree上的层级没有直接关系，因此这里统计的层级都指的是Widget Tree上的层级。</p>
+<p>主要检查静态资产中，可能导致导致GPU Bind的操作或配置，这些操作或配置可能会打断UMG的合批</p>
+<p><strong>从资产配置角度，对常用的非结构性需要渲染的UWidget做检查，包括UImage，UButton，UText，UProgressBar等。</strong></p>
+<p>这些设置通常是在美术制作时就可以很容易注意的。</p>
+<ol>
+<li><p>因为不同Layer下的Widget会导致LayerID不同，所以一定不能合批，因此对同Layer下的常见Widget的一些配置参数做检查。</p>
+</li>
+<li><p>检查同一层级下UWidget是否使用同样的Texture，使用Texture不同，则不能合批。</p>
+</li>
+<li><p>检查同一层级下UWidget的Till属性是否被设置，如果被设置则不能和普通控件合批。</p>
+</li>
+<li><p>检查同一层级下UWidget的DrawAs选项是否为Border或者Text，如果被设置则不能被合批</p>
+</li>
+<li><p>检查Enable属性是否被勾选，如果没被勾选，则自己和自己的Child Widget都无法合批。</p>
+</li>
+</ol>
+<hr>
+<p><strong>工具主要思路为，从需要检查的资产开始作为根节点，创建一个UMG实例，递归遍历整棵Widget Tree，对需要检查的UWidget做属性设置的检查。</strong></p>
+<p><strong>触发检查的入口，可以是当前Asset进行保存前进行检查，重写Uobject的PreSave函数，对于检查到可能导致合批失败的行为，弹出弹窗，提示不规范的行为。</strong></p>
+<p><strong>由于Widget Tree只在Runtime时存在，无法直接在Editor获得</strong></p>
+<p><strong>所以这里还需要获取对应的包目录，通过AssetRegistryModule搜索资产，然后转为UWidgetBlueprint以获取Widget Tree</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208172204939.png"></p>
+<p><strong>递归遍历每层Widget Tree，对处于同一Layer下的Widget做检查，检查通过就返回True</strong></p>
+<p><strong>检查失败需要向容器中添加对应的Widget名称和不规范的行为，在检查结束后同一打印</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208221742570.png"></p>
+<p><strong>检查通过：</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208191640922.png"></p>
+<p><strong>检测到不规范的行为：</strong></p>
+<p><img src="/images/loading.jpg" data-original="/2023/12/08/UMG%E6%B8%B2%E6%9F%93%E5%88%86%E6%9E%90%EF%BC%8C%E8%A7%84%E8%8C%83%E5%88%B6%E5%AE%9A%EF%BC%8C%E5%B7%A5%E5%85%B7%E5%88%B6%E4%BD%9C/image-20231208221403577.png"></p>
+<hr>
+<h3 id="最终结论（规范-工具思路）"><a href="#最终结论（规范-工具思路）" class="headerlink" title="最终结论（规范+工具思路）"></a>最终结论（规范+工具思路）</h3><p><strong>针对UI开发人员：</strong></p>
+<ol>
+<li>对于静态UI，通过通过使用InviladitionBox来开启FathPath。</li>
+<li>避免Widget Tree有太多层级，扁平化管理Widget</li>
+<li>使用Retainer Box提高渲染效率，加速OnPaint过程，动静分离降低OverDraw：</li>
+</ol>
+<p><strong>针对美术人员：</strong></p>
+<ol>
+<li><p>美术填充资源时，尽可能避免导致合批会被打断的设置（通过合批检查工具）</p>
+</li>
+<li><p>确保Texture的分辨率和压缩格式合规，尽量使用同样的大图集</p>
+</li>
+</ol>
+<p><strong>针对程序人员：</strong></p>
+<ol>
+<li><p>UMG逻辑性能本身：逻辑迁移到C++中或者脚本，采用事件驱动UI。根据更新频率和响应效率划分不同的UI，采用不同的策略，InviladitionBox的分区也可以参考这个。</p>
+</li>
+<li><p>对于动态UI做生命周期维护，避免Runtime时期重构Widget Tree的操作。</p>
+</li>
+</ol>
+<hr>
+<p><strong>UMG合批检查工具开发思路：</strong></p>
+<ol>
+<li>对于常用被渲染的UWidget进行配置检查，检查项是可能打断合批的不合理设置</li>
+<li>从资产保存作为触发检查的入口，获取对应目录下的资产转为UMG蓝图资产（UWidgetBlueprint）</li>
+<li>获取对应UWidgetBlueprint的Widget的RootWidget，自顶向下查找对应UWidge不规范的配置，记录违规Widget的名称和不规范原因</li>
+<li>继续保存流程（不阻断），输出违规Widget的名称和不规范原因，辅助相关人员进行排查</li>
+</ol>
+
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2023 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+<script>
+    const gitalk = new Gitalk({
+        clientID: '',
+        clientSecret: '',
+        repo: 'hexo-theme-particle',      // The repository of store comments,
+        owner: 'korilin',
+        admin: ['korilin'],
+        language: 'en',
+        id: location.pathname,      // Ensure uniqueness and length less than 50
+        distractionFreeMode: true  // Facebook-like distraction free mode
+    })
+    gitalk.render('gitalk-container')
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

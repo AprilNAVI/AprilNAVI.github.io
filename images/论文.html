@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || </title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1> </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2023/12/8
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>游戏引擎是指一些已编写好的可编辑电脑游戏系统或者一些交互式实时图像应用程序的核心组件。这些系统为游戏开发者提供各种编写游戏所需的各种工具，其目的在于让游戏设计者能容易和快速地做出游戏程式而不用重新搭建开发框架。</p>
+<p>游戏引擎一般分为商业引擎和自研引擎，目前现有的商业引擎能较好的支持开发多种类型的游戏，对游戏开发需求的各个系统有较好的功能支持，例如Unity，Unreal，Cocos2x。自研引擎则是游戏厂商为了开发某种类型的游戏，或为了达成某种特色的效果需求，商业引擎无法满足开发的需求，此时厂商就会开发自己的游戏引擎来打造属于厂商特色的游戏。例如EA的寒霜引擎是为了打造可交互的场景破坏效果，而R星的Rage引擎能创造出有趣的物理系统。</p>
+<p>除了游戏开发方面，以游戏引擎为代表的高端渲染引擎是数字新基建的基座，除了游戏还涉及到电影行业、汽车制造业、智慧城市，同时也推动硬件发展，关乎国计民生。</p>
+<p>现如今中小厂商的游戏开发和数字媒体开发都依赖国外的商业引擎，国内市场认为造不如买，买不如租，仅有腾讯、网易、完美世界等大厂少数工作室群拥有自研引擎。而引擎人才存在着不小的断层，再往后想去追赶引擎技术，会变得更难。</p>
+<p>结合我国数字化转型大趋势，笔者认为游戏引擎的设计与开发十分重要，它是数字化转型的关键技术。</p>
+<hr>
+<h1 id="系统介绍"><a href="#系统介绍" class="headerlink" title="系统介绍"></a>系统介绍</h1><p>本系统使用C++17编写，使用Vulkan进行场景绘制，使用glfw进行窗口绘制。旨在完成现代游戏引擎的资产系统，渲染系统，物理系统，动画系统，核心框架系统，游戏性编码系统。采用面向对象的编程思想，按照软件工程的基本步骤进行系统分析、设计以及实现。</p>
+<p>目标引擎特性和预想效果包括但不限于：</p>
+<p> 1.以图形硬件接口封装的多线程渲染系统</p>
+<p>2.支持多种资产格式的资产系统</p>
+<p>3.高效的底层核心算法支持</p>
+<p>4.合理的动画和物理表现</p>
+<p>5.任务消息系统为支持的游戏性系统</p>
+<p>6.宏标记生成代码式的运行时反射系统</p>
+<hr>
+<h2 id="系统架构分层"><a href="#系统架构分层" class="headerlink" title="系统架构分层"></a>系统架构分层</h2><p>引擎有以下模块，以各个类的智能指针的形式存在</p>
+<p>他们都存放在Runtime_global_context中作为成员变量，在引擎启动时按照依赖项进行顺序注册和启动。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114160830097.png" alt="image-20230114160830097"></p>
+<p>其中对于底层物理支持上的模块，将其命名为system，例如窗口模块，输入模块，渲染模块等。</p>
+<p>而引擎逻辑上功能的部分，我则将其抽象为manager，例如物理模块，粒子模块。</p>
+<p>对于引擎的模块，根据现代引擎常用的分层架构进行分层，将引擎的几个模块剥离开，方便解耦合和后期维护</p>
+<p>从表层到底层分别是:</p>
+<p><strong>功能层</strong> <code>function</code> :提供引擎功能模块,分为框架和子系统两部分</p>
+<p>运行时功能核心框架采用世界 <code>world</code> -关卡 <code>level</code> -GO <code>object</code> -组件 <code>component</code> 的层级架构。</p>
+<p>世界管理器 <code>world_manager</code> 负责管理世界的加载、卸载、保存，和tick下属当前关卡。 关卡 <code>level</code> 负责加载、卸载、保存关卡。同时关卡也管理下属GO的tick、创建和删除。 游戏对象 <code>object</code> 负责加载、保存GO。同时GO也管理下属组件。</p>
+<p>组件全都继承自 <code>component.h</code> 中的 <code>Component</code> 类，目前组件包括：</p>
+<ul>
+<li>动画 <code>animation</code></li>
+<li>相机 <code>camera</code></li>
+<li>网格 <code>mesh</code></li>
+<li>运动 <code>motor</code></li>
+<li>粒子 <code>particle</code></li>
+<li>刚体 <code>rigidbody</code></li>
+<li>变换 <code>transform</code></li>
+</ul>
+<p>子系统则则是在具体GO组件的功能之外，运行时功能层其他子系统。</p>
+<p>目前包括：</p>
+<ul>
+<li>动画 <code>animation</code></li>
+<li>角色 <code>character</code></li>
+<li>控制器 <code>controller</code></li>
+<li>全局上下文 <code>global</code></li>
+<li>输入 <code>input</code></li>
+<li>粒子 <code>particle</code></li>
+<li>物理 <code>physics</code></li>
+<li>渲染 <code>render</code></li>
+<li>UI <code>ui</code></li>
+</ul>
+<hr>
+<p><strong>资源层</strong> <code>resource</code> :提供资产加载、保存功能，资产的结构化数据定义和相关路径配置等</p>
+<ul>
+<li>资产系统 <code>asset_manager</code></li>
+<li>配置系统 <code>config_manager</code></li>
+<li>结构化数据定义 <code>res_type</code></li>
+</ul>
+<hr>
+<p><strong>核心层</strong> <code>core</code> :提供软件系统常用模块</p>
+<ul>
+<li><p>基础库 <code>base</code> （宏、哈希）</p>
+</li>
+<li><p>色彩 <code>color</code></p>
+</li>
+<li><p>数学库 <code>math</code></p>
+</li>
+<li><p>元数据系统 <code>meta</code></p>
+<ul>
+<li>反射 <code>reflection</code></li>
+<li>序列化/反序列化 <code>serializer</code></li>
+</ul>
+</li>
+<li><p>日志系统 <code>log</code></p>
+</li>
+</ul>
+<hr>
+<p><strong>平台层</strong> <code>platform</code></p>
+<ul>
+<li>文件系统 <code>file_service</code></li>
+<li>路径 <code>path</code></li>
+</ul>
+<hr>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230116164438070.png" alt="image-20230116164438070"></p>
+<hr>
+<h2 id="引擎启动及Tick流程"><a href="#引擎启动及Tick流程" class="headerlink" title="引擎启动及Tick流程"></a>引擎启动及Tick流程</h2><p>引擎的入口是Main.cpp，其中调用了Engine类的各个函数。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114173339110.png" alt="image-20230114173339110"></p>
+<p>引擎的启动，终止和更新从Engine.cpp中的各个函数中执行。</p>
+<p>Engine中包含了以下几个函数：</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114163508886.png" alt="image-20230114163508886"></p>
+<p>StartEngine()负责启动引擎，他和ShutdownEngine()是相对应的关系。</p>
+<p>initialize()负责引擎系统的初始化，而clear()负责清除缓存的初始化信息。</p>
+<p>isQuit()返回一个bool型的m_is_quit，查询引擎是否已经退出。</p>
+<p>run()是运行的主循环，也是Tick的入口。</p>
+<p>tickOneFrame则是Tick主要函数，其实所做的就是底下的逻辑Tick和渲染Tick。</p>
+<p>在我们的架构中，渲染和逻辑是分离开来的各占一个线程的Tick，其中还包括了两个线程的数据同步交换。</p>
+<hr>
+<p>在StartEngine中，我们会先在反射系统中注册，随后启动加载引擎的各个模块。</p>
+<p>在加载完成后，在日志中输出引擎启动的消息。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114172435516.png" alt="image-20230114172435516"></p>
+<p>引擎启动时使用make_shared创建智能指针，将runtime_global_context中各个模块初始化</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114191920763.png" alt="image-20230114191920763"></p>
+<hr>
+<p>shutdown Engine则和启动的步骤对应。</p>
+<p>输出引擎关闭的信息，正常关闭引擎的各个系统，随后在反射系统中注销。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114172520358.png" alt="image-20230114172520358"></p>
+<hr>
+<p>run函数中，先获取窗口的引用，断言验证是否可用</p>
+<p>随后在确定窗口不关闭的情况下，计算出差量时间。</p>
+<p>原理是用这次调用的时间减去上次调用的时间，这样就能计算出引擎每次tick的耗时。</p>
+<p>再根据差量时间对逻辑和渲染进行tick，这样确保引擎的tick能前进合理的步长。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114181844330.png" alt="image-20230114181844330"></p>
+<hr>
+<h2 id="日志模块"><a href="#日志模块" class="headerlink" title="日志模块"></a>日志模块</h2><h3 id="功能说明"><a href="#功能说明" class="headerlink" title="功能说明"></a>功能说明</h3><p>日志模块是游戏开发中经常需要用到的功能，当我们编写gameplay代码需要调试时</p>
+<p>又或是需要更改引擎中的某个模块时，我们需要输出一些信息来帮助我们定位代码</p>
+<p>因此需要一个完善的日志系统，我们可以得知引擎是否成功运行到了某个函数的某个位置</p>
+<hr>
+<h3 id="技术细节"><a href="#技术细节" class="headerlink" title="技术细节"></a>技术细节</h3><p>日志模块使用了基于c++11的一个开源的纯头文件日志系统spdlog来实现</p>
+<p>使用c++标准输出流std::out进行输出，（print到小黑窗口上）</p>
+<p>我们规定了自己的日志类LogSystem，在其中声明了uint8_t的枚举类型变量LogLevel</p>
+<p>其中对应了几种日志可能的类型：debug，info，warn，error，fatal；</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114183508488.png" alt="image-20230114183508488"></p>
+<p>我们使用一个模板函数log进行输出，并在发生致命错误时进行回调，throw出一个异常。</p>
+<p>对于传递来的参数使用完美转发，避免不必要的拷贝，提高运行效率。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114184254758.png" alt="image-20230114184254758"></p>
+<p>对于日志系统的使用，我们使用宏加以包装</p>
+<p>例如引擎启动时使用的输出的消息“engine start”，原本应该是使用语句</p>
+<pre><code>g_runtime_global_context.m_logger_system-&gt;log(LogSystem::LogLevel::info, &quot;engine start&quot;);
+</code></pre>
+<p>如今只要使用<code>LOG_INFO(&quot;engine start&quot;);</code>就可以了</p>
+<p>其中还使用c++官方宏_FUNCTION_加以修饰，让其输出调用的函数名，方便我们调试时能定位代码的位置。</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114185720685.png" alt="image-20230114185720685"></p>
+<pre><code class="c++">[info] [Engine::startEngine] engine start
+</code></pre>
+<hr>
+<h2 id="输入模块"><a href="#输入模块" class="headerlink" title="输入模块"></a>输入模块</h2><h3 id="功能说明-1"><a href="#功能说明-1" class="headerlink" title="功能说明"></a>功能说明</h3><p>我们的游戏世界发生变化和更新，一切都是因为我们进行了输入，输入转化为了指令</p>
+<p>游戏逻辑世界对指令进行了响应，例如主角上进行了fire，move等动作指令</p>
+<p>然后逻辑世界生成子弹的实例逐帧向前飞，更改主角的transform和rotation</p>
+<p>在渲染模块中根据更新的场景数据进行渲染，最终将更新的画面一帧帧的送入我们的眼中</p>
+<p>因此游戏的变化是从输入开始的，游戏引擎需要能捕获平台相关的所有输入信息。</p>
+<p>在pc平台上则是键盘的按下，松开，鼠标各个键的按下和松开，鼠标的位移偏移量和鼠标滚轮的偏移量</p>
+<p>若是在游戏机平台，则输入游戏手柄上是两个陀螺仪的旋转偏移，游戏手柄各个键位的按下和松开</p>
+<p>甚至还可能使用触摸板，手柄的重力感应数据作为输入</p>
+<p>若游戏引擎是跨平台的，则需要针对不同平台，在我们做出例如开火这样的指令时，将鼠标左键或者手柄上某个键都转化成开火的指令。</p>
+<p>我们的游戏引擎是基于win平台的，使用窗口库glfw进行输入的捕获</p>
+<p>因此具有捕获按键按下和松开，以及鼠标偏移量的能力。</p>
+<hr>
+<h3 id="技术细节-1"><a href="#技术细节-1" class="headerlink" title="技术细节"></a>技术细节</h3><p>在我们的输入系统中，我使用枚举变量GameCommand收录了常用的几个键W，A，S，D，Left Shift</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114195353697.png" alt="image-20230114195353697"></p>
+<p>inputsystem类声明一个此类型的变量为m_game_command，在初始化时将其值设为0；</p>
+<p>除此之外，类中还存放了m_last_cursor_x和m_last_cursor_y来存放上一次鼠标的位置</p>
+<p>还有m_cursor_delta_x和m_cursor_delta_y记录了两次tick之间鼠标的偏移量</p>
+<hr>
+<p>除了构造函数之外，输入模块需要调用显示的初始化函数initialize()</p>
+<p>先确定g_runtime_global_context中的窗口模块是否已经挂载，进行断言</p>
+<p>接着将onKey和onCursorPos两个函数利用函数指针的形式注册到窗口模块</p>
+<p>当窗口模块捕获到输入时，便会从窗口模块捕获输入调用进输入模块的这两个函数</p>
+<p>gflw会捕获操作，随即调用此处的回调</p>
+<p>并在输入模块中进行处理</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114213945564.png" alt="image-20230114213945564"></p>
+<hr>
+<p><code>onKey(int key, int scancode, int action, int mods);</code></p>
+<p>和<code>void onCursorPos(double current_cursor_x, double current_cursor_y);</code>这样的函数用来相应按键的输入</p>
+<p>onKey函数的原理，是在每次执行时，将0xFFFFFFFF和GameCommand::jump的值做按位异操作</p>
+<p>再用当前的m_game_command和得出的值做按位与后赋值的操作</p>
+<p>根据传入的操作action（按下或松开）和传入的键位key，将成员变量m_game_command转为新的unsigned int型数据</p>
+<p>其中传入的key和action由glfw库捕获传递而来</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114212607353.png" alt="image-20230114212607353"></p>
+<p>这样就能最后将不同的操作都转化为同一类型的数据（unsigned int）</p>
+<p>使用他们的函数就能进行统一的处理。</p>
+<p>onCursorPos函数则很简单，先确定在游戏模式还是编辑模式</p>
+<p>更新鼠标上一次的坐标位置，只有在游戏模式才计算鼠标偏移量</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230114213201406.png" alt="image-20230114213201406"></p>
+<p>操作是如何转化成</p>
+<hr>
+<h2 id="文件模块"><a href="#文件模块" class="headerlink" title="文件模块"></a>文件模块</h2><h3 id="功能说明-2"><a href="#功能说明-2" class="headerlink" title="功能说明"></a>功能说明</h3><p>文件模块是用来处理文件读取和写入功能的模块</p>
+<p>当引擎启动时，我们需要将各种各样的文件，例如纹理，模型，json文件读入，并转化为字节流</p>
+<p>在跨平台引擎中，这个模块负责处理不同平台对于数据的处理方式</p>
+<p>最终目标是将数据转化为资产系统中使用的引擎需要的资产，因此将这个模块定位我们引擎的Platform层的基石</p>
+<p>文件读取后会由资产处理系统接手，转化为引擎通用的资产</p>
+<hr>
+<h3 id="技术细节-2"><a href="#技术细节-2" class="headerlink" title="技术细节"></a>技术细节</h3><p>文件系统使用了c++17标准库中的filesystem</p>
+<p>我们自定的FileSystem类只有一个public函数getFiles(const std::filesystem::path&amp; directory)</p>
+<p>返回一个filesystem::path类型的vector动态数组files</p>
+<p>主要原理是传入一个目录，然后迭代器会检索当前目录下的文件入口</p>
+<p>对每个文件入口检查给定的文件状态或路径是否与常规文件相对应</p>
+<p>若检查成功则将其压入我们的path数组files</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230116171741199.png" alt="image-20230116171741199"></p>
+<hr>
+<h2 id="资产模块"><a href="#资产模块" class="headerlink" title="资产模块"></a>资产模块</h2><h3 id="功能说明-3"><a href="#功能说明-3" class="headerlink" title="功能说明"></a>功能说明</h3><p>游戏引擎中会用到诸如纹理，音频，模型等数据，每种数据的格式都不相同。</p>
+<p>音频有mp3，wmv等格式，而图片和模型的格式也截然不同</p>
+<p>这意味着这些数据的压缩格式和算法都不相同，也无法在游戏引擎中实现交互和通用</p>
+<p>像PSD、Max、Maya这些数据格式，解析工具较为复杂</p>
+<p>这些数据若直接在游戏引擎中加载，效率会非常低</p>
+<p>就好比文章若使用word来储存的效率远不如使用txt格式来储存的效率高</p>
+<p>因此最正确的做法，是将这些数据全都转换为我们引擎的高效数据，即为资产</p>
+<p>我们的小引擎中这部分所做的即是将json解析序列化</p>
+<p>json中有我们其他的资产路径，他们会由各自的库去解析，为各个模块所用</p>
+<hr>
+<h3 id="技术细节-3"><a href="#技术细节-3" class="headerlink" title="技术细节"></a>技术细节</h3><p>资产系统最重要的两个功能是读取资产和保存资产</p>
+<p>即为我们asset_manager中的loadAsset和saveAsset函数</p>
+<p>文件操作的部分使用filesystem，c++的输入文件流ifstream还有json11库来实现</p>
+<hr>
+<p>由于我们loadAsset是一个通用操作，也就是我们并不知晓需输出的资产是什么类型</p>
+<p>因此我们使用了一个模板形参加上引用，来作为我们对外输出资产的方式</p>
+<p>我们先读入资产路径，使用一个getfullpath函数将资产路径转为绝对路径</p>
+<p>使用这个路径对一个ifstream对象进行初始化并验证，若ifstream对象不存在则会抛出错误日志</p>
+<p>若一切无误则创建一个stringstream类型的缓冲，将ifstream的内容传入其中并转为字符串</p>
+<p>最后将字符串使用json11库的解析函数转化为json，送入我们的序列化工具中</p>
+<p>在确认没有解析报错后函数会返回true提示资产加载成功</p>
+<p>由于编译器会检查类型，因此我们的函数实现部分是编写在头文件里的</p>
+<p>若将模板函数的实现和声明分开，则会引发链接错误</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230118084928207.png" alt="image-20230118084928207"></p>
+<p>再来说说我们的saveasset功能，原理上和LoadAsset是大同小异的</p>
+<p>这次是先验证ostream对象，使用序列化模块的写入功能之后，将json输出到我们给定的路径</p>
+<hr>
+<h2 id="配置模块"><a href="#配置模块" class="headerlink" title="配置模块"></a>配置模块</h2><h3 id="功能说明-4"><a href="#功能说明-4" class="headerlink" title="功能说明"></a>功能说明</h3><p>对于一些经常需要更改的数据，我们一般会将其放在外部的配置文件中</p>
+<p>对于我们的游戏引擎来说，这些数据可能是引擎的根目录信息，引擎各个模块所使用的资产存放的位置，还有默认启动时使用的关卡</p>
+<p>配置模块的功能就是提供各个函数，返回其他模块所需要的文件目录信息</p>
+<hr>
+<h3 id="技术细节-4"><a href="#技术细节-4" class="headerlink" title="技术细节"></a>技术细节</h3><p>配置模块会在引擎启动时读取我们的配置文件数据给其他模块使用</p>
+<p>而由于几乎所有的功能性模块都需要读取不同的资产文件，因此在引擎所有的模块启动顺序中是配置模块是最先启动的</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230120190525557.png" alt="image-20230120190525557"></p>
+<p>先让我们看看我们的配置文件是什么样的</p>
+<pre><code>Editor.ini
+</code></pre>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230120192145501.png" alt="image-20230120192145501"></p>
+<p>再来看看我们的ConfigManager类，他有着如下成员变量</p>
+<pre><code>    private:
+        std::filesystem::path m_root_folder;
+        std::filesystem::path m_asset_folder;
+        std::filesystem::path m_schema_folder;
+        std::filesystem::path m_editor_big_icon_path;
+        std::filesystem::path m_editor_small_icon_path;
+        std::filesystem::path m_editor_font_path;
+
+#ifdef ENABLE_PHYSICS_DEBUG_RENDERER
+        std::filesystem::path m_jolt_physics_asset_folder;
+#endif
+
+        std::string m_default_world_url;
+        std::string m_global_rendering_res_url;
+        std::string m_global_particle_res_url;
+</code></pre>
+<p>并提供了各式各样的public get函数来返回这些成员变量，供外界使用来获取所需配置信息</p>
+<p>在引擎启动我们的配置模块时，会自动显示的调用我们的initialize函数来显式的进行初始化</p>
+<pre><code> void initialize(const std::filesystem::path&amp; config_file_path);
+</code></pre>
+<p>函数接收一个filesystem::path类型的参数，也就是我们所需读入的配置文件</p>
+<p>随后使用c++的ifstream对象和getline函数进行数据解析</p>
+<p>将每段配置数据的name和value分格开，最后实现将我们的成员变量初始化完成</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230120194646371.png" alt="image-20230120194646371"></p>
+<hr>
+<h2 id="关卡和世界模块"><a href="#关卡和世界模块" class="headerlink" title="关卡和世界模块"></a>关卡和世界模块</h2><h3 id="功能说明-5"><a href="#功能说明-5" class="headerlink" title="功能说明"></a>功能说明</h3><p>这个模块包含了我们的世界管理器world_manager，还有关卡部分的level类，世界实例WorldRes</p>
+<p>我们前面提到过，我们的世界框架是由组件<del>游戏对象</del>关卡~世界的架构运行的</p>
+<p>关卡和世界是游戏中经常出现的概念，这两个概念也经常混淆</p>
+<p>而在我的定义中，我认为关卡逻辑含义是一个包含规则的容器，其中包含着许多不一样的游戏对象</p>
+<p>游戏的运行时，就是将一个关卡内的对象按照他们特定的规则将它们的组件逐一tick</p>
+<p>而一个游戏通常需要许多个关卡，他们可能处于激活或者未激活的状态，等待着他们的上层进行装载</p>
+<p>而他们的上层逻辑就是世界，我们运行引擎时，会默认启动一个世界和一个编辑器实例</p>
+<p>一个世界能包含许多关卡，一个关卡能摆放许多不一样的对象，以此组成不同的游戏世界供玩家冒险</p>
+<p>我们的世界模块提供了诸如loadWorld，loadLevel，reloadLevel，getCurrentActiveLevel这样的函数</p>
+<p>主要负责管理关卡和世界的加载，卸载，保存，获取当前正在活跃的关卡</p>
+<hr>
+<h3 id="技术细节-5"><a href="#技术细节-5" class="headerlink" title="技术细节"></a>技术细节</h3><p>前文提到关卡的逻辑含义是一个容器，而实际上关卡的物理含义也是如此，许多游戏会以例如json这样的文本形式来记录关卡</p>
+<p>在我们的引擎中，level1.json文件就记录了这样的许多字段</p>
+<p>拥有诸如name，instanced_components，definition这样的字段来规定名称，组件，还有对象的文件位置</p>
+<p>我们可以看到对象也是一个json文件，可以想象对象也是由类似这样的层级来构造的</p>
+<p><img src="/images/loading.jpg" data-original="/images/Users\16140\Desktop\blog\Futaba\source_posts\论文\image-20230121040318640.png" alt="image-20230121040318640"></p>
+<p>首先在启动世界模块时，我们也会显式的调用此模块的initialize函数来进行初始化</p>
+<p>主要是将m_is_world_loaded置为FALSE，标记当前还没有世界被装载，然后从从配置模块取得默认世界的信息（json文件）进行装载</p>
+<hr>
+<h2 id="物理模块"><a href="#物理模块" class="headerlink" title="物理模块"></a>物理模块</h2><hr>
+<h2 id="窗口模块"><a href="#窗口模块" class="headerlink" title="窗口模块"></a>窗口模块</h2><hr>
+<h2 id="渲染系统"><a href="#渲染系统" class="headerlink" title="渲染系统"></a>渲染系统</h2><hr>
+<h2 id="粒子系统"><a href="#粒子系统" class="headerlink" title="粒子系统"></a>粒子系统</h2><hr>
+<h2 id="射线绘制"><a href="#射线绘制" class="headerlink" title="射线绘制"></a>射线绘制</h2><hr>
+<h2 id="渲染调试"><a href="#渲染调试" class="headerlink" title="渲染调试"></a>渲染调试</h2><hr>
+<h2 id="反射模块"><a href="#反射模块" class="headerlink" title="反射模块"></a>反射模块</h2><hr>
+<h1 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h1>
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2023 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>

@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN ">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AprilNAVI&#39;s Blog | You are the best || UE4优化通解</title>
+    <meta name="author" content="AprilNAVI">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/https://i.loli.net/2021/04/11/ntQaX3ly1ohHNGr.jpg">
+    <link rel="stylesheet" href="/css/antd.min.css">
+    
+    <link rel="stylesheet" href="/css/maiden-theme.css">
+    
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="AprilNAVI's Blog | You are the best" type="application/atom+xml">
+</head>
+
+<body>
+
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">AprilNAVI's Blog | You are the best</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>AprilNAVI's Blog | You are the best</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                     
+<link rel="stylesheet" href="/css/post-body.css">
+<div class="article">
+    <div>
+        <h1>UE4优化通解 </h1>
+    </div>
+    <div class="info">
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2022/9/13
+        </span>
+
+        
+
+        
+    </div>
+
+    <div class="content" v-pre>
+        <p>宇宙第一的学习资料</p>
+<span id="more"></span>
+
+<h1 id="UE4优化通解"><a href="#UE4优化通解" class="headerlink" title="UE4优化通解"></a>UE4优化通解</h1><p>用来吹逼的收益较大的常用优化手段</p>
+<h2 id="瓶颈定位"><a href="#瓶颈定位" class="headerlink" title="瓶颈定位"></a>瓶颈定位</h2><p>最终性能表现都是由最短板决定的，使用Stat Unit等命令，insight工具来查看每帧的表现初步确定瓶颈</p>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><h3 id="Stat"><a href="#Stat" class="headerlink" title="Stat"></a>Stat</h3><p><strong>Stat Unit :</strong> 输出Frame，Game，Draw，GPU</p>
+<p><img src="/images/loading.jpg" data-original="/images/image-20220908145740330.png" alt="image-20220908145740330"></p>
+<p><strong>Stat UnitGraph：</strong>输出图表</p>
+<p><img src="/images/loading.jpg" data-original="/images/image-20220908145831967.png" alt="image-20220908145831967"></p>
+<p><strong>Stat Engine：</strong>输出引擎的整体情况</p>
+<p><img src="/images/loading.jpg" data-original="/images/image-20220908150021388.png" alt="image-20220908150021388"></p>
+<p><strong>Stat Game：</strong>输出Game线程的细分情况</p>
+<p><img src="/images/loading.jpg" data-original="/images/image-20220908150154072.png" alt="image-20220908150154072"></p>
+<p><strong>还有Stat Uobject，Levels，RenderThreadCommands，Quick</strong></p>
+<hr>
+<h3 id="UE-profiler"><a href="#UE-profiler" class="headerlink" title="UE profiler"></a>UE profiler</h3><p>窗口中菜单DeveloperTools下SessionFrontend界面即为Profiler所在的窗口</p>
+<p>可通过两种方法抓取数据：</p>
+<ol>
+<li>启动程序时增加参数：-messaging</li>
+<li>游戏中使用命令： stat startfile, stat stopfile</li>
+</ol>
+<p>在手机中增加命令</p>
+<pre><code class="bash">/sdcard/UE4Game/YourProject/UE4CommandLine.txt
+../../../YourProject/YourProject.uproject -messaging
+</code></pre>
+<p>抓获数据后，数据保存在</p>
+<pre><code class="bash">/sdcard/UE4Game/FPSDemo/FPSDemo/Saved/Profiling/UnrealStats
+</code></pre>
+<p><strong>特点：</strong>能看到更深的调用堆栈，Profiler是统计了当帧不同线程中比较深的调用堆栈，比较适合检查某帧的具体问题。</p>
+<hr>
+<h3 id="UE-Insight"><a href="#UE-Insight" class="headerlink" title="UE Insight"></a>UE Insight</h3><p>首先你需要提供Profile或Development版的App安装在你的安卓设备上，其次在需要在下面的目录创建一个 UE4CommandLine.txt的文件：</p>
+<pre><code class="bash">/sdcard/UE4Game/YourProject/UE4CommandLine.txt
+</code></pre>
+<p>文件内容设置为：</p>
+<pre><code>../../../YourProject/YourProject.uproject -tracehost=127.0.0.1 -cpuprofilertrace -loadtimetrace
+</code></pre>
+<p>也可以通过adb命令自动上传：</p>
+<pre><code class="bash">adb shell mkdir -p /sdcard/UE4Game/YourProject
+adb push UE4CommandLine.txt /sdcard/UE4Game/YourProject/UE4CommandLine.txt
+</code></pre>
+<p>接下来连接你的手机并打开命令行，输入如下命令以打开adb端口：</p>
+<pre><code class="bash">adb reverse tcp:1980 tcp:1980
+</code></pre>
+<p>在你的PC上打开UE4引擎的Binaries目录，打开Win64文件夹：</p>
+<pre><code class="bash">C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\Win64\UnrealInsights.exe
+</code></pre>
+<p><strong>特点：</strong>支持联机实时采集分析，有Profile资源加载的功能</p>
+<p>相比于Profiler，增加了线程执行情况的图表View，比较方便观察线程之间的执行情况。</p>
+<h3 id="UE-CSV"><a href="#UE-CSV" class="headerlink" title="UE CSV"></a>UE CSV</h3><p>可以Dump出Game、RenderThread每帧的耗时数据，结合离线处理工具</p>
+<pre><code>csvprofile start
+csvprofile stop
+csvprofile frames=N # capture N frames
+</code></pre>
+<p>数据将保存在此文件夹下：</p>
+<pre><code>/sdcard/UE4Game/FPSDemo/FPSDemo/Saved/Profiling/CSV
+</code></pre>
+<p>将文件Pull到PC后，可通过此工具输出HTML报告：</p>
+<pre><code>Engine\Binaries\DotNET\CsvTools\PerfreportTool.exe path-to-your-csv-file
+</code></pre>
+<hr>
+<h3 id="DumpHitches"><a href="#DumpHitches" class="headerlink" title="DumpHitches"></a>DumpHitches</h3><p>快速输出超出预设时间的坏帧</p>
+<hr>
+<h3 id="Renderdoc"><a href="#Renderdoc" class="headerlink" title="Renderdoc"></a>Renderdoc</h3><h3 id><a href="#" class="headerlink" title></a></h3><hr>
+<h2 id="GC"><a href="#GC" class="headerlink" title="GC"></a>GC</h2><h3 id="GC简述"><a href="#GC简述" class="headerlink" title="GC简述"></a>GC简述</h3><p>核心是使用了标记-清理算法，标记以所有在ROOT上的UObject列表为根</p>
+<p>去递归遍历所有这些根Uobject的引用链，所有能访问到的UObject就标记为可达的</p>
+<p>清理阶段对不可达的Uobject对其进行清理回收。</p>
+<h3 id="GC条件"><a href="#GC条件" class="headerlink" title="GC条件"></a>GC条件</h3><ol>
+<li>UObject对象中的UObject*成员变量必须被UPROPERTY宏定义修饰（自动）。</li>
+<li>UObject对象实现了派生的AddReferencedObjects接口（手动）。</li>
+<li>对于Struct结构体中引用的UObject，必须继承FGCObject对象，并实现派生的AddReferencedObjects接口，手动将UObject*变量加入引用。</li>
+</ol>
+<h3 id="防止GC"><a href="#防止GC" class="headerlink" title="防止GC"></a>防止GC</h3><ol>
+<li>UObject对象调用AddRoot函数。</li>
+<li>直接或者间接被根节点Root对象引用（UPROPERTY宏修饰）</li>
+<li>直接或间接被存活的FGCObject对象引用</li>
+</ol>
+<h3 id="手动GC"><a href="#手动GC" class="headerlink" title="手动GC"></a>手动GC</h3><ol>
+<li>手动对UObject对象调用MarkPendingKill()</li>
+<li>调用GEngine-&gt;ForceGarbageCollection(bool bForcePurge)接口，来让UE进行一次完整的垃圾回收</li>
+</ol>
+<h3 id="GC流程"><a href="#GC流程" class="headerlink" title="GC流程"></a>GC流程</h3><p>上锁（防止其他进程访问Uobject），标记阶段，清理阶段，解锁</p>
+<p><strong>标记：</strong></p>
+<p>将所有不确定是否可达的对象都标记为不可达</p>
+<p>随后将所有确定可达的对象都清除掉不可达标记。</p>
+<p><strong>清理：</strong></p>
+<p>将所有的不可达的Uobejct收集到一个GunreachableObjects列表</p>
+<p>设置增量清理bUseTimeLimit为True，那么每一次的清理操作时间超过TimeLimit时会返回，等待下一次的Tick帧到来时继续清理</p>
+<p>bUseTimeLimit为false，那么进行全量清理，会一帧内清理直到所有的不可达对象全部销毁。</p>
+<p><strong>析构：</strong></p>
+<p>对所有的不可达的UObject分别调用了ConditionalBeginDestroy和ConditionalFinishDestroy后</p>
+<p>对所有的不可达对象进行析构，销毁对象。</p>
+<h3 id="优化手段"><a href="#优化手段" class="headerlink" title="优化手段"></a>优化手段</h3><h4 id="编辑器层面（通用）："><a href="#编辑器层面（通用）：" class="headerlink" title="编辑器层面（通用）："></a>编辑器层面（通用）：</h4><p><strong>Allow Parallel GC：</strong>开启多线程GC</p>
+<p><strong>Incremental BeginDestroy Enabled：</strong>开启增量BeginDestroy</p>
+<p><strong>Mutithreaded Destruction Enabled：</strong>开启多线程析构</p>
+<p>开启集群特性（集群：一类Uobject的可达性由Root决定）：<strong>Asset</strong> <strong>Actor</strong> <strong>Blueprint</strong> </p>
+<p><strong>Maximum Object Count Not Considerd By GC：</strong>设置不被GC的Uobject数量，小于此数目不GC</p>
+<p>针对引擎启动初始化，能减少频繁申请内存</p>
+<p><img src="/images/loading.jpg" data-original="/images/image-20220908164737697.png" alt="image-20220908164737697"></p>
+<hr>
+<h4 id="业务层面："><a href="#业务层面：" class="headerlink" title="业务层面："></a>业务层面：</h4><p><strong>根据游戏的特征和特性来</strong></p>
+<p><strong>标记阶段：</strong></p>
+<p>排查GC可以将Build.h中的LOOKING_FOR_PERF_ISSUES打开</p>
+<p>GC时就会log出各个类的信息和占比</p>
+<p>例如StaticMesh在我们的游戏中绝大部分作为场景存在，单局中不需要销毁</p>
+<p>则考虑将StaticMesh合为一个Cluster参与到统计阶段</p>
+<p><strong>清除阶段：</strong></p>
+<p>启用增量GC</p>
+<p>观察log发现其中有很多技能和生成物、UI相关的反复销毁。</p>
+<p>比如使用频率高的UI和技能生成物等，用池来缓存，池子的容器长度要控制好不要太长</p>
+<h2 id="UI"><a href="#UI" class="headerlink" title="UI"></a>UI</h2><h3 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h3><p>我们动态UI的Tick时间到了6.5ms</p>
+<p>UI树的深度会直接影响UI性能，每层canvas嵌套都有消耗</p>
+<p>（计算child的几何数据并更新Layer ID）</p>
+<h3 id="业务手段"><a href="#业务手段" class="headerlink" title="业务手段"></a>业务手段</h3><p>原则上不允许蓝图使用tick event，userwidget中将tick event删除</p>
+<p>避免NativeTick中会调到空函数产生消耗</p>
+<p>保证功能的前提下，在设计UI树的时候尽量广度优先而不是深度优先</p>
+<p>深度优先的设计更容易产生更大layerID，而layerID直接影响UI是否能合批，以及UI事件的传导。</p>
+<p>非必要不tick，可降频的tick尽量降频。</p>
+<h2 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h2><h3 id="UE-MemoryReport"><a href="#UE-MemoryReport" class="headerlink" title="UE MemoryReport"></a>UE MemoryReport</h3><p>memreport命令会dump出一个文本文件，存储了不同类型对象的列表数据，存放在</p>
+<pre><code>/sdcard/UE4Game/FPSDemo/FPSDemo/Saved/Profiling/MemReports
+</code></pre>
+<p>memreport命令能输出如UObjects列表、Textures、RT列表等非常详细的数据，以方便开发者判断是否有资源或对象内存存在异常</p>
+<h3 id="Android平台内存相关"><a href="#Android平台内存相关" class="headerlink" title="Android平台内存相关"></a>Android平台内存相关</h3>
+    </div>
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <div id="comment">
+        <div id="gitalk-container">
+        </div>
+    </div>
+    
+</div>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2023 AprilNAVI&#39;s Blog | You are the best
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @AprilNAVI
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
+    </div>
+
+</footer>
+
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
+
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
+
+<script>
+            window.imageLazyLoadSetting = {
+                isSPA: false,
+                preloadRatio: 1,
+                processImages: null,
+            };
+        </script><script>window.addEventListener("load",function(){var t=/\.(gif|jpg|jpeg|tiff|png)$/i,r=/^data:image\/[a-z]+;base64,/;Array.prototype.slice.call(document.querySelectorAll("img[data-original]")).forEach(function(a){var e=a.parentNode;"A"===e.tagName&&(e.href.match(t)||e.href.match(r))&&(e.href=a.dataset.original)})});</script><script>!function(n){n.imageLazyLoadSetting.processImages=o;var e=n.imageLazyLoadSetting.isSPA,i=n.imageLazyLoadSetting.preloadRatio||1,r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]"));function o(){e&&(r=Array.prototype.slice.call(document.querySelectorAll("img[data-original]")));for(var t,a=0;a<r.length;a++)0<=(t=(t=r[a]).getBoundingClientRect()).bottom&&0<=t.left&&t.top<=(n.innerHeight*i||document.documentElement.clientHeight*i)&&function(){var t,e,n,i,o=r[a];t=o,e=function(){r=r.filter(function(t){return o!==t})},n=new Image,i=t.getAttribute("data-original"),n.onload=function(){t.src=i,e&&e()},t.src!==i&&(n.src=i)}()}o(),n.addEventListener("scroll",function(){var t,e;t=o,e=n,clearTimeout(t.tId),t.tId=setTimeout(function(){t.call(e)},500)})}(this);</script></body>
+
+</html>
